@@ -1,2 +1,4 @@
 .vscode/settings.json
 *.jar
+chess_server/target/
+ClientApp/app/target/
