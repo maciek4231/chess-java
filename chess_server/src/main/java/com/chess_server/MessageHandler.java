@@ -7,28 +7,12 @@ import com.google.gson.JsonParser;
 
 public class MessageHandler {
 
-    // private Gson gson;
     private final ChessWebSocketServer server;
+    public final ConnectionHandler connectionHandler;
 
     public MessageHandler(ChessWebSocketServer server) {
         this.server = server;
-        // gson = new GsonBuilder()
-        // .registerTypeAdapter(Message.class, (JsonDeserializer<Message>) (json,
-        // typeOfT, context) -> {
-        // String type = json.getAsJsonObject().get("type").getAsString();
-        // switch (type) {
-        // case "pickMove":
-        // return context.deserialize(json, PickMoveMessage.class);
-        // case "abort":
-        // return context.deserialize(json, AbortMessage.class);
-        // case "takeback":
-        // return context.deserialize(json, TakebackMessage.class);
-        // case "availability":
-        // return context.deserialize(json, AvailabilityMessage.class);
-        // default:
-        // throw new IllegalArgumentException("Unknown message type: " + type);
-        // }
-        // }).create();
+        this.connectionHandler = new ConnectionHandler();
     }
 
     public void handleMessage(WebSocket conn, String message) {
@@ -48,6 +32,9 @@ public class MessageHandler {
                 case "availability":
                     handleAvailability(conn, msg);
                     break;
+                case "joinGame":
+                    handleJoinGame(conn, msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -55,25 +42,6 @@ public class MessageHandler {
             System.out.println("Invalid JSON received: " + e.getMessage());
         }
     }
-
-    // private void handleMessage(WebSocket conn, String message) {
-    // switch (msg.type) {
-    // case "pickMove":
-    // handleMove(conn, (PickMoveMessage) msg);
-    // break;
-    // case "abort":
-    // handleAbort(conn, (AbortMessage) msg);
-    // break;
-    // case "takeback":
-    // handleTakeback(conn, (TakebackMessage) msg);
-    // break;
-    // case "availability":
-    // handleAvailability(conn, (AvailabilityMessage) msg);
-    // break;
-    // default:
-    // System.out.println("Unknown message type: " + msg.type);
-    // }
-    // }
 
     private void handleMove(WebSocket conn, JsonObject msg) {
         // Handle move message
@@ -92,11 +60,36 @@ public class MessageHandler {
 
     private void handleAvailability(WebSocket conn, JsonObject msg) {
         Integer availability = msg.get("availability").getAsInt();
+        String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        JsonObject response = new JsonObject();
         if (availability.equals(1)) {
-            server.sendMessageToClient(conn, "Available");
+            Integer gameCode = connectionHandler.generateJoinCode(clientId);
+            response.addProperty("gameCode", gameCode);
         } else {
-            // Handle unavailability?
+            // obslugiwac unavailable?
         }
+        server.sendMessageToClient(conn, response.toString());
         System.out.println("Handling availability");
+    }
+
+    private void handleJoinGame(WebSocket conn, JsonObject msg) {
+        String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        int joinCode = msg.get("gameCode").getAsInt();
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "joinGameRes");
+        String opponentId = connectionHandler.joinGame(clientId, joinCode);
+        if (opponentId.isEmpty()) {
+            response.addProperty("status", -1); // nie udalo sie dolaczyc
+        } else {
+            response.addProperty("status", 0);
+            response.addProperty("gameCode", joinCode);
+            WebSocket connOpp = connectionHandler.getUserConnection(opponentId);
+            if (connOpp != null) {
+                server.sendMessageToClient(connOpp, response.toString());
+            } else {
+                response.addProperty("status", -2); // przeciwnik nie jest online
+            }
+        }
+        server.sendMessageToClient(conn, response.toString());
     }
 }
