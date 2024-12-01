@@ -29,5 +29,7 @@ public class Main {
 
         frame.getContentPane().add(board.getPane());
         frame.setVisible(true);
+
+        messageHandler.anounceAvailable();
     }
 }

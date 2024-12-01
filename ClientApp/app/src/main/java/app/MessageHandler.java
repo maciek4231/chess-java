@@ -29,4 +29,12 @@ public class MessageHandler {
             System.out.println("Invalid JSON received: " + e.getMessage());
         }
     }
+
+    public void anounceAvailable()
+    {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "availability");
+        msg.addProperty("avail", 1);
+        client.send(msg.toString());
+    }
 }
