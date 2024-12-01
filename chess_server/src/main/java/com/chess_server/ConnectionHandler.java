@@ -14,7 +14,8 @@ import java.util.Random;
 public class ConnectionHandler {
     // thread safe for future use
     private ConcurrentHashMap<Integer, String> joinablePlayers = new ConcurrentHashMap<>();
-    private Map<String, WebSocket> activeUsers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, WebSocket> activeUsers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, List<String>> activeGames = new ConcurrentHashMap<>();
     private AtomicInteger idCounter = new AtomicInteger(0);
     private Random rand = new Random();
 
@@ -25,7 +26,8 @@ public class ConnectionHandler {
         Integer randN;
         do {
             randN = rand.nextInt(0, 1_000_000); // id od 000000 do 999999
-        } while (joinablePlayers.containsKey(randN)); // poki nie zaczniemy doganiac lichessa to powinno byc ok
+        } while (joinablePlayers.containsKey(randN) || activeGames.containsKey(randN)); // poki nie zaczniemy doganiac
+                                                                                        // lichessa to powinno byc ok
         joinablePlayers.put(randN, clientId);
         return randN;
     }
@@ -37,6 +39,7 @@ public class ConnectionHandler {
             if (joinablePlayers.containsValue(clientId)) {
                 joinablePlayers.values().remove(clientId);
             }
+            activeGames.put(joinCode, List.of(clientId, opponentId));
             return opponentId;
         }
         return "";
