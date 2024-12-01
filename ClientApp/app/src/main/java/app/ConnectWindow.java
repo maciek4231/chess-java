@@ -38,7 +38,7 @@ public class ConnectWindow {
 
         frame.getContentPane().add(button);
 
-        responseLabel = new JLabel("Halo");
+        responseLabel = new JLabel("");
         responseLabel.setBounds(50, 100, 400, 20);
         frame.getContentPane().add(responseLabel);
 
