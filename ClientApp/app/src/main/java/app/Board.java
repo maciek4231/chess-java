@@ -82,6 +82,44 @@ public class Board {
         return pieces.containsKey(coords);
     }
 
+    public void clientMove(Coords from, Coords to)
+    {
+        makeMove(from, to);
+        clearMoves();
+        // TODO: Send move to server
+    }
+
+    public void makeMove(Coords from, Coords to)
+    {
+        Piece piece = pieces.get(from);
+        piece.move(to);
+        if (isOccupied(to))
+        {
+            jPane.remove(pieces.get(to).getButton());
+            pieces.remove(to);
+        }
+        pieces.remove(from);
+        pieces.put(to, piece);
+    }
+
+    private void clearMoves() {
+        for (Move move : availableMoves)
+        {
+            move.getButton().setVisible(false);
+            jPane.remove(move.getButton());
+        }
+        availableMoves.clear();
+        selectableMoves.clear();
+    }
+
+    public void addPiece(PieceType type, Coords coords)
+    {
+        Piece piece = new Piece(this, type, coords);
+        pieces.put(coords, piece);
+        jPane.add(piece.getButton());
+        jPane.setLayer(piece.getButton(), 1);
+    }
+
     private void createPieces()     // TODO: Remove this method
     {
         pieces.put(new Coords(0, 0), new Piece(this, PieceType.B_ROOK, 0, 0));
@@ -127,5 +165,7 @@ public class Board {
 
         addAvailableMove(new Coords(1, 1), new Coords(1, 2));
         addAvailableMove(new Coords(1, 1), new Coords(1, 6));
+
+        addPiece(PieceType.W_KING, new Coords(4, 4));
     }
 }

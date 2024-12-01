@@ -9,6 +9,14 @@ public class Piece {
     JButton button;
     Board board;
 
+    public Piece(Board board, PieceType type, Coords coords) {
+        this.board = board;
+        this.type = type;
+        this.coords = coords;
+
+        createButton();
+    }
+
     public Piece(Board board, PieceType type, int x, int y) {
         this.board = board;
         this.type = type;
@@ -34,6 +42,11 @@ public class Piece {
         button.addActionListener(e -> {
             board.selectPiece(coords);
         });
+    }
+
+    public void move(Coords coords) {
+        this.coords = coords;
+        button.setBounds(coords.getX()*128, coords.getY()*128, 128, 128);
     }
 
     javax.swing.ImageIcon getPieceImage(PieceType type) {

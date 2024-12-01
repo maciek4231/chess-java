@@ -40,7 +40,7 @@ public class Move {
         button.setFocusPainted(false);
         button.setBorder(null);
         button.addActionListener(e -> {
-            System.out.println(from.toString() + " -> " + to.toString());
+            board.clientMove(from, to);
         });
     }
 
