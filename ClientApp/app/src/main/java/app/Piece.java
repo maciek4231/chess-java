@@ -6,7 +6,7 @@ public class Piece {
 
     PieceType type;
     Coords coords;
-    JButton button;
+    CustomButton button;
     Board board;
 
     public Piece(Board board, PieceType type, Coords coords) {
@@ -30,15 +30,9 @@ public class Piece {
     }
 
     private void createButton() {
-        button = new JButton("");
+        button = new CustomButton();
         button.setIcon(this.getPieceImage(this.type));
         button.setBounds(coords.getX()*128, coords.getY()*128, 128, 128);
-        button.setBackground(new java.awt.Color(0, 0, 0, 0));
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        button.setBorder(null);
         button.addActionListener(e -> {
             board.selectPiece(coords);
         });
