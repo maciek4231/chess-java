@@ -21,7 +21,13 @@ public class Main {
         board.setMessageHandler(messageHandler);
 
         client.connect();
-
+        while (!client.isOpen()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         JFrame frame = new JFrame("Chess");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
