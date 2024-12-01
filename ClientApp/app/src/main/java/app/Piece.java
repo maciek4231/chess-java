@@ -5,18 +5,24 @@ import javax.swing.JButton;
 public class Piece {
 
     PieceType type;
-    int x;
-    int y;
+    Coords coords;
     JButton button;
 
     public Piece(PieceType type, int x, int y) {
         this.type = type;
-        this.x = x;
-        this.y = y;
+        this.coords = new Coords(x, y);
 
+        createButton();
+    }
+
+    public JButton getButton() {
+        return button;
+    }
+
+    private void createButton() {
         button = new JButton("");
         button.setIcon(this.getPieceImage(this.type));
-        button.setBounds(x*128, y*128, 128, 128);
+        button.setBounds(coords.getX()*128, coords.getY()*128, 128, 128);
         button.setBackground(new java.awt.Color(0, 0, 0, 0));
         button.setOpaque(false);
         button.setContentAreaFilled(false);
@@ -26,10 +32,6 @@ public class Piece {
         button.addActionListener(e -> {
             System.out.println(type.toString());
         });
-    }
-
-    public JButton getButton() {
-        return button;
     }
 
     javax.swing.ImageIcon getPieceImage(PieceType type) {
