@@ -40,7 +40,7 @@ public class Piece {
 
     public void move(Coords coords) {
         this.coords = coords;
-        button.setBounds(coords.getX()*128, (7-coords.getY()*128), 128, 128);
+        button.setBounds(coords.getX()*128, (7-coords.getY())*128, 128, 128);
     }
 
     javax.swing.ImageIcon getPieceImage(PieceType type) {

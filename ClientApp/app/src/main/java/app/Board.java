@@ -13,6 +13,8 @@ import java.awt.Image;
 
 public class Board {
 
+    MessageHandler messageHandler;
+
     JLayeredPane jPane;
 
     HashMap<Coords, Piece> pieces;
@@ -30,6 +32,11 @@ public class Board {
 
         createPane();
         createPieces();
+    }
+
+    public void setMessageHandler(MessageHandler messageHandler)
+    {
+        this.messageHandler = messageHandler;
     }
 
     public JLayeredPane getPane()
