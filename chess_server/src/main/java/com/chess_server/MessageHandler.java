@@ -59,7 +59,7 @@ public class MessageHandler {
     }
 
     private void handleAvailability(WebSocket conn, JsonObject msg) {
-        Integer availability = msg.get("availability").getAsInt();
+        Integer availability = msg.get("avail").getAsInt();
         String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
         JsonObject response = new JsonObject();
         if (availability.equals(1)) {
