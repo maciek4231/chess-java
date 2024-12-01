@@ -32,7 +32,7 @@ public class Piece {
     private void createButton() {
         button = new CustomButton();
         button.setIcon(this.getPieceImage(this.type));
-        button.setBounds(coords.getX()*128, coords.getY()*128, 128, 128);
+        button.setBounds(coords.getX()*128, (7-coords.getY())*128, 128, 128);
         button.addActionListener(e -> {
             board.selectPiece(coords);
         });
@@ -40,7 +40,7 @@ public class Piece {
 
     public void move(Coords coords) {
         this.coords = coords;
-        button.setBounds(coords.getX()*128, coords.getY()*128, 128, 128);
+        button.setBounds(coords.getX()*128, (7-coords.getY()*128), 128, 128);
     }
 
     javax.swing.ImageIcon getPieceImage(PieceType type) {
