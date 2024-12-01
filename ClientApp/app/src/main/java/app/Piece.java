@@ -7,8 +7,10 @@ public class Piece {
     PieceType type;
     Coords coords;
     JButton button;
+    Board board;
 
-    public Piece(PieceType type, int x, int y) {
+    public Piece(Board board, PieceType type, int x, int y) {
+        this.board = board;
         this.type = type;
         this.coords = new Coords(x, y);
 
@@ -30,7 +32,7 @@ public class Piece {
         button.setFocusPainted(false);
         button.setBorder(null);
         button.addActionListener(e -> {
-            System.out.println(type.toString());
+            board.selectPiece(coords);
         });
     }
 
