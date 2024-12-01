@@ -5,12 +5,9 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ChessWebSocketServer extends WebSocketServer {
 
-    private Map<String, WebSocket> clients = new ConcurrentHashMap<>();
     private final MessageHandler messageHandler;
 
     public ChessWebSocketServer(InetSocketAddress address) {
@@ -21,14 +18,14 @@ public class ChessWebSocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
-        clients.put(clientId, conn);
+        messageHandler.connectionHandler.addActiveUser(clientId, conn);
         System.out.println("New connection from " + clientId);
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
-        clients.remove(clientId);
+        messageHandler.connectionHandler.removeActiveUser(clientId);
         System.out.println("Closed connection from " + clientId);
     }
 
