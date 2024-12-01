@@ -13,29 +13,30 @@ public class MessageHandler {
 
     public MessageHandler(ChessWebSocketServer server) {
         this.server = server;
-        this.connectionHandler = new ConnectionHandler();
         this.gameManager = new GameManager();
+        this.connectionHandler = new ConnectionHandler(gameManager);
     }
 
     public void handleMessage(WebSocket conn, String message) {
         try {
             JsonObject msg = JsonParser.parseString(message).getAsJsonObject();
             String type = msg.get("type").getAsString();
+            Integer clientId = connectionHandler.getClientId(conn);
             switch (type) {
                 case "pickMove":
-                    handleMove(conn, msg);
+                    handleMove(clientId, msg);
                     break;
                 case "abort":
-                    handleAbort(conn, msg);
+                    handleAbort(clientId, msg);
                     break;
                 case "takeback":
-                    handleTakeback(conn, msg);
+                    handleTakeback(clientId, msg);
                     break;
                 case "availability":
-                    handleAvailability(conn, msg);
+                    handleAvailability(clientId, msg);
                     break;
                 case "joinGame":
-                    handleJoinGame(conn, msg);
+                    handleJoinGame(clientId, msg);
                     break;
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -45,27 +46,28 @@ public class MessageHandler {
         }
     }
 
-    private void handleMove(WebSocket conn, JsonObject msg) {
+    private void handleMove(Integer clientId, JsonObject msg) {
         // Handle move message
         System.out.println("Picked move number: " + msg.get("moveNo").getAsInt());
     }
 
-    private void handleAbort(WebSocket conn, JsonObject msg) {
+    private void handleAbort(Integer clientId, JsonObject msg) {
         // Handle abort message
         System.out.println("Handling abort");
     }
 
-    private void handleTakeback(WebSocket conn, JsonObject msg) {
+    private void handleTakeback(Integer clientId, JsonObject msg) {
         // Handle takeback message
         System.out.println("Handling takeback");
     }
 
-    private void handleAvailability(WebSocket conn, JsonObject msg) {
+    private void handleAvailability(Integer clientId, JsonObject msg) {
         Integer availability = msg.get("avail").getAsInt();
-        String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        WebSocket conn = connectionHandler.getClientConn(clientId);
         JsonObject response = new JsonObject();
         if (availability.equals(1)) {
             Integer gameCode = connectionHandler.generateJoinCode(clientId);
+            response.addProperty("type", "availabilityRes");
             response.addProperty("gameCode", gameCode);
         } else {
             connectionHandler.removeJoinCode(clientId);
@@ -74,19 +76,19 @@ public class MessageHandler {
         System.out.println("Handling availability");
     }
 
-    private void handleJoinGame(WebSocket conn, JsonObject msg) {
+    private void handleJoinGame(Integer clientId, JsonObject msg) {
         boolean isSuccess = false;
-        String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        WebSocket conn = connectionHandler.getClientConn(clientId);
         int joinCode = msg.get("gameCode").getAsInt();
         JsonObject response = new JsonObject();
         response.addProperty("type", "joinGameRes");
-        String opponentId = connectionHandler.joinGame(clientId, joinCode);
-        if (opponentId.isEmpty()) {
+        Integer opponentId = connectionHandler.joinGame(clientId, joinCode);
+        if (opponentId.equals(-1)) {
             response.addProperty("status", -1); // game not found
         } else {
             response.addProperty("status", 0);
             response.addProperty("gameCode", joinCode);
-            WebSocket connOpp = connectionHandler.getUserConnection(opponentId);
+            WebSocket connOpp = connectionHandler.getClientConn(opponentId);
             if (connOpp != null) {
                 server.sendMessageToClient(connOpp, response.toString()); // if successful both players get the same
                                                                           // response
@@ -104,8 +106,8 @@ public class MessageHandler {
 
     private boolean sendToPlayers(Integer gameCode, String message) {
         var players = connectionHandler.getActiveGamePlayers(gameCode);
-        WebSocket conn1 = connectionHandler.getUserConnection(players.get(0));
-        WebSocket conn2 = connectionHandler.getUserConnection(players.get(1));
+        WebSocket conn1 = connectionHandler.getClientConn(players.get(0));
+        WebSocket conn2 = connectionHandler.getClientConn(players.get(1));
         if (conn1 != null && conn2 != null) {
             server.sendMessageToClient(conn1, message);
             server.sendMessageToClient(conn2, message);

@@ -18,16 +18,17 @@ public class ChessWebSocketServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        Integer clientId = messageHandler.connectionHandler.GenerateClientID();
         messageHandler.connectionHandler.addActiveUser(clientId, conn);
         System.out.println("New connection from " + clientId);
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        String clientId = conn.getRemoteSocketAddress().getAddress().getHostAddress();
+        Integer clientId = messageHandler.connectionHandler.getClientId(conn);
         messageHandler.connectionHandler.removeActiveUser(clientId);
-        System.out.println("Closed connection from " + clientId);
+        System.out.println("Closed connection from client id: " + clientId + " with ip: "
+                + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
     @Override

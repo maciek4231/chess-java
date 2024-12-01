@@ -9,12 +9,26 @@ import java.util.Random;
 
 public class ConnectionHandler {
     // thread safe for future use
-    private ConcurrentHashMap<Integer, String> joinablePlayers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, WebSocket> activeUsers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, List<String>> activeGames = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Integer> joinablePlayers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, WebSocket> activeUsers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, List<Integer>> activeGames = new ConcurrentHashMap<>(); // gameCode -> [player1,
+                                                                                               // player2]
     private Random rand = new Random();
+    private final GameManager gameManager;
 
-    public Integer generateJoinCode(String clientId) {
+    public ConnectionHandler(GameManager gameManager) {
+        this.gameManager = gameManager;
+    }
+
+    public Integer GenerateClientID() {
+        Integer randID;
+        do {
+            randID = rand.nextInt(0, 1_000_000);
+        } while (activeUsers.containsKey(randID));
+        return randID;
+    }
+
+    public Integer generateJoinCode(Integer clientId) {
         if (joinablePlayers.containsValue(clientId)) {
             joinablePlayers.values().remove(clientId);
         }
@@ -27,15 +41,15 @@ public class ConnectionHandler {
         return randN;
     }
 
-    public void removeJoinCode(String clientId) {
+    public void removeJoinCode(Integer clientId) {
         if (joinablePlayers.containsValue(clientId)) {
             joinablePlayers.values().remove(clientId); // to trzeba bedzie lepiej robic
         }
     }
 
-    public String joinGame(String clientId, int joinCode) {
+    public Integer joinGame(Integer clientId, Integer joinCode) {
         if (joinablePlayers.containsKey(joinCode)) {
-            String opponentId = joinablePlayers.get(joinCode);
+            Integer opponentId = joinablePlayers.get(joinCode);
             joinablePlayers.remove(joinCode);
             if (joinablePlayers.containsValue(clientId)) {
                 joinablePlayers.values().remove(clientId);
@@ -43,31 +57,41 @@ public class ConnectionHandler {
             activeGames.put(joinCode, List.of(clientId, opponentId));
             return opponentId;
         }
-        return "";
+        return -1;
     }
 
-    public void addActiveUser(String clientId, WebSocket conn) {
+    public void addActiveUser(Integer clientId, WebSocket conn) {
         activeUsers.put(clientId, conn);
     }
 
-    public void removeActiveUser(String clientId) { // player disconnected
+    public void removeActiveUser(Integer clientId) { // player disconnected
         if (joinablePlayers.containsValue(clientId)) {
             joinablePlayers.values().remove(clientId);
         }
-        for (Map.Entry<Integer, List<String>> entry : activeGames.entrySet()) { // na razie usuwamy gre jak gracz sie
-                                                                                // rozlaczy
+        for (Map.Entry<Integer, List<Integer>> entry : activeGames.entrySet()) { // na razie usuwamy gre jak gracz sie
+                                                                                 // rozlaczy
             if (entry.getValue().contains(clientId)) { // w przyszlosci moze szybsza implementacja na 3 mapy
                 activeGames.remove(entry.getKey());
+                gameManager.removeGame(entry.getKey());
             }
         }
         activeUsers.remove(clientId);
     }
 
-    public WebSocket getUserConnection(String clientId) {
+    public WebSocket getClientConn(Integer clientId) {
         return activeUsers.get(clientId);
     }
 
-    public List<String> getActiveGamePlayers(Integer gameCode) {
+    public Integer getClientId(WebSocket conn) {
+        for (Map.Entry<Integer, WebSocket> entry : activeUsers.entrySet()) {
+            if (entry.getValue().equals(conn)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
+    public List<Integer> getActiveGamePlayers(Integer gameCode) {
         return activeGames.get(gameCode);
     }
 }

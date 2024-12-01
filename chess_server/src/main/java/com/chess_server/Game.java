@@ -15,7 +15,7 @@ public class Game {
             { 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R' }
     };
 
-    Game(String player1, String player2) {
+    Game(Integer player1, Integer player2) {
         System.out.println("Game started!");
     }
 
