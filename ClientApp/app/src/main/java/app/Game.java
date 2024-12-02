@@ -6,6 +6,7 @@ import javax.swing.JLayeredPane;
 public class Game {
 
     JLayeredPane window;
+    PromptWindow promptWindow;
 
     public Game(ChessWebSocketClient client) {
         Board board = new Board();
@@ -28,5 +29,15 @@ public class Game {
 
     public JLayeredPane getWindow() {
         return window;
+    }
+
+    public void showPromptWindow(String message) {
+        promptWindow = new PromptWindow(this, message);
+        window.add(promptWindow.getPanel(), 2, 2);
+    }
+
+    public void closePromptWindow() {
+        window.remove(promptWindow.getPanel());
+        promptWindow = null;
     }
 }
