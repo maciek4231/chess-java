@@ -13,8 +13,9 @@ public class ConnectionHandler {
     private ConcurrentHashMap<Integer, WebSocket> activeUsers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, List<Integer>> activeGames = new ConcurrentHashMap<>(); // gameCode -> [player1,
                                                                                                // player2]
+    final private GameManager gameManager;
+
     private Random rand = new Random();
-    private final GameManager gameManager;
 
     public ConnectionHandler(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -64,18 +65,32 @@ public class ConnectionHandler {
         activeUsers.put(clientId, conn);
     }
 
-    public void removeActiveUser(Integer clientId) { // player disconnected
+    /**
+     * Removes user from activeUsers, joinablePlayers and removes user's game from
+     * activeGames and gameManager (if applicable)
+     * 
+     * @param clientId
+     * @return clientId of opponent or -1 if user wasn't in any game
+     */
+    public Integer removeActiveUser(Integer clientId) { // player disconnected
+        Integer opponentId = -1;
         if (joinablePlayers.containsValue(clientId)) {
             joinablePlayers.values().remove(clientId);
         }
         for (Map.Entry<Integer, List<Integer>> entry : activeGames.entrySet()) { // na razie usuwamy gre jak gracz sie
                                                                                  // rozlaczy
-            if (entry.getValue().contains(clientId)) { // w przyszlosci moze szybsza implementacja na 3 mapy
-                activeGames.remove(entry.getKey());
-                gameManager.removeGame(entry.getKey());
+            List<Integer> players = entry.getValue();
+            if (players.contains(clientId)) { // w przyszlosci moze szybsza implementacja na 3? mapy
+                Integer gameCode = entry.getKey();
+                activeGames.remove(gameCode);
+                gameManager.removeGame(gameCode);
+                opponentId = players.get(0).equals(clientId) ? players.get(1)
+                        : players.get(0);
+                break; // na razie zakladamy ze gracz jest w jednej grze
             }
         }
         activeUsers.remove(clientId);
+        return opponentId; //  w przyszlosci potencjalnie wielu przeciwnikow
     }
 
     public WebSocket getClientConn(Integer clientId) {

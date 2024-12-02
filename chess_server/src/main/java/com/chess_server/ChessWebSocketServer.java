@@ -26,7 +26,7 @@ public class ChessWebSocketServer extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         Integer clientId = messageHandler.connectionHandler.getClientId(conn);
-        messageHandler.connectionHandler.removeActiveUser(clientId);
+        messageHandler.playerDisconnected(clientId);
         System.out.println("Closed connection from client id: " + clientId + " with ip: "
                 + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }

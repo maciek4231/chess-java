@@ -113,8 +113,20 @@ public class MessageHandler {
         if (isSuccess) {
             Game game = gameManager.newGame(joinCode, clientId, opponentId);
             sendToPlayers(joinCode, game.getBoardState().toString());
-            server.sendMessageToClient(connectionHandler.getClientConn(game.getCurrentPlayer()),
+            server.sendMessageToClient(connectionHandler.getClientConn(game.playerBlack),
+                    "{\"type\":\"playerIsBlackRes\"}");
+            server.sendMessageToClient(connectionHandler.getClientConn(game.playerWhite),
                     game.getPossibleMoves().toString());
+        }
+    }
+
+    public void playerDisconnected(Integer clientId) {
+        Integer opponentId = connectionHandler.removeActiveUser(clientId);
+        if (opponentId.equals(-1)) {
+            return;
+        } else {
+            WebSocket conn = connectionHandler.getClientConn(opponentId);
+            server.sendMessageToClient(conn, "{\"type\":\"opponentDisconnectedRes\"}");
         }
     }
 
@@ -127,9 +139,9 @@ public class MessageHandler {
             server.sendMessageToClient(conn2, message);
         } else {
             if (conn1 != null) {
-                server.sendMessageToClient(conn1, "{\"type\":\"opponentDisconnected\"}");
+                server.sendMessageToClient(conn1, "{\"type\":\"opponentDisconnectedRes\"}");
             } else {
-                server.sendMessageToClient(conn2, "{\"type\":\"opponentDisconnected\"}");
+                server.sendMessageToClient(conn2, "{\"type\":\"opponentDisconnectedRes\"}");
             }
             return false;
         }
