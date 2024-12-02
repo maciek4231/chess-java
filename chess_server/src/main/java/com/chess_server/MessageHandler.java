@@ -113,7 +113,8 @@ public class MessageHandler {
         if (isSuccess) {
             Game game = gameManager.newGame(joinCode, clientId, opponentId);
             sendToPlayers(joinCode, game.getBoardState().toString());
-            server.sendMessageToClient(connectionHandler.getClientConn(clientId), game.getPossibleMoves().toString());
+            server.sendMessageToClient(connectionHandler.getClientConn(game.getCurrentPlayer()),
+                    game.getPossibleMoves().toString());
         }
     }
 
