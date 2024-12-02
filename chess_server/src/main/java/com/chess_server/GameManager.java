@@ -19,4 +19,15 @@ public class GameManager {
     public Game getGame(int gameId) {
         return games.get(gameId);
     }
+
+    public boolean verifyPlayer(Integer clientId, Integer gameId) {
+        Game game = games.get(gameId);
+        if (game == null) {
+            return false;
+        }
+        if (!game.isPlayerRound(clientId)) {
+            return false;
+        }
+        return true;
+    }
 }

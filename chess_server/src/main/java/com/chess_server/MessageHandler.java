@@ -47,8 +47,16 @@ public class MessageHandler {
     }
 
     private void handleMove(Integer clientId, JsonObject msg) {
-        // Handle move message
-        System.out.println("Picked move number: " + msg.get("moveNo").getAsInt());
+        int gameId = msg.get("gameId").getAsInt();
+        if (gameManager.verifyPlayer(clientId, gameId)) {
+            Game game = gameManager.getGame(gameId);
+            if (game.makeMove(msg.get("move"))) {
+                server.sendMessageToClient(connectionHandler.getClientConn(game.getCurrentPlayer()),
+                        game.getPossibleMoves().toString());
+            }
+        } else {
+            System.out.println("Invalid player");
+        }
     }
 
     private void handleAbort(Integer clientId, JsonObject msg) {
@@ -101,6 +109,7 @@ public class MessageHandler {
         if (isSuccess) {
             Game game = gameManager.newGame(joinCode, clientId, opponentId);
             sendToPlayers(joinCode, game.getBoardState().toString());
+            server.sendMessageToClient(connectionHandler.getClientConn(clientId), game.getPossibleMoves().toString());
         }
     }
 
