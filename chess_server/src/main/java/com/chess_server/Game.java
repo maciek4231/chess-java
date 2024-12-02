@@ -3,9 +3,15 @@ package com.chess_server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Game {
+
+    public enum GameStatus {
+        LOST, MATERIAL, STALEMATE, CONTINUE
+    }
 
     private char[][] board = {
             { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
@@ -44,6 +50,10 @@ public class Game {
         return whiteTurn ? playerWhite : playerBlack;
     }
 
+    public Integer getOpponentPlayer() {
+        return whiteTurn ? playerBlack : playerWhite;
+    }
+
     public JsonObject getBoardState() {
         JsonObject initialBoard = new JsonObject();
         initialBoard.addProperty("type", "placementRes");
@@ -76,11 +86,97 @@ public class Game {
             char piece = board[y1][x1];
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
+            if (isInCheck(whiteTurn)) {
+                board[y1][x1] = piece;
+                board[y2][x2] = ' ';
+                throw new IllegalArgumentException("Invalid move: King would be in check");
+            }
             whiteTurn = !whiteTurn;
         } else {
             throw new IllegalArgumentException("Invalid move");
         }
         return isValid;
+    }
+
+    private boolean isInCheck(boolean isWhite) {
+        int kingRow = -1, kingCol = -1;
+        char king = isWhite ? 'K' : 'k';
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == king) {
+                    kingRow = i;
+                    kingCol = j;
+                    break;
+                }
+            }
+        }
+
+        return isSquareAttacked(kingRow, kingCol, !isWhite);
+    }
+
+    private boolean isSquareAttacked(int row, int col, boolean byWhite) {
+        // Check for pawn attacks
+        int direction = byWhite ? -1 : 1;
+        if (isValidMove(row + direction, col - 1) && board[row + direction][col - 1] == (byWhite ? 'P' : 'p')) {
+            return true;
+        }
+        if (isValidMove(row + direction, col + 1) && board[row + direction][col + 1] == (byWhite ? 'P' : 'p')) {
+            return true;
+        }
+
+        // Check for knight attacks
+        int[][] knightMoves = { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { 1, -2 }, { -1, 2 },
+                { -1, -2 } };
+        for (int[] move : knightMoves) {
+            int newRow = row + move[0];
+            int newCol = col + move[1];
+            if (isValidMove(newRow, newCol) && board[newRow][newCol] == (byWhite ? 'N' : 'n')) {
+                return true;
+            }
+        }
+
+        // Check for linear attacks (rook, queen)
+        int[][] linearDirections = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+        for (int[] dir : linearDirections) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            while (isValidMove(newRow, newCol) && board[newRow][newCol] == ' ') {
+                newRow += dir[0];
+                newCol += dir[1];
+            }
+            if (isValidMove(newRow, newCol) && (board[newRow][newCol] == (byWhite ? 'R' : 'r')
+                    || board[newRow][newCol] == (byWhite ? 'Q' : 'q'))) {
+                return true;
+            }
+        }
+
+        // Check for diagonal attacks (bishop, queen)
+        int[][] diagonalDirections = { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+        for (int[] dir : diagonalDirections) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            while (isValidMove(newRow, newCol) && board[newRow][newCol] == ' ') {
+                newRow += dir[0];
+                newCol += dir[1];
+            }
+            if (isValidMove(newRow, newCol) && (board[newRow][newCol] == (byWhite ? 'B' : 'b')
+                    || board[newRow][newCol] == (byWhite ? 'Q' : 'q'))) {
+                return true;
+            }
+        }
+
+        // Check for king attacks
+        int[][] kingMoves = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+        for (int[] move : kingMoves) {
+            int newRow = row + move[0];
+            int newCol = col + move[1];
+            if (isValidMove(newRow, newCol) && board[newRow][newCol] == (byWhite ? 'K' : 'k')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public JsonObject updateView(JsonElement move) {
@@ -148,9 +244,78 @@ public class Game {
                 }
             }
         }
-        this.currentLegalMoves = movesArray;
-        possibleMoves.add("moves", movesArray);
+
+        JsonArray validMovesArray = new JsonArray();
+        for (JsonElement move : movesArray) {
+            JsonObject moveObj = move.getAsJsonObject();
+            int x1 = moveObj.get("x1").getAsInt();
+            int y1 = moveObj.get("y1").getAsInt();
+            int x2 = moveObj.get("x2").getAsInt();
+            int y2 = moveObj.get("y2").getAsInt();
+
+            char piece = board[y1][x1];
+            char target = board[y2][x2];
+            board[y1][x1] = ' ';
+            board[y2][x2] = piece;
+
+            if (!isInCheck(whiteTurn)) {
+                validMovesArray.add(move);
+            }
+
+            board[y1][x1] = piece;
+            board[y2][x2] = target;
+        }
+
+        this.currentLegalMoves = validMovesArray;
+        possibleMoves.add("moves", validMovesArray);
         return possibleMoves;
+    }
+
+    public GameStatus getGameStatus() {
+
+        if (isInCheck(whiteTurn) && currentLegalMoves.size() == 0) {
+            return GameStatus.LOST; // checkmate
+        }
+
+        if (!isInCheck(whiteTurn) && currentLegalMoves.size() == 0) {
+            return GameStatus.STALEMATE; // stalemate
+        }
+        if (checkInsufficientMaterial()) {
+            return GameStatus.MATERIAL; // insufficient material
+        }
+
+        return GameStatus.CONTINUE;
+    }
+
+    private boolean checkInsufficientMaterial() {
+        ArrayList<Character> whitePieces = new ArrayList<>();
+        ArrayList<Character> blackPieces = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                char piece = board[i][j];
+                if (piece == ' ' || piece == 'K' || piece == 'k') {
+                    continue;
+                }
+                if (Character.isUpperCase(piece)) {
+                    whitePieces.add(piece);
+                } else {
+                    blackPieces.add(piece);
+                }
+            }
+        }
+
+        return hasInsufficientMaterial(whitePieces) && hasInsufficientMaterial(blackPieces);
+    }
+
+    private boolean hasInsufficientMaterial(ArrayList<Character> pieces) {
+        if (pieces.size() == 0) {
+            return true; // lone king
+        }
+        if (pieces.size() == 1
+                && (pieces.get(0) == 'B' || pieces.get(0) == 'N' || pieces.get(0) == 'b' || pieces.get(0) == 'n')) {
+            return true; // king and bishop or king and knight
+        }
+        return false;
     }
 
     private void addPawnMoves(JsonArray movesArray, int row, int col, boolean isWhite) {

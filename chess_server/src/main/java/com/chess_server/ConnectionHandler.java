@@ -61,6 +61,10 @@ public class ConnectionHandler {
         return -1;
     }
 
+    public void removeGame(Integer gameCode) {
+        activeGames.remove(gameCode);
+    }
+
     public void addActiveUser(Integer clientId, WebSocket conn) {
         activeUsers.put(clientId, conn);
     }

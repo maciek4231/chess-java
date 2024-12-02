@@ -9,6 +9,6 @@ async def test_websocket():
   "avail": 1
 }""")
         response = await websocket.recv()
-        print(f"Received: {response}")  # Received: {"type": "availability", "avail": 1, "gameID": 1}   
+        print(f"Received: {response}")
 
 asyncio.run(test_websocket())

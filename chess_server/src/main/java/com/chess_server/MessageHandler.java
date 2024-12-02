@@ -2,6 +2,7 @@ package com.chess_server;
 
 import org.java_websocket.WebSocket;
 
+import com.chess_server.Game.GameStatus;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -55,8 +56,32 @@ public class MessageHandler {
             if (game.makeMove(move)) {
                 WebSocket newCurrent = connectionHandler.getClientConn(game.getCurrentPlayer());
                 server.sendMessageToClient(newCurrent, game.updateView(move).toString());
-                server.sendMessageToClient(newCurrent, game.getPossibleMoves().toString());
+                JsonObject nextMoves = game.getPossibleMoves();
+                if (nextMoves.get("moves").getAsJsonArray().size() == 0) {
+                    GameStatus status = game.getGameStatus();
 
+                    if (!status.equals(GameStatus.CONTINUE)) {
+                        if (status.equals(GameStatus.LOST)) {
+                            server.sendMessageToClient(newCurrent, "{\"type\":\"gameOverRes\",\"status\":\"lost\"}");
+                            server.sendMessageToClient(connectionHandler.getClientConn(game.getOpponentPlayer()),
+                                    "{\"type\":\"gameOverRes\",\"status\":\"won\"}");
+
+                        } else if (status.equals(GameStatus.STALEMATE)) {
+                            server.sendMessageToClient(newCurrent,
+                                    "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
+                            server.sendMessageToClient(connectionHandler.getClientConn(game.getOpponentPlayer()),
+                                    "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
+                        } else if (status.equals(GameStatus.MATERIAL)) {
+                            server.sendMessageToClient(newCurrent,
+                                    "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+                            server.sendMessageToClient(connectionHandler.getClientConn(game.getOpponentPlayer()),
+                                    "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+                        }
+                        gameManager.removeGame(gameId);
+                        connectionHandler.removeGame(gameId);
+                    }
+                }
+                server.sendMessageToClient(newCurrent, game.getPossibleMoves().toString());
             }
         } else {
             System.out.println("Invalid player");
