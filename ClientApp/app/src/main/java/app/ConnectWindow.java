@@ -4,6 +4,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class ConnectWindow {
     private int gameCode = -1;
@@ -37,6 +39,14 @@ public class ConnectWindow {
         button.setBounds(50, 75, 400, 20);
 
         frame.getContentPane().add(button);
+
+        input.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    button.doClick();
+                }
+            }
+        });
 
         responseLabel = new JLabel("");
         responseLabel.setBounds(50, 100, 400, 20);
