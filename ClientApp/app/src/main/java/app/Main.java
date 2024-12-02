@@ -4,8 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.swing.JFrame;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Main {
 
@@ -21,14 +19,6 @@ public class Main {
             frame.setSize(1024, 1044);
             frame.getContentPane().add(game.getWindow());
             frame.setVisible(true);
-
-            frame.addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    int size = Math.min(frame.getWidth(), frame.getHeight());
-                    frame.setSize(size, size);
-                }
-            });
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
