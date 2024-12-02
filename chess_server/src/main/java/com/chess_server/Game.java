@@ -84,8 +84,12 @@ public class Game {
 
         if (isValid) {
             char piece = board[y1][x1];
+
+            handleEnPassants(x1, y1, x2, y2, piece);
+
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
+
             if (isInCheck(whiteTurn)) {
                 board[y1][x1] = piece;
                 board[y2][x2] = ' ';
@@ -141,7 +145,7 @@ public class Game {
         for (int[] dir : linearDirections) {
             int newRow = row + dir[0];
             int newCol = col + dir[1];
-            while (isValidMove(newRow, newCol) && board[newRow][newCol] == ' ') {
+            while (isValidMove(newRow, newCol) && isEmpty(newRow, newCol)) {
                 newRow += dir[0];
                 newCol += dir[1];
             }
@@ -156,7 +160,7 @@ public class Game {
         for (int[] dir : diagonalDirections) {
             int newRow = row + dir[0];
             int newCol = col + dir[1];
-            while (isValidMove(newRow, newCol) && board[newRow][newCol] == ' ') {
+            while (isValidMove(newRow, newCol) && isEmpty(newRow, newCol)) {
                 newRow += dir[0];
                 newCol += dir[1];
             }
@@ -293,7 +297,7 @@ public class Game {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 char piece = board[i][j];
-                if (piece == ' ' || piece == 'K' || piece == 'k') {
+                if (piece == ' ' || piece == 'e' || piece == 'E' || piece == 'K' || piece == 'k') {
                     continue;
                 }
                 if (Character.isUpperCase(piece)) {
@@ -364,7 +368,7 @@ public class Game {
         for (int[] direction : directions) {
             int newRow = row + direction[0];
             int newCol = col + direction[1];
-            while (isValidMove(newRow, newCol) && board[newRow][newCol] == ' ') {
+            while ((isValidMove(newRow, newCol) && isEmpty(newRow, newCol))) {
                 addMove(movesArray, row, col, newRow, newCol);
                 newRow += direction[0];
                 newCol += direction[1];
@@ -380,7 +384,7 @@ public class Game {
             int newRow = row + direction[0];
             int newCol = col + direction[1];
             if (isValidMove(newRow, newCol)
-                    && (board[newRow][newCol] == ' ' || isOpponentPiece(newRow, newCol, isWhite))) {
+                    && (isEmpty(newRow, newCol) || isOpponentPiece(newRow, newCol, isWhite))) {
                 addMove(movesArray, row, col, newRow, newCol);
             }
         }
@@ -402,5 +406,61 @@ public class Game {
         move.addProperty("x2", endCol);
         move.addProperty("y2", endRow);
         movesArray.add(move);
+    }
+
+    private boolean isEmpty(int row, int col) {
+        return board[row][col] == ' ' || board[row][col] == 'e' || board[row][col] == 'E';
+    }
+
+    private void prunePassants()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (board[2][i] == 'e')
+            {
+                board[2][i] = ' ';
+            }
+            if (board[5][i] == 'E')
+            {
+                board[5][i] = ' ';
+            }
+        }
+    }
+
+    private void addEnPassants(int x1, int y1, int x2, int y2, char piece)
+    {
+        if (piece == 'p' && y1 == 1 && y2 == 3) {
+            board[2][x2] = 'e';
+        }
+        if (piece == 'P' && y1 == 6 && y2 == 4) {
+            board[5][x2] = 'E';
+        }
+    }
+
+    private void enPassantAttack(int x2, int y2)
+    {
+        char piece = board[y2][x2];
+        if (piece == 'e')
+        {
+            deletePiece(x2, 3);
+        }
+        if (piece == 'E')
+        {
+            deletePiece(x2, 4);
+        }
+    }
+
+    private void handleEnPassants(int x1, int y1, int x2, int y2, char piece)
+    {
+        enPassantAttack(x2, y2);
+        prunePassants();
+        addEnPassants(x1, y1, x2, y2, piece);
+    }
+
+    private void deletePiece(int x, int y)
+    {
+        board[y][x] = ' ';
+        // TODO: send message to client
+        System.out.println("Piece deleted at " + x + ", " + y);
     }
 }
