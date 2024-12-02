@@ -117,7 +117,7 @@ public class Game {
 
     private boolean isSquareAttacked(int row, int col, boolean byWhite) {
         // Check for pawn attacks
-        int direction = byWhite ? -1 : 1;
+        int direction = byWhite ? 1 : -1;
         if (isValidMove(row + direction, col - 1) && board[row + direction][col - 1] == (byWhite ? 'P' : 'p')) {
             return true;
         }
