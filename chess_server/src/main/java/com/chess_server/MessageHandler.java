@@ -2,6 +2,7 @@ package com.chess_server;
 
 import org.java_websocket.WebSocket;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -50,9 +51,12 @@ public class MessageHandler {
         int gameId = msg.get("gameId").getAsInt();
         if (gameManager.verifyPlayer(clientId, gameId)) {
             Game game = gameManager.getGame(gameId);
-            if (game.makeMove(msg.get("move"))) {
-                server.sendMessageToClient(connectionHandler.getClientConn(game.getCurrentPlayer()),
-                        game.getPossibleMoves().toString());
+            JsonElement move = msg.get("move");
+            if (game.makeMove(move)) {
+                WebSocket newCurrent = connectionHandler.getClientConn(game.getCurrentPlayer());
+                server.sendMessageToClient(newCurrent, game.updateView(move).toString());
+                server.sendMessageToClient(newCurrent, game.getPossibleMoves().toString());
+
             }
         } else {
             System.out.println("Invalid player");

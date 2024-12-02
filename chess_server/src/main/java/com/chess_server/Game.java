@@ -83,6 +83,13 @@ public class Game {
         return isValid;
     }
 
+    public JsonObject updateView(JsonElement move) {
+        JsonObject update = new JsonObject();
+        update.addProperty("type", "boardUpdateRes");
+        update.add("move", move);
+        return update;
+    }
+
     public JsonObject getPossibleMoves() {
         JsonObject possibleMoves = new JsonObject();
         possibleMoves.addProperty("type", "possibleMovesRes");
