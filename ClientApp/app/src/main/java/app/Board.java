@@ -95,7 +95,7 @@ public class Board {
     {
         makeMove(from, to);
         clearMoves();
-        // TODO: Send move to server
+        messageHandler.sendMove(from, to);
     }
 
     public void makeMove(Coords from, Coords to)

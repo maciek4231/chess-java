@@ -1,5 +1,7 @@
 package app;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -28,6 +30,9 @@ public class MessageHandler {
                     break;
                 case "placementRes":
                     handlePlacement(msg);
+                    break;
+                case "possibleMovesRes":
+                    handlePossibleMoves(msg);
                     break;
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -139,5 +144,35 @@ public class MessageHandler {
                 return;
         }
         board.addPiece(pieceType, coords);
+    }
+
+    private void handlePossibleMoves(JsonObject msg) {
+        try {
+            JsonArray moves = msg.get("moves").getAsJsonArray();
+            for (JsonElement entry : moves) {
+                JsonObject move = entry.getAsJsonObject();
+                int x1 = move.get("x1").getAsInt();
+                int y1 = move.get("y1").getAsInt();
+                int x2 = move.get("x2").getAsInt();
+                int y2 = move.get("y2").getAsInt();
+                System.out.println("Adding move: " + x1 + " " + y1 + " " + x2 + " " + y2);
+                board.addAvailableMove(new Coords(x1, y1), new Coords(x2, y2));
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid possible moves received.");
+        }
+    }
+
+    public void sendMove(Coords from, Coords to) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "pickMove");
+        msg.addProperty("gameId", gameCode);
+        JsonObject move = new JsonObject();
+        move.addProperty("x1", from.getX());
+        move.addProperty("y1", from.getY());
+        move.addProperty("x2", to.getX());
+        move.addProperty("y2", to.getY());
+        msg.add("move", move);
+        client.send(msg.toString());
     }
 }
