@@ -45,6 +45,9 @@ public class MessageHandler {
                 case "gameOverRes":
                     handleGameOver(msg);
                     break;
+                case "deletePieceRes":
+                    handleDeletePiece(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -221,6 +224,16 @@ public class MessageHandler {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void handleDeletePiece(JsonObject msg) {
+        try {
+            int x = msg.get("x").getAsInt();
+            int y = msg.get("y").getAsInt();
+            board.deletePiece(new Coords(x, y));
+        } catch (Exception e) {
+            System.out.println("Invalid piece deletion received.");
         }
     }
 }

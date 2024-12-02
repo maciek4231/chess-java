@@ -53,6 +53,10 @@ public class MessageHandler {
         if (gameManager.verifyPlayer(clientId, gameId)) {
             Game game = gameManager.getGame(gameId);
             JsonElement move = msg.get("move");
+            if (game.handleEnPassants(move))
+            {
+                sendToPlayers(gameId, "{\"type\":\"deletePieceRes\",\"x\":" + move.getAsJsonObject().get("x2").getAsInt() + ",\"y\":" + (move.getAsJsonObject().get("y2").getAsInt() == 2 ? 3 : 4) + "}");
+            }
             if (game.makeMove(move)) {
                 WebSocket newCurrent = connectionHandler.getClientConn(game.getCurrentPlayer());
                 server.sendMessageToClient(newCurrent, game.updateView(move).toString());

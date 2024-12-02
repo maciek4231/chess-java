@@ -85,8 +85,6 @@ public class Game {
         if (isValid) {
             char piece = board[y1][x1];
 
-            handleEnPassants(x1, y1, x2, y2, piece);
-
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
 
@@ -437,24 +435,36 @@ public class Game {
         }
     }
 
-    private void enPassantAttack(int x2, int y2)
+    private boolean enPassantAttack(int x2, int y2)
     {
         char piece = board[y2][x2];
         if (piece == 'e')
         {
             deletePiece(x2, 3);
+            return true;
         }
         if (piece == 'E')
         {
             deletePiece(x2, 4);
+            return true;
         }
+        return false;
     }
 
-    private void handleEnPassants(int x1, int y1, int x2, int y2, char piece)
+    public boolean handleEnPassants(JsonElement move)
     {
-        enPassantAttack(x2, y2);
+        int x1 = move.getAsJsonObject().get("x1").getAsInt();
+        int y1 = move.getAsJsonObject().get("y1").getAsInt();
+        int x2 = move.getAsJsonObject().get("x2").getAsInt();
+        int y2 = move.getAsJsonObject().get("y2").getAsInt();
+
+        char piece = board[y1][x1];
+
+        boolean ret = enPassantAttack(x2, y2);
         prunePassants();
         addEnPassants(x1, y1, x2, y2, piece);
+
+        return ret;
     }
 
     private void deletePiece(int x, int y)

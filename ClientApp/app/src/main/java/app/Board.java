@@ -146,4 +146,11 @@ public class Board {
     {
         return isWhite;
     }
+
+    public void deletePiece(Coords coords)
+    {
+        pieces.get(coords).getButton().setVisible(false);
+        jPane.remove(pieces.get(coords).getButton());
+        pieces.remove(coords);
+    }
 }
