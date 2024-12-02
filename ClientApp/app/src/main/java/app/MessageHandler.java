@@ -155,7 +155,6 @@ public class MessageHandler {
                 int y1 = move.get("y1").getAsInt();
                 int x2 = move.get("x2").getAsInt();
                 int y2 = move.get("y2").getAsInt();
-                System.out.println("Adding move: " + x1 + " " + y1 + " " + x2 + " " + y2);
                 board.addAvailableMove(new Coords(x1, y1), new Coords(x2, y2));
             }
         } catch (Exception e) {
