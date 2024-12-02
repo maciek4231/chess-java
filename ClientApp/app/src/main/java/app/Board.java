@@ -27,6 +27,7 @@ public class Board {
     public Board()
     {
         jPane = new JLayeredPane();
+        jPane.setBounds(0, 0, 1024, 1054);
         pieces = new HashMap<Coords, Piece>();
 
         availableMoves = new ArrayList<Move>();

@@ -1,15 +1,16 @@
 package app;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class ConnectWindow {
     private int gameCode = -1;
-    JFrame frame;
+    JLayeredPane panel;
     JLabel responseLabel;
 
     public ConnectWindow(MessageHandler messageHandler) {
@@ -23,22 +24,25 @@ public class ConnectWindow {
             }
         }
 
-        frame = new JFrame("New game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 170);
+        panel = new JLayeredPane();
+        panel.setLayout(null);
+        panel.setBounds(262, 457, 500, 150);
+        panel.setBackground((java.awt.Color.WHITE));
+        panel.setOpaque(true);
 
         JLabel label = new JLabel("Share your game code: " + gameCode + " or enter a code:");
         label.setBounds(50, 25, 400, 20);
-        frame.getContentPane().add(label);
+        panel.add(label, 1);
+
 
         JTextField input = new JTextField();
         input.setBounds(50, 50, 400, 20);
-        frame.getContentPane().add(input);
+        panel.add(input, 1);
 
         JButton button = new JButton("Connect");
         button.setBounds(50, 75, 400, 20);
 
-        frame.getContentPane().add(button);
+        panel.add(button, 1);
 
         input.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -50,11 +54,7 @@ public class ConnectWindow {
 
         responseLabel = new JLabel("");
         responseLabel.setBounds(50, 100, 400, 20);
-        frame.getContentPane().add(responseLabel);
-
-        JLabel trash = new JLabel("");
-        trash.setBounds(350, 100, 50, 20);
-        frame.getContentPane().add(trash);
+        panel.add(responseLabel, 1);
 
         button.addActionListener(e -> {
             try {
@@ -65,7 +65,11 @@ public class ConnectWindow {
             }
         });
 
-        frame.setVisible(true);
+        panel.setVisible(true);
+    }
+
+    public JLayeredPane getPanel() {
+        return panel;
     }
 
     public void setGameCode(int code) {
@@ -74,7 +78,8 @@ public class ConnectWindow {
 
     public void gameFound() {
         System.out.println("Game found");
-        frame.dispose();
+        panel.setVisible(false);
+        panel = null;
     }
 
     public void gameNotFound() {

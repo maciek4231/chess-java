@@ -4,6 +4,8 @@ package app;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.swing.JFrame;
+
 
 
 public class Main {
@@ -13,7 +15,14 @@ public class Main {
         try {
             client = new ChessWebSocketClient(new URI("ws://localhost:8887"));
             setUpConnection(client);
-            new Game(client);
+            Game game = new Game(client);
+
+            JFrame frame = new JFrame("illChess");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(1024, 1044);
+            frame.getContentPane().add(game.getWindow());
+            frame.setVisible(true);
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
