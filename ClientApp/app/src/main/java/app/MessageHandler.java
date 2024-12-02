@@ -8,12 +8,14 @@ import com.google.gson.JsonParser;
 public class MessageHandler {
 
     ChessWebSocketClient client;
+    Game game;
     Board board;
     ConnectWindow connectWindow;
     int gameCode;
 
-    public MessageHandler(ChessWebSocketClient client, Board board) {
+    public MessageHandler(ChessWebSocketClient client, Game game, Board board) {
         this.client = client;
+        this.game = game;
         this.board = board;
     }
 
@@ -39,6 +41,9 @@ public class MessageHandler {
                     break;
                 case "playerIsBlackRes":
                     handlePlayerIsBlack();
+                    break;
+                case "gameOverRes":
+                    handleGameOver(msg);
                     break;
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -196,5 +201,26 @@ public class MessageHandler {
 
     private void handlePlayerIsBlack() {
         board.setToBlack();
+    }
+
+    private void handleGameOver(JsonObject msg) {
+        String status = msg.get("status").getAsString();
+
+        switch (status) {
+            case "won":
+                game.showPromptWindow("You won!");
+                break;
+            case "lost":
+                game.showPromptWindow("You lost!");
+                break;
+            case "stalemate":
+                game.showPromptWindow("You drew, because there are no legal moves left.");
+                break;
+            case "material":
+                game.showPromptWindow("You drew, because there is not enough material to win.");
+                break;
+            default:
+                break;
+        }
     }
 }

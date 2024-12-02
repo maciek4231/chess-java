@@ -15,7 +15,7 @@ public class Game {
         window.setBounds(0, 0, 1024, 1044);
         window.setLayout(null);
 
-        MessageHandler messageHandler = new MessageHandler(client, board);
+        MessageHandler messageHandler = new MessageHandler(client, this, board);
 
         client.setHandler(messageHandler);
         board.setMessageHandler(messageHandler);
