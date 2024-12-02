@@ -34,6 +34,9 @@ public class MessageHandler {
                 case "possibleMovesRes":
                     handlePossibleMoves(msg);
                     break;
+                case "boardUpdateRes":
+                    handleServerMove(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -173,5 +176,18 @@ public class MessageHandler {
         move.addProperty("y2", to.getY());
         msg.add("move", move);
         client.send(msg.toString());
+    }
+
+    private void handleServerMove(JsonObject msg) {
+        try {
+            JsonObject move = msg.get("move").getAsJsonObject();
+            int x1 = move.get("x1").getAsInt();
+            int y1 = move.get("y1").getAsInt();
+            int x2 = move.get("x2").getAsInt();
+            int y2 = move.get("y2").getAsInt();
+            board.makeMove(new Coords(x1, y1), new Coords(x2, y2));
+        } catch (Exception e) {
+            System.out.println("Invalid move received.");
+        }
     }
 }
