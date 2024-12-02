@@ -112,9 +112,9 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
         if (isSuccess) {
             Game game = gameManager.newGame(joinCode, clientId, opponentId);
-            sendToPlayers(joinCode, game.getBoardState().toString());
             server.sendMessageToClient(connectionHandler.getClientConn(game.playerBlack),
                     "{\"type\":\"playerIsBlackRes\"}");
+            sendToPlayers(joinCode, game.getBoardState().toString());
             server.sendMessageToClient(connectionHandler.getClientConn(game.playerWhite),
                     game.getPossibleMoves().toString());
         }

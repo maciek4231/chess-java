@@ -22,6 +22,7 @@ public class Board {
     ArrayList<Move> selectableMoves;
 
     int gameCode;
+    boolean isWhite;
 
     public Board()
     {
@@ -32,6 +33,7 @@ public class Board {
         selectableMoves = new ArrayList<Move>();
 
         gameCode = -1;
+        isWhite = true;
 
         createPane();
     }
@@ -132,5 +134,15 @@ public class Board {
     public void setGameCode(int code)
     {
         gameCode = code;
+    }
+
+    public void setToBlack()
+    {
+        isWhite = false;
+    }
+
+    public boolean getIsWhite()
+    {
+        return isWhite;
     }
 }

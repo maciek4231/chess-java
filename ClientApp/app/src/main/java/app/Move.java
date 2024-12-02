@@ -32,7 +32,7 @@ public class Move {
     private void createButton() {
         button = new CustomButton();
         button.setIcon(getButtonIcon());
-        button.setBounds(to.getX()*128, to.getY()*128, 128, 128);
+        button.setBounds(to.getRelX(board.getIsWhite())*128, to.getRelY(board.getIsWhite())*128, 128, 128);
         button.addActionListener(e -> {
             board.clientMove(from, to);
         });

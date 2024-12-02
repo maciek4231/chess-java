@@ -37,6 +37,9 @@ public class MessageHandler {
                 case "boardUpdateRes":
                     handleServerMove(msg);
                     break;
+                case "playerIsBlackRes":
+                    handlePlayerIsBlack();
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -189,5 +192,9 @@ public class MessageHandler {
         } catch (Exception e) {
             System.out.println("Invalid move received.");
         }
+    }
+
+    private void handlePlayerIsBlack() {
+        board.setToBlack();
     }
 }

@@ -12,4 +12,12 @@ import lombok.Data;
         this.x = x;
         this.y = y;
     }
+
+    public int getRelX(boolean isWhite) {
+        return isWhite ? x : 7 - x;
+    }
+
+    public int getRelY(boolean isWhite) {
+        return isWhite ? y : 7 - y;
+    }
 }
