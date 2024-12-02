@@ -8,36 +8,18 @@ import java.net.URISyntaxException;
 
 public class Main {
 
-    Board board;
-    ChessWebSocketClient client;
-    MessageHandler messageHandler;
-
-    public Main() {
-        setUpConnection();
-
-        new GameWindow(board);
-
-        new ConnectWindow(messageHandler);
-    }
-
     public static void main(String[] args) {
-        new Main();
-    }
-
-
-    private void setUpConnection() {
-        board = new Board();
-
+        ChessWebSocketClient client;
         try {
             client = new ChessWebSocketClient(new URI("ws://localhost:8887"));
+            setUpConnection(client);
+            new Game(client);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        messageHandler = new MessageHandler(client, board);
+    }
 
-        client.setHandler(messageHandler);
-        board.setMessageHandler(messageHandler);
-
+    private static void setUpConnection(ChessWebSocketClient client) {
         client.connect();
         while (!client.isOpen()) {
             try {
