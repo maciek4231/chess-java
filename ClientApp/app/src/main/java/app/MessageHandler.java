@@ -105,40 +105,40 @@ public class MessageHandler {
         PieceType pieceType;
         switch (type) {
             case 'P':
-                pieceType = PieceType.B_PAWN;
-                break;
-            case 'R':
-                pieceType = PieceType.B_ROOK;
-                break;
-            case 'N':
-                pieceType = PieceType.B_KNIGHT;
-                break;
-            case 'B':
-                pieceType = PieceType.B_BISHOP;
-                break;
-            case 'Q':
-                pieceType = PieceType.B_QUEEN;
-                break;
-            case 'K':
-                pieceType = PieceType.B_KING;
-                break;
-            case 'p':
                 pieceType = PieceType.W_PAWN;
                 break;
-            case 'r':
+            case 'R':
                 pieceType = PieceType.W_ROOK;
                 break;
-            case 'n':
+            case 'N':
                 pieceType = PieceType.W_KNIGHT;
                 break;
-            case 'b':
+            case 'B':
                 pieceType = PieceType.W_BISHOP;
                 break;
-            case 'q':
+            case 'Q':
                 pieceType = PieceType.W_QUEEN;
                 break;
-            case 'k':
+            case 'K':
                 pieceType = PieceType.W_KING;
+                break;
+            case 'p':
+                pieceType = PieceType.B_PAWN;
+                break;
+            case 'r':
+                pieceType = PieceType.B_ROOK;
+                break;
+            case 'n':
+                pieceType = PieceType.B_KNIGHT;
+                break;
+            case 'b':
+                pieceType = PieceType.B_BISHOP;
+                break;
+            case 'q':
+                pieceType = PieceType.B_QUEEN;
+                break;
+            case 'k':
+                pieceType = PieceType.B_KING;
                 break;
             default:
                 return;
