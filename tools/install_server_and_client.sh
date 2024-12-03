@@ -10,6 +10,6 @@ mvn package
 
 cd ../..
 
-cp ./tools/localhost_config.json ./ClientApp/app/target/config.json
+cp ./tools/localhost_config.json ./config.json
 
 echo Installation complete

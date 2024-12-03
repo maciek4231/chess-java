@@ -56,7 +56,7 @@ public class Main {
             server = json.get("server").getAsString();
             file.close();
         } catch (FileNotFoundException e) {
-            System.out.println("config.txt not found, using default server address");
+            System.out.println("config.json not found, using default server address");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -68,7 +68,7 @@ public class Main {
                 }
             }
         }
-
+        
         return server;
     }
 }
