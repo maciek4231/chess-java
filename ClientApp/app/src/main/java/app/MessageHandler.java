@@ -59,6 +59,9 @@ public class MessageHandler {
                 case "checkRes":
                     handleCheck(msg);
                     break;
+                case "opponentDisconnectedRes":
+                    handleOpponentDisconnected(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -267,6 +270,10 @@ public class MessageHandler {
         } catch (Exception e) {
             System.out.println("Invalid check received.");
         }
+    }
+
+    private void handleOpponentDisconnected(JsonObject msg) {
+        game.showPromptWindow("Your opponent disconnected.");
     }
 
     private PieceType getPieceType(char type) {
