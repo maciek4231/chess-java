@@ -1,5 +1,7 @@
 package app;
 
+import java.util.ArrayList;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -228,6 +230,24 @@ public class MessageHandler {
             int y2 = move.get("y2").getAsInt();
             PieceType type = getPieceType(msg.get("pieceType").getAsString().charAt(0));
             board.makePromotion(new Coords(x1, y1), new Coords(x2, y2), type);
+        } catch (Exception e) {
+            System.out.println("Invalid promotion received.");
+        }
+    }
+
+    public void handleAvailablePromotions(JsonObject msg) {
+        try {
+            JsonObject move = msg.get("move").getAsJsonObject();
+            int x1 = move.get("x1").getAsInt();
+            int y1 = move.get("y1").getAsInt();
+            int x2 = move.get("x2").getAsInt();
+            int y2 = move.get("y2").getAsInt();
+            String types = msg.get("pieceTypes").getAsString();
+            ArrayList<PieceType> promotionOptions = new ArrayList<>();
+            for (int i = 0; i < types.length(); i++) {
+                promotionOptions.add(getPieceType(types.charAt(i)));
+            }
+            board.addPromotion(new Coords(x1, y1), new Coords(x2, y2), promotionOptions);
         } catch (Exception e) {
             System.out.println("Invalid promotion received.");
         }
