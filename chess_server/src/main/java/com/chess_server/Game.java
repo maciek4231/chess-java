@@ -31,7 +31,6 @@ public class Game {
     Integer playerBlack;
     JsonArray currentLegalMoves;
     Integer gameId;
-    private boolean promotionMade;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
@@ -88,7 +87,6 @@ public class Game {
                 break;
             }
         }
-        this.promotionMade = false;
         if (isValid) {
             boolean isEnPassant = handleEnPassants(x1, y1, x2, y2);
 
@@ -106,13 +104,7 @@ public class Game {
 
             if (pawnPromotion(x2, y2)) {
                 messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, "QRBN");
-                while (!this.promotionMade) {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                return;
             }
 
             whiteTurn = !whiteTurn;
@@ -122,7 +114,7 @@ public class Game {
                 int[] kingPos = getKingPosition(whiteTurn);
                 messageHandler.sendCheck(this.gameId, kingPos[0], kingPos[1]);
             }
-            
+
             handleNextTurn();
         } else {
             throw new IllegalArgumentException("Invalid move");
@@ -150,10 +142,18 @@ public class Game {
         if (currentLegalMoves.contains(moveObj)) {
             int x2 = moveObj.get("x2").getAsInt();
             int y2 = moveObj.get("y2").getAsInt();
-
             board[y2][x2] = piece;
-            messageHandler.sendPromotion(getOpponentPlayer(), moveObj, piece);
-            this.promotionMade = true;
+
+            whiteTurn = !whiteTurn;
+            messageHandler.sendUpdateView(getCurrentPlayer(), move);
+            messageHandler.sendPromotion(getCurrentPlayer(), moveObj, piece);
+
+            if (isInCheck(whiteTurn)) {
+                int[] kingPos = getKingPosition(whiteTurn);
+                messageHandler.sendCheck(this.gameId, kingPos[0], kingPos[1]);
+            }
+
+            handleNextTurn();
         } else {
             throw new IllegalArgumentException("Invalid promotion");
         }
