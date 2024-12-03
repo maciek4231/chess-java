@@ -135,59 +135,67 @@ public class MessageHandler {
         sendToPlayers(gameId, response.toString());
     }
 
-    public void sendUpdateView(Integer UserId, JsonElement move) {
+    public void sendUpdateView(Integer userId, JsonElement move) {
         JsonObject update = new JsonObject();
         update.addProperty("type", "boardUpdateRes");
         update.add("move", move);
-        WebSocket conn = connectionHandler.getClientConn(UserId);
+        WebSocket conn = connectionHandler.getClientConn(userId);
         server.sendMessageToClient(conn, update.toString());
     }
 
-    public void sendLost(Integer UserId) {
-        WebSocket conn = connectionHandler.getClientConn(UserId);
+    public void sendLost(Integer userId) {
+        WebSocket conn = connectionHandler.getClientConn(userId);
         JsonObject response = new JsonObject();
         response.addProperty("type", "gameOverRes");
         response.addProperty("status", "lost");
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendWin(Integer UserId) {
-        WebSocket conn = connectionHandler.getClientConn(UserId);
+    public void sendWin(Integer userId) {
+        WebSocket conn = connectionHandler.getClientConn(userId);
         JsonObject response = new JsonObject();
         response.addProperty("type", "gameOverRes");
         response.addProperty("status", "won");
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendStalemate(Game game) {
-        sendToPlayers(game.gameId, "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
+    public void sendStalemate(Integer gameId) {
+        sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
     }
 
-    public void sendMaterial(Game game) {
-        sendToPlayers(game.gameId, "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+    public void sendMaterial(Integer gameId) {
+        sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
     }
 
-    public void sendPlayerIsBlack(Integer UserId) {
-        WebSocket conn = connectionHandler.getClientConn(UserId);
+    public void sendPlayerIsBlack(Integer userId) {
+        WebSocket conn = connectionHandler.getClientConn(userId);
         JsonObject response = new JsonObject();
         response.addProperty("type", "playerIsBlackRes");
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendBoardState(Game game, ArrayList<String> board) {
+    public void sendBoardState(Integer gameId, ArrayList<String> board) {
         JsonObject response = new JsonObject();
         response.addProperty("type", "placementRes");
         for (int i = 0; i < board.size(); i++) {
             response.addProperty(Integer.toString(i), board.get(i));
         }
-        sendToPlayers(game.gameId, response.toString());
+        sendToPlayers(gameId, response.toString());
     }
 
-    public void sendPossibleMoves(Integer UserId, JsonArray moves) {
+    public void sendPossibleMoves(Integer userId, JsonArray moves) {
         JsonObject response = new JsonObject();
         response.addProperty("type", "possibleMovesRes");
         response.add("moves", moves);
-        WebSocket conn = connectionHandler.getClientConn(UserId);
+        WebSocket conn = connectionHandler.getClientConn(userId);
         server.sendMessageToClient(conn, response.toString());
+    }
+
+    public void sendCheck(Integer gameId, Integer x, Integer y) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "checkRes");
+        response.addProperty("x", x);
+        response.addProperty("y", y);
+        sendToPlayers(gameId, response.toString());
     }
 }

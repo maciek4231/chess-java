@@ -19,7 +19,7 @@ public class GameManager {
         Game game = new Game(player1, player2, gameCode, this.messageHandler, this);
         games.put(gameCode, game); // gameCode now becomes gameId
         messageHandler.sendPlayerIsBlack(game.playerBlack);
-        messageHandler.sendBoardState(game, game.getBoard());
+        messageHandler.sendBoardState(game.gameId, game.getBoard());
         messageHandler.sendPossibleMoves(game.getCurrentPlayer(), game.getPossibleMoves());
         return game;
     }
@@ -54,9 +54,9 @@ public class GameManager {
 
     public void gameDraw(Game game, GameStatus status) {
         if (status == GameStatus.STALEMATE) {
-            messageHandler.sendStalemate(game);
+            messageHandler.sendStalemate(game.gameId);
         } else {
-            messageHandler.sendMaterial(game);
+            messageHandler.sendMaterial(game.gameId);
         }
         messageHandler.connectionHandler.removeGame(game);
         removeGame(game);

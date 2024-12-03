@@ -62,12 +62,6 @@ public class Game {
     }
 
     public ArrayList<String> getBoard() {
-        // JsonObject initialBoard = new JsonObject();
-        // initialBoard.addProperty("type", "placementRes");
-        // for (int i = 0; i < 8; i++) {
-        // initialBoard.addProperty(Integer.toString(i), new String(board[i]));
-        // }
-        // return initialBoard;
         ArrayList<String> ret = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             ret.add(new String(board[i]));
@@ -95,19 +89,21 @@ public class Game {
         }
 
         if (isValid) {
-            if (isInCheck(whiteTurn)) {
-                throw new IllegalArgumentException("Invalid move: King would be in check");
-            }
             if (handleEnPassants(x1, y1, x2, y2)) {
                 messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
             }
-
             char piece = board[y1][x1];
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
+            if (isInCheck(whiteTurn)) {
+                throw new IllegalArgumentException("Invalid move: King would be in check");
+            }
 
             whiteTurn = !whiteTurn;
-
+            if (isInCheck(whiteTurn)) {
+                int[] kingPos = getKingPosition(whiteTurn);
+                messageHandler.sendCheck(this.gameId, kingPos[0], kingPos[1]);
+            }
             messageHandler.sendUpdateView(getCurrentPlayer(), move);
             handleNextTurn();
         } else {
@@ -131,19 +127,24 @@ public class Game {
         messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
     }
 
-    private boolean isInCheck(boolean isWhite) {
-        int kingRow = -1, kingCol = -1;
+    private int[] getKingPosition(boolean isWhite) {
         char king = isWhite ? 'K' : 'k';
-
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] == king) {
-                    kingRow = i;
-                    kingCol = j;
-                    break;
+                    return new int[] { j, i };
                 }
             }
         }
+        return null;
+    }
+
+    private boolean isInCheck(boolean isWhite) {
+        int kingRow = -1, kingCol = -1;
+
+        int[] kingPos = getKingPosition(isWhite);
+        kingRow = kingPos[1];
+        kingCol = kingPos[0];
 
         return isSquareAttacked(kingRow, kingCol, !isWhite);
     }
