@@ -95,20 +95,19 @@ public class Game {
         }
 
         if (isValid) {
-            char piece = board[y1][x1];
-
-            board[y1][x1] = ' ';
-            board[y2][x2] = piece;
-
             if (isInCheck(whiteTurn)) {
-                board[y1][x1] = piece;
-                board[y2][x2] = ' ';
                 throw new IllegalArgumentException("Invalid move: King would be in check");
             }
-            whiteTurn = !whiteTurn;
             if (handleEnPassants(x1, y1, x2, y2)) {
                 messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
             }
+
+            char piece = board[y1][x1];
+            board[y1][x1] = ' ';
+            board[y2][x2] = piece;
+
+            whiteTurn = !whiteTurn;
+
             messageHandler.sendUpdateView(getCurrentPlayer(), move);
             handleNextTurn();
         } else {
