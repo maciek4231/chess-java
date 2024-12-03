@@ -53,6 +53,9 @@ public class MessageHandler {
                 case "promotionRes":
                     handlePromotion(msg);
                     break;
+                case "availablePromotionsRes":
+                    handleAvailablePromotions(msg);
+                    break;
                 case "checkRes":
                     handleCheck(msg);
                     break;
