@@ -31,6 +31,7 @@ public class Game {
     Integer playerBlack;
     JsonArray currentLegalMoves;
     Integer gameId;
+    private boolean promotionMade;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
@@ -87,7 +88,7 @@ public class Game {
                 break;
             }
         }
-
+        this.promotionMade = false;
         if (isValid) {
             boolean isEnPassant = handleEnPassants(x1, y1, x2, y2);
 
@@ -105,6 +106,13 @@ public class Game {
 
             if (pawnPromotion(x2, y2)) {
                 messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, "QRBN");
+                while (!this.promotionMade) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             whiteTurn = !whiteTurn;
@@ -135,6 +143,20 @@ public class Game {
                 break;
         }
         messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
+    }
+
+    public void makePromotion(JsonElement move, char piece) {
+        JsonObject moveObj = move.getAsJsonObject();
+        if (currentLegalMoves.contains(moveObj)) {
+            int x2 = moveObj.get("x2").getAsInt();
+            int y2 = moveObj.get("y2").getAsInt();
+
+            board[y2][x2] = piece;
+            messageHandler.sendPromotion(getOpponentPlayer(), moveObj, piece);
+            this.promotionMade = true;
+        } else {
+            throw new IllegalArgumentException("Invalid promotion");
+        }
     }
 
     private int[] getKingPosition(boolean isWhite) {

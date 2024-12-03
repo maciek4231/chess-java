@@ -45,6 +45,15 @@ public class GameManager {
         }
     }
 
+    public void handlePromotion(Integer clientId, Integer gameId, JsonElement move, char piece) {
+        if (verifyPlayer(clientId, gameId)) {
+            Game game = getGame(gameId);
+            game.makePromotion(move, piece);
+        } else {
+            System.out.println("Invalid player");
+        }
+    }
+
     public void gameLost(Game game) {
         messageHandler.sendLost(game.getCurrentPlayer());
         messageHandler.sendWin(game.getOpponentPlayer());

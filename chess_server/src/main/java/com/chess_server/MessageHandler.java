@@ -42,6 +42,9 @@ public class MessageHandler {
                 case "joinGame":
                     handleJoinGame(clientId, msg);
                     break;
+                case "makePromotion":
+                    handlePromotion(clientId, msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -106,6 +109,13 @@ public class MessageHandler {
         if (isSuccess) {
             gameManager.newGame(joinCode, clientId, opponentId);
         }
+    }
+
+    private void handlePromotion(Integer clientId, JsonObject msg) {
+        int gameId = msg.get("gameId").getAsInt();
+        JsonElement move = msg.get("move");
+        char piece = msg.get("pieceType").getAsString().charAt(0);
+        gameManager.handlePromotion(clientId, gameId, move, piece);
     }
 
     public void playerDisconnected(Integer clientId) {
@@ -210,6 +220,15 @@ public class MessageHandler {
         move.addProperty("y2", y2);
         response.add("move", move);
         response.addProperty("pieceTypes", pieceString);
+        WebSocket conn = connectionHandler.getClientConn(userId);
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    public void sendPromotion(Integer userId, JsonObject move, char piece) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "promotionRes");
+        response.addProperty("move", move.toString());
+        response.addProperty("pieceType", piece);
         WebSocket conn = connectionHandler.getClientConn(userId);
         server.sendMessageToClient(conn, response.toString());
     }
