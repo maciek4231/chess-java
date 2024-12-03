@@ -10,6 +10,9 @@ public class Move {
     CustomButton button;
 
     public Move(Board board, Coords from, Coords to) {
+        if (board == null || from == null || to == null) {
+            throw new NullPointerException("Board, from, and to cannot be null");
+        }
         this.board = board;
         this.from = from;
         this.to = to;
