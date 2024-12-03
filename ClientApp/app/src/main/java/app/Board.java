@@ -180,7 +180,7 @@ public class Board {
         makePromotion(from, to, type);
         deselectPromotion();
         clearMoves();
-        // TODO: Send the promotion message
+        messageHandler.sendPromotion(from, to, type);
     }
 
     public void makePromotion(Coords from, Coords to, PieceType type)

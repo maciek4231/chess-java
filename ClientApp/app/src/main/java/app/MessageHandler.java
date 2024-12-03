@@ -48,6 +48,9 @@ public class MessageHandler {
                 case "deletePieceRes":
                     handleDeletePiece(msg);
                     break;
+                case "promotionRes":
+                    handlePromotion(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -117,45 +120,10 @@ public class MessageHandler {
 
     private void placePiece(char type, Coords coords) {
         PieceType pieceType;
-        switch (type) {
-            case 'P':
-                pieceType = PieceType.W_PAWN;
-                break;
-            case 'R':
-                pieceType = PieceType.W_ROOK;
-                break;
-            case 'N':
-                pieceType = PieceType.W_KNIGHT;
-                break;
-            case 'B':
-                pieceType = PieceType.W_BISHOP;
-                break;
-            case 'Q':
-                pieceType = PieceType.W_QUEEN;
-                break;
-            case 'K':
-                pieceType = PieceType.W_KING;
-                break;
-            case 'p':
-                pieceType = PieceType.B_PAWN;
-                break;
-            case 'r':
-                pieceType = PieceType.B_ROOK;
-                break;
-            case 'n':
-                pieceType = PieceType.B_KNIGHT;
-                break;
-            case 'b':
-                pieceType = PieceType.B_BISHOP;
-                break;
-            case 'q':
-                pieceType = PieceType.B_QUEEN;
-                break;
-            case 'k':
-                pieceType = PieceType.B_KING;
-                break;
-            default:
-                return;
+
+        pieceType = getPieceType(type);
+        if (pieceType == null) {
+            return;
         }
         board.addPiece(pieceType, coords);
     }
@@ -234,6 +202,96 @@ public class MessageHandler {
             board.deletePiece(new Coords(x, y));
         } catch (Exception e) {
             System.out.println("Invalid piece deletion received.");
+        }
+    }
+
+    public void sendPromotion(Coords from, Coords to, PieceType type) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "makePromotion");
+        msg.addProperty("gameId", gameCode);
+        JsonObject move = new JsonObject();
+        move.addProperty("x1", from.getX());
+        move.addProperty("y1", from.getY());
+        move.addProperty("x2", to.getX());
+        move.addProperty("y2", to.getY());
+        msg.add("move", move);
+        msg.addProperty("pieceType", getPieceChar(type));
+        client.send(msg.toString());
+    }
+
+    public void handlePromotion(JsonObject msg) {
+        try {
+            JsonObject move = msg.get("move").getAsJsonObject();
+            int x1 = move.get("x1").getAsInt();
+            int y1 = move.get("y1").getAsInt();
+            int x2 = move.get("x2").getAsInt();
+            int y2 = move.get("y2").getAsInt();
+            PieceType type = getPieceType(msg.get("pieceType").getAsString().charAt(0));
+            board.makePromotion(new Coords(x1, y1), new Coords(x2, y2), type);
+        } catch (Exception e) {
+            System.out.println("Invalid promotion received.");
+        }
+    }
+
+    private PieceType getPieceType(char type) {
+        switch (type) {
+            case 'P':
+                return PieceType.W_PAWN;
+            case 'R':
+                return PieceType.W_ROOK;
+            case 'N':
+                return PieceType.W_KNIGHT;
+            case 'B':
+                return PieceType.W_BISHOP;
+            case 'Q':
+                return PieceType.W_QUEEN;
+            case 'K':
+                return PieceType.W_KING;
+            case 'p':
+                return PieceType.B_PAWN;
+            case 'r':
+                return PieceType.B_ROOK;
+            case 'n':
+                return PieceType.B_KNIGHT;
+            case 'b':
+                return PieceType.B_BISHOP;
+            case 'q':
+                return PieceType.B_QUEEN;
+            case 'k':
+                return PieceType.B_KING;
+            default:
+                return null;
+        }
+    }
+
+    private char getPieceChar(PieceType type) {
+        switch (type) {
+            case W_PAWN:
+                return 'P';
+            case W_ROOK:
+                return 'R';
+            case W_KNIGHT:
+                return 'N';
+            case W_BISHOP:
+                return 'B';
+            case W_QUEEN:
+                return 'Q';
+            case W_KING:
+                return 'K';
+            case B_PAWN:
+                return 'p';
+            case B_ROOK:
+                return 'r';
+            case B_KNIGHT:
+                return 'n';
+            case B_BISHOP:
+                return 'b';
+            case B_QUEEN:
+                return 'q';
+            case B_KING:
+                return 'k';
+            default:
+                return ' ';
         }
     }
 }
