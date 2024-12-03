@@ -53,6 +53,9 @@ public class MessageHandler {
                 case "promotionRes":
                     handlePromotion(msg);
                     break;
+                case "checkRes":
+                    handleCheck(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -250,6 +253,16 @@ public class MessageHandler {
             board.addPromotion(new Coords(x1, y1), new Coords(x2, y2), promotionOptions);
         } catch (Exception e) {
             System.out.println("Invalid promotion received.");
+        }
+    }
+
+    private void handleCheck(JsonObject msg) {
+        try {
+            int x = msg.get("x").getAsInt();
+            int y = msg.get("y").getAsInt();
+            board.checkPiece(new Coords(x, y));
+        } catch (Exception e) {
+            System.out.println("Invalid check received.");
         }
     }
 

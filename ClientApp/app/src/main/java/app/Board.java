@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import java.awt.Color;
 import java.awt.Image;
 
 
@@ -25,6 +26,7 @@ public class Board {
     boolean isWhite;
 
     Promotion selectedPromotion;
+    Piece checkedPiece;
 
     public Board()
     {
@@ -108,6 +110,8 @@ public class Board {
 
     public void makeMove(Coords from, Coords to)
     {
+        uncheckPiece();
+
         Piece piece = pieces.get(from);
         piece.move(to);
         if (isOccupied(to))
@@ -201,5 +205,25 @@ public class Board {
 
         Promotion promotion = new Promotion(this, from, to, promotionOptions);
         availableMoves.add(promotion);
+    }
+
+    public void checkPiece(Coords coords)
+    {
+        Piece piece = pieces.get(coords);
+        if (piece != null)
+        {
+            piece.getButton().setBackground(new Color(255, 70, 70));
+            piece.getButton().setOpaque(true);
+        }
+        this.checkedPiece = piece;
+    }
+
+    private void uncheckPiece()
+    {
+        if (checkedPiece != null)
+        {
+            checkedPiece.getButton().setOpaque(false);
+        }
+        this.checkedPiece = null;
     }
 }
