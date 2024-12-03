@@ -57,13 +57,10 @@ public class Main {
             file.close();
         } catch (FileNotFoundException e) {
             System.out.println("config.txt not found, using default server address");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if (file != null)
-            {
+        } finally {
+            if (file != null) {
                 try {
                     file.close();
                 } catch (Exception e) {

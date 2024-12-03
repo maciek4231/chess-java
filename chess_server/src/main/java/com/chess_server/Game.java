@@ -341,6 +341,7 @@ public class Game {
                             break;
                         case 'k':
                             addKingMoves(movesArray, i, j, false);
+                            addCastleMoves(movesArray, i, j, false);
                             break;
                     }
                 }
