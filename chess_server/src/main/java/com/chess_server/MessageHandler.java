@@ -237,4 +237,16 @@ public class MessageHandler {
         WebSocket conn = connectionHandler.getClientConn(userId);
         server.sendMessageToClient(conn, response.toString());
     }
+
+    public void sendUpdateToPlayers(Integer gameId, Integer x1, Integer y1, Integer x2, Integer y2) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "boardUpdateRes");
+        JsonObject move = new JsonObject();
+        move.addProperty("x1", x1);
+        move.addProperty("y1", y1);
+        move.addProperty("x2", x2);
+        move.addProperty("y2", y2);
+        response.add("move", move);
+        sendToPlayers(gameId, response.toString());
+    }
 }

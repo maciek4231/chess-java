@@ -37,6 +37,13 @@ public class Game {
     ArrayList<ArrayList<Integer>> currentLegalMoves;
     Integer gameId;
 
+    private boolean whiteKingMoved = false;
+    private boolean blackKingMoved = false;
+    private boolean whiteRookKingSideMoved = false;
+    private boolean whiteRookQueenSideMoved = false;
+    private boolean blackRookKingSideMoved = false;
+    private boolean blackRookQueenSideMoved = false;
+
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
         this.gameManager = gameManager;
@@ -86,6 +93,38 @@ public class Game {
             char piece = board[y1][x1];
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
+
+            if (piece == 'K') {
+                whiteKingMoved = true;
+                if (x1 == 4 && x2 == 6) {
+                    board[7][5] = 'R';
+                    board[7][7] = ' ';
+                    messageHandler.sendUpdateToPlayers(gameId, 7, 7, 5, 7);
+                } else if (x1 == 4 && x2 == 2) {
+                    board[7][3] = 'R';
+                    board[7][0] = ' ';
+                    messageHandler.sendUpdateToPlayers(gameId, 0, 7, 3, 7);
+                }
+            } else if (piece == 'k') {
+                blackKingMoved = true;
+                if (x1 == 4 && x2 == 6) {
+                    board[0][5] = 'r';
+                    board[0][7] = ' ';
+                    messageHandler.sendUpdateToPlayers(gameId, 7, 0, 5, 0);
+                } else if (x1 == 4 && x2 == 2) {
+                    board[0][3] = 'r';
+                    board[0][0] = ' ';
+                    messageHandler.sendUpdateToPlayers(gameId, 0, 0, 3, 0);
+                }
+            } else if (piece == 'R' && y1 == 7 && x1 == 7) {
+                whiteRookKingSideMoved = true;
+            } else if (piece == 'R' && y1 == 7 && x1 == 0) {
+                whiteRookQueenSideMoved = true;
+            } else if (piece == 'r' && y1 == 0 && x1 == 7) {
+                blackRookKingSideMoved = true;
+            } else if (piece == 'r' && y1 == 0 && x1 == 0) {
+                blackRookQueenSideMoved = true;
+            }
 
             if (isEnPassant) {
                 messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
@@ -275,6 +314,7 @@ public class Game {
                             break;
                         case 'K':
                             addKingMoves(movesArray, i, j, true);
+                            addCastleMoves(movesArray, i, j, true);
                             break;
                     }
                 }
@@ -324,7 +364,8 @@ public class Game {
 
             if (!isInCheck(whiteTurn)) {
                 if (isPromotion(y2, piece)) {
-                    messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, whiteTurn ? "QRBN" : "qrbn");
+                    messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2,
+                            whiteTurn ? "QRBN" : "qrbn");
                 } else {
                     movesToSend.add(moveObj);
                 }
@@ -530,5 +571,48 @@ public class Game {
     private void deletePiece(int x, int y) {
         board[y][x] = ' ';
         System.out.println("Piece deleted at " + x + ", " + y);
+    }
+
+    private void addCastleMoves(JsonArray movesArray, int row, int col, boolean isWhite) {
+        if (isWhite) {
+            if (canCastleKingSide(true)) {
+                addMove(movesArray, row, col, row, col + 2);
+            }
+            if (canCastleQueenSide(true)) {
+                addMove(movesArray, row, col, row, col - 2);
+            }
+        } else {
+            if (canCastleKingSide(false)) {
+                addMove(movesArray, row, col, row, col + 2);
+            }
+            if (canCastleQueenSide(false)) {
+                addMove(movesArray, row, col, row, col - 2);
+            }
+        }
+    }
+
+    private boolean canCastleKingSide(boolean isWhite) {
+        int row = isWhite ? 7 : 0;
+        return board[row][4] == (isWhite ? 'K' : 'k') &&
+                board[row][5] == ' ' &&
+                board[row][6] == ' ' &&
+                board[row][7] == (isWhite ? 'R' : 'r') &&
+                !isSquareAttacked(row, 4, !isWhite) &&
+                !isSquareAttacked(row, 5, !isWhite) &&
+                !isSquareAttacked(row, 6, !isWhite) &&
+                !(isWhite ? whiteKingMoved || whiteRookKingSideMoved : blackKingMoved || blackRookKingSideMoved);
+    }
+
+    private boolean canCastleQueenSide(boolean isWhite) {
+        int row = isWhite ? 7 : 0;
+        return board[row][4] == (isWhite ? 'K' : 'k') &&
+                board[row][3] == ' ' &&
+                board[row][2] == ' ' &&
+                board[row][1] == ' ' &&
+                board[row][0] == (isWhite ? 'R' : 'r') &&
+                !isSquareAttacked(row, 4, !isWhite) &&
+                !isSquareAttacked(row, 3, !isWhite) &&
+                !isSquareAttacked(row, 2, !isWhite) &&
+                !(isWhite ? whiteKingMoved || whiteRookQueenSideMoved : blackKingMoved || blackRookQueenSideMoved);
     }
 }
