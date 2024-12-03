@@ -1,8 +1,10 @@
 package com.chess_server;
 
+import java.util.ArrayList;
+
 import org.java_websocket.WebSocket;
 
-import com.chess_server.Game.GameStatus;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -15,7 +17,7 @@ public class MessageHandler {
 
     public MessageHandler(ChessWebSocketServer server) {
         this.server = server;
-        this.gameManager = new GameManager();
+        this.gameManager = new GameManager(this);
         this.connectionHandler = new ConnectionHandler(gameManager);
     }
 
@@ -50,46 +52,8 @@ public class MessageHandler {
 
     private void handleMove(Integer clientId, JsonObject msg) {
         int gameId = msg.get("gameId").getAsInt();
-        if (gameManager.verifyPlayer(clientId, gameId)) {
-            Game game = gameManager.getGame(gameId);
-            JsonElement move = msg.get("move");
-            if (game.handleEnPassants(move))
-            {
-                sendToPlayers(gameId, "{\"type\":\"deletePieceRes\",\"x\":" + move.getAsJsonObject().get("x2").getAsInt() + ",\"y\":" + (move.getAsJsonObject().get("y2").getAsInt() == 2 ? 3 : 4) + "}");
-            }
-            if (game.makeMove(move)) {
-                WebSocket newCurrent = connectionHandler.getClientConn(game.getCurrentPlayer());
-                server.sendMessageToClient(newCurrent, game.updateView(move).toString());
-                JsonObject nextMoves = game.getPossibleMoves();
-                if (nextMoves.get("moves").getAsJsonArray().size() == 0) {
-                    GameStatus status = game.getGameStatus();
-
-                    if (!status.equals(GameStatus.CONTINUE)) {
-                        if (status.equals(GameStatus.LOST)) {
-                            server.sendMessageToClient(newCurrent, "{\"type\":\"gameOverRes\",\"status\":\"lost\"}");
-                            server.sendMessageToClient(connectionHandler.getClientConn(game.getOpponentPlayer()),
-                                    "{\"type\":\"gameOverRes\",\"status\":\"won\"}");
-
-                        } else if (status.equals(GameStatus.STALEMATE)) {
-                            server.sendMessageToClient(newCurrent,
-                                    "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
-                            server.sendMessageToClient(connectionHandler.getClientConn(game.getOpponentPlayer()),
-                                    "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
-                        } else if (status.equals(GameStatus.MATERIAL)) {
-                            server.sendMessageToClient(newCurrent,
-                                    "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
-                            server.sendMessageToClient(connectionHandler.getClientConn(game.getOpponentPlayer()),
-                                    "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
-                        }
-                        gameManager.removeGame(gameId);
-                        connectionHandler.removeGame(gameId);
-                    }
-                }
-                server.sendMessageToClient(newCurrent, game.getPossibleMoves().toString());
-            }
-        } else {
-            System.out.println("Invalid player");
-        }
+        JsonElement move = msg.get("move");
+        gameManager.handleMove(clientId, gameId, move);
     }
 
     private void handleAbort(Integer clientId, JsonObject msg) {
@@ -114,15 +78,15 @@ public class MessageHandler {
             connectionHandler.removeJoinCode(clientId);
         }
         server.sendMessageToClient(conn, response.toString());
-        System.out.println("Handling availability");
     }
 
     private void handleJoinGame(Integer clientId, JsonObject msg) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "joinGameRes");
         boolean isSuccess = false;
         WebSocket conn = connectionHandler.getClientConn(clientId);
         int joinCode = msg.get("gameCode").getAsInt();
-        JsonObject response = new JsonObject();
-        response.addProperty("type", "joinGameRes");
+
         Integer opponentId = connectionHandler.joinGame(clientId, joinCode);
         if (opponentId.equals(-1)) {
             response.addProperty("status", -1); // game not found
@@ -140,12 +104,7 @@ public class MessageHandler {
         }
         server.sendMessageToClient(conn, response.toString());
         if (isSuccess) {
-            Game game = gameManager.newGame(joinCode, clientId, opponentId);
-            server.sendMessageToClient(connectionHandler.getClientConn(game.playerBlack),
-                    "{\"type\":\"playerIsBlackRes\"}");
-            sendToPlayers(joinCode, game.getBoardState().toString());
-            server.sendMessageToClient(connectionHandler.getClientConn(game.playerWhite),
-                    game.getPossibleMoves().toString());
+            gameManager.newGame(joinCode, clientId, opponentId);
         }
     }
 
@@ -159,21 +118,76 @@ public class MessageHandler {
         }
     }
 
-    private boolean sendToPlayers(Integer gameCode, String message) {
-        var players = connectionHandler.getActiveGamePlayers(gameCode);
+    public void sendToPlayers(Integer gameId, String message) {
+        var players = connectionHandler.getActiveGamePlayers(gameId);
         WebSocket conn1 = connectionHandler.getClientConn(players.get(0));
         WebSocket conn2 = connectionHandler.getClientConn(players.get(1));
-        if (conn1 != null && conn2 != null) {
-            server.sendMessageToClient(conn1, message);
-            server.sendMessageToClient(conn2, message);
-        } else {
-            if (conn1 != null) {
-                server.sendMessageToClient(conn1, "{\"type\":\"opponentDisconnectedRes\"}");
-            } else {
-                server.sendMessageToClient(conn2, "{\"type\":\"opponentDisconnectedRes\"}");
-            }
-            return false;
+        server.sendMessageToClient(conn1, message);
+        server.sendMessageToClient(conn2, message);
+
+    }
+
+    public void sendDeleteToPlayers(Integer gameId, Integer x, Integer y) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "deletePieceRes");
+        response.addProperty("x", x);
+        response.addProperty("y", y);
+        sendToPlayers(gameId, response.toString());
+    }
+
+    public void sendUpdateView(Integer UserId, JsonElement move) {
+        JsonObject update = new JsonObject();
+        update.addProperty("type", "boardUpdateRes");
+        update.add("move", move);
+        WebSocket conn = connectionHandler.getClientConn(UserId);
+        server.sendMessageToClient(conn, update.toString());
+    }
+
+    public void sendLost(Integer UserId) {
+        WebSocket conn = connectionHandler.getClientConn(UserId);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("status", "lost");
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    public void sendWin(Integer UserId) {
+        WebSocket conn = connectionHandler.getClientConn(UserId);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("status", "won");
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    public void sendStalemate(Game game) {
+        sendToPlayers(game.gameId, "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
+    }
+
+    public void sendMaterial(Game game) {
+        sendToPlayers(game.gameId, "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+    }
+
+    public void sendPlayerIsBlack(Integer UserId) {
+        WebSocket conn = connectionHandler.getClientConn(UserId);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "playerIsBlackRes");
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    public void sendBoardState(Game game, ArrayList<String> board) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "placementRes");
+        for (int i = 0; i < board.size(); i++) {
+            response.addProperty(Integer.toString(i), board.get(i));
         }
-        return true;
+        sendToPlayers(game.gameId, response.toString());
+    }
+
+    public void sendPossibleMoves(Integer UserId, JsonArray moves) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "possibleMovesRes");
+        response.add("moves", moves);
+        WebSocket conn = connectionHandler.getClientConn(UserId);
+        server.sendMessageToClient(conn, response.toString());
     }
 }

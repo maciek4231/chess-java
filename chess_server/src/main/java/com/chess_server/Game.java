@@ -9,6 +9,9 @@ import java.util.Random;
 
 public class Game {
 
+    private final MessageHandler messageHandler;
+    private final GameManager gameManager;
+
     public enum GameStatus {
         LOST, MATERIAL, STALEMATE, CONTINUE
     }
@@ -27,8 +30,12 @@ public class Game {
     Integer playerWhite;
     Integer playerBlack;
     JsonArray currentLegalMoves;
+    Integer gameId;
 
-    Game(Integer player1Id, Integer player2Id) {
+    Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
+        this.messageHandler = messageHandler;
+        this.gameManager = gameManager;
+        this.gameId = gameId;
         if (new Random().nextBoolean()) {
             Integer temp = player1Id;
             player1Id = player2Id;
@@ -54,16 +61,21 @@ public class Game {
         return whiteTurn ? playerBlack : playerWhite;
     }
 
-    public JsonObject getBoardState() {
-        JsonObject initialBoard = new JsonObject();
-        initialBoard.addProperty("type", "placementRes");
+    public ArrayList<String> getBoard() {
+        // JsonObject initialBoard = new JsonObject();
+        // initialBoard.addProperty("type", "placementRes");
+        // for (int i = 0; i < 8; i++) {
+        // initialBoard.addProperty(Integer.toString(i), new String(board[i]));
+        // }
+        // return initialBoard;
+        ArrayList<String> ret = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            initialBoard.addProperty(Integer.toString(i), new String(board[i]));
+            ret.add(new String(board[i]));
         }
-        return initialBoard;
+        return ret;
     }
 
-    public boolean makeMove(JsonElement move) {
+    public void makeMove(JsonElement move) {
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
@@ -94,10 +106,30 @@ public class Game {
                 throw new IllegalArgumentException("Invalid move: King would be in check");
             }
             whiteTurn = !whiteTurn;
+            if (handleEnPassants(x1, y1, x2, y2)) {
+                messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
+            }
+            messageHandler.sendUpdateView(getCurrentPlayer(), move);
+            handleNextTurn();
         } else {
             throw new IllegalArgumentException("Invalid move");
         }
-        return isValid;
+    }
+
+    public void handleNextTurn() {
+        GameStatus status;
+        switch (status = getGameStatus()) {
+            case CONTINUE:
+                break;
+            case LOST:
+                gameManager.gameLost(this);
+                break;
+            case MATERIAL:
+            case STALEMATE:
+                gameManager.gameDraw(this, status);
+                break;
+        }
+        messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
     }
 
     private boolean isInCheck(boolean isWhite) {
@@ -181,18 +213,8 @@ public class Game {
         return false;
     }
 
-    public JsonObject updateView(JsonElement move) {
-        JsonObject update = new JsonObject();
-        update.addProperty("type", "boardUpdateRes");
-        update.add("move", move);
-        return update;
-    }
-
-    public JsonObject getPossibleMoves() {
-        JsonObject possibleMoves = new JsonObject();
-        possibleMoves.addProperty("type", "possibleMovesRes");
+    public JsonArray getPossibleMoves() {
         JsonArray movesArray = new JsonArray();
-
         if (whiteTurn) {
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
@@ -269,8 +291,7 @@ public class Game {
         }
 
         this.currentLegalMoves = validMovesArray;
-        possibleMoves.add("moves", validMovesArray);
-        return possibleMoves;
+        return validMovesArray;
     }
 
     public GameStatus getGameStatus() {
@@ -410,23 +431,18 @@ public class Game {
         return board[row][col] == ' ' || board[row][col] == 'e' || board[row][col] == 'E';
     }
 
-    private void prunePassants()
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            if (board[2][i] == 'e')
-            {
+    private void prunePassants() {
+        for (int i = 0; i < 8; i++) {
+            if (board[2][i] == 'e') {
                 board[2][i] = ' ';
             }
-            if (board[5][i] == 'E')
-            {
+            if (board[5][i] == 'E') {
                 board[5][i] = ' ';
             }
         }
     }
 
-    private void addEnPassants(int x1, int y1, int x2, int y2, char piece)
-    {
+    private void addEnPassants(int x1, int y1, int x2, int y2, char piece) {
         if (piece == 'p' && y1 == 1 && y2 == 3) {
             board[2][x2] = 'e';
         }
@@ -435,28 +451,20 @@ public class Game {
         }
     }
 
-    private boolean enPassantAttack(int x2, int y2)
-    {
+    private boolean enPassantAttack(int x2, int y2) {
         char piece = board[y2][x2];
-        if (piece == 'e')
-        {
+        if (piece == 'e') {
             deletePiece(x2, 3);
             return true;
         }
-        if (piece == 'E')
-        {
+        if (piece == 'E') {
             deletePiece(x2, 4);
             return true;
         }
         return false;
     }
 
-    public boolean handleEnPassants(JsonElement move)
-    {
-        int x1 = move.getAsJsonObject().get("x1").getAsInt();
-        int y1 = move.getAsJsonObject().get("y1").getAsInt();
-        int x2 = move.getAsJsonObject().get("x2").getAsInt();
-        int y2 = move.getAsJsonObject().get("y2").getAsInt();
+    public boolean handleEnPassants(int x1, int y1, int x2, int y2) {
 
         char piece = board[y1][x1];
 
@@ -467,10 +475,8 @@ public class Game {
         return ret;
     }
 
-    private void deletePiece(int x, int y)
-    {
+    private void deletePiece(int x, int y) {
         board[y][x] = ' ';
-        // TODO: send message to client
         System.out.println("Piece deleted at " + x + ", " + y);
     }
 }
