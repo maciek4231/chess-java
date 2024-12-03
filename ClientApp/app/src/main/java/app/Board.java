@@ -29,7 +29,7 @@ public class Board {
     public Board()
     {
         jPane = new JLayeredPane();
-        jPane.setBounds(0, 0, 1252, 1054);
+        jPane.setBounds(0, 0, 1252, 1056);
 
         pieces = new HashMap<Coords, Piece>();
 
