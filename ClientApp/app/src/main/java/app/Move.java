@@ -29,7 +29,7 @@ public class Move {
         return button;
     }
 
-    private void createButton() {
+    protected void createButton() {
         button = new CustomButton();
         button.setIcon(getButtonIcon());
         button.setBounds(to.getRelX(board.getIsWhite())*128, to.getRelY(board.getIsWhite())*128, 128, 128);
