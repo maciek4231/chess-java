@@ -89,14 +89,22 @@ public class Game {
         }
 
         if (isValid) {
-            if (handleEnPassants(x1, y1, x2, y2)) {
-                messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
-            }
+            boolean isEnPassant = handleEnPassants(x1, y1, x2, y2);
+
+            char[][] boardClone = board.clone();
             char piece = board[y1][x1];
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
             if (isInCheck(whiteTurn)) {
+                board = boardClone;
                 throw new IllegalArgumentException("Invalid move: King would be in check");
+            }
+            if (isEnPassant) {
+                messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
+            }
+
+            if (pawnPromotion(x2, y2)) {
+                messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, "QRBN");
             }
 
             whiteTurn = !whiteTurn;
@@ -464,7 +472,7 @@ public class Game {
         return false;
     }
 
-    public boolean handleEnPassants(int x1, int y1, int x2, int y2) {
+    private boolean handleEnPassants(int x1, int y1, int x2, int y2) {
 
         char piece = board[y1][x1];
 
@@ -473,6 +481,17 @@ public class Game {
         addEnPassants(x1, y1, x2, y2, piece);
 
         return ret;
+    }
+
+    private boolean pawnPromotion(int x2, int y2) {
+        char piece = board[y2][x2];
+        if (piece == 'P' && y2 == 0) {
+            return true;
+        }
+        if (piece == 'p' && y2 == 7) {
+            return true;
+        }
+        return false;
     }
 
     private void deletePiece(int x, int y) {

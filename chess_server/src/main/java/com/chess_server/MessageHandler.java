@@ -198,4 +198,19 @@ public class MessageHandler {
         response.addProperty("y", y);
         sendToPlayers(gameId, response.toString());
     }
+
+    public void sendAvailablePromotion(Integer userId, Integer x1, Integer y1, Integer x2, Integer y2,
+            String pieceString) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "availablePromotionsRes");
+        JsonObject move = new JsonObject();
+        move.addProperty("x1 ", x1);
+        move.addProperty("y1", y1);
+        move.addProperty("x2", x2);
+        move.addProperty("y2", y2);
+        response.add("move", move);
+        response.addProperty("pieceTypes", pieceString);
+        WebSocket conn = connectionHandler.getClientConn(userId);
+        server.sendMessageToClient(conn, response.toString());
+    }
 }
