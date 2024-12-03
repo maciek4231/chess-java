@@ -41,7 +41,7 @@ public class Move {
         });
     }
 
-    private ImageIcon getButtonIcon() {
+    protected ImageIcon getButtonIcon() {
         if (board.isOccupied(to))
         {
             return new ImageIcon(getClass().getResource("/attack.png"));

@@ -2,8 +2,6 @@ package app;
 
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
-
 public class Promotion extends Move {
 
     ArrayList<CustomButton> promotionButtons;
@@ -17,7 +15,7 @@ public class Promotion extends Move {
     @Override
     protected void createButton() {
         button = new CustomButton();
-        button.setIcon(new ImageIcon(getClass().getResource("/move.png")));
+        button.setIcon(getButtonIcon());
         button.setBounds(to.getRelX(board.getIsWhite())*128, to.getRelY(board.getIsWhite())*128, 128, 128);
         button.addActionListener(e -> {
             board.selectPromotion(this);

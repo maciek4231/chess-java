@@ -62,6 +62,11 @@ public class Board {
     }
 
     public void addAvailableMove(Coords from, Coords to) {
+        for (Move move : availableMoves) {
+            if (move.getFrom().equals(from) && move.getTo().equals(to)) {
+                return;
+            }
+        }
         availableMoves.add(new Move(this, from, to));
     }
 
@@ -155,6 +160,7 @@ public class Board {
     }
 
     public void clientPromotion(Coords from, Coords to, PieceType type) {
+        makeMove(from, to);
         makePromotion(from, to, type);
         deselectPromotion();
         clearMoves();
@@ -163,7 +169,6 @@ public class Board {
 
     public void makePromotion(Coords from, Coords to, PieceType type) {
         System.out.println(from + "\n" + to);
-        makeMove(from, to);
         pieces.get(to).changeType(type);
     }
 

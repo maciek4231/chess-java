@@ -132,6 +132,7 @@ public class Game {
         int y2 = moveObj.get("y2").getAsInt();
         MoveEval eval = evaluateMove(x1, y1, x2, y2);
         if (eval == MoveEval.PROMOTION) {
+            board[y1][x1] = ' ';
             board[y2][x2] = piece;
 
             whiteTurn = !whiteTurn;
@@ -323,7 +324,7 @@ public class Game {
 
             if (!isInCheck(whiteTurn)) {
                 if (isPromotion(y2, piece)) {
-                    messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, "QRBN");
+                    messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, whiteTurn ? "QRBN" : "qrbn");
                 } else {
                     movesToSend.add(moveObj);
                 }
