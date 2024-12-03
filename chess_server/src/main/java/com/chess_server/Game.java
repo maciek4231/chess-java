@@ -108,11 +108,13 @@ public class Game {
             }
 
             whiteTurn = !whiteTurn;
+
+            messageHandler.sendUpdateView(getCurrentPlayer(), move);
             if (isInCheck(whiteTurn)) {
                 int[] kingPos = getKingPosition(whiteTurn);
                 messageHandler.sendCheck(this.gameId, kingPos[0], kingPos[1]);
             }
-            messageHandler.sendUpdateView(getCurrentPlayer(), move);
+            
             handleNextTurn();
         } else {
             throw new IllegalArgumentException("Invalid move");

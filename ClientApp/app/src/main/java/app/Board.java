@@ -222,6 +222,7 @@ public class Board {
     {
         if (checkedPiece != null)
         {
+            checkedPiece.getButton().setBackground(new Color(0, 0, 0, 0));
             checkedPiece.getButton().setOpaque(false);
         }
         this.checkedPiece = null;
