@@ -24,10 +24,13 @@ public class Board {
     int gameCode;
     boolean isWhite;
 
+    Promotion selectedPromotion;
+
     public Board()
     {
         jPane = new JLayeredPane();
-        jPane.setBounds(0, 0, 1024, 1054);
+        jPane.setBounds(0, 0, 1252, 1054);
+
         pieces = new HashMap<Coords, Piece>();
 
         availableMoves = new ArrayList<Move>();
@@ -68,6 +71,7 @@ public class Board {
 
     public void selectPiece(Coords coords)
     {
+        deselectPromotion();
         for (Move move : selectableMoves)
         {
             move.getButton().setVisible(false);
@@ -97,6 +101,7 @@ public class Board {
     public void clientMove(Coords from, Coords to)
     {
         makeMove(from, to);
+        deselectPromotion();
         clearMoves();
         messageHandler.sendMove(from, to);
     }
@@ -152,5 +157,49 @@ public class Board {
         pieces.get(coords).getButton().setVisible(false);
         jPane.remove(pieces.get(coords).getButton());
         pieces.remove(coords);
+    }
+
+    public void selectPromotion(Promotion promotion)
+    {
+        deselectPromotion();
+        selectedPromotion = promotion;
+        selectedPromotion.showPromotionButtons();
+    }
+
+    private void deselectPromotion()
+    {
+        if (selectedPromotion != null)
+        {
+            selectedPromotion.hidePromotionButtons();
+            selectedPromotion = null;
+        }
+    }
+
+    public void clientPromotion(Coords from, Coords to, PieceType type)
+    {
+        makePromotion(from, to, type);
+        deselectPromotion();
+        clearMoves();
+        messageHandler.sendPromotion(from, to, type);
+    }
+
+    public void makePromotion(Coords from, Coords to, PieceType type)
+    {
+        makeMove(from, to);
+        pieces.get(to).changeType(type);
+    }
+
+    public void addPromotion(Coords from, Coords to, ArrayList<PieceType> promotionOptions)
+    {
+        for (Move move : availableMoves)
+        {
+            if (move.getFrom().equals(from) && move.getTo().equals(to))
+            {
+                availableMoves.remove(move);
+            }
+        }
+
+        Promotion promotion = new Promotion(this, from, to, promotionOptions);
+        availableMoves.add(promotion);
     }
 }

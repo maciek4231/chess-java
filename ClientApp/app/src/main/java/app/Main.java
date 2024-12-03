@@ -16,7 +16,7 @@ public class Main {
 
             JFrame frame = new JFrame("illChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1024, 1044);
+            frame.setSize(1152, 1044);
             frame.getContentPane().add(game.getWindow());
             frame.setVisible(true);
 

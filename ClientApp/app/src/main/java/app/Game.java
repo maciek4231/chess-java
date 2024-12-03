@@ -12,7 +12,7 @@ public class Game {
         Board board = new Board();
 
         window = new JLayeredPane();
-        window.setBounds(0, 0, 1024, 1044);
+        window.setBounds(0, 0, 1252, 1044);
         window.setLayout(null);
 
         MessageHandler messageHandler = new MessageHandler(client, this, board);
