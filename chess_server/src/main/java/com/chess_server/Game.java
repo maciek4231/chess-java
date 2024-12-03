@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -14,6 +15,10 @@ public class Game {
 
     public enum GameStatus {
         LOST, MATERIAL, STALEMATE, CONTINUE
+    }
+
+    private enum MoveEval {
+        VALID, INVALID, PROMOTION
     }
 
     private char[][] board = {
@@ -29,7 +34,7 @@ public class Game {
     boolean whiteTurn = true;
     Integer playerWhite;
     Integer playerBlack;
-    JsonArray currentLegalMoves;
+    ArrayList<ArrayList<Integer>> currentLegalMoves;
     Integer gameId;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
@@ -75,36 +80,15 @@ public class Game {
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
         int y2 = move.getAsJsonObject().get("y2").getAsInt();
 
-        boolean isValid = false;
-
-        for (JsonElement possibleMove : currentLegalMoves) {
-            JsonObject possibleMoveObj = possibleMove.getAsJsonObject();
-            if (possibleMoveObj.get("x1").getAsInt() == x1 &&
-                    possibleMoveObj.get("y1").getAsInt() == y1 &&
-                    possibleMoveObj.get("x2").getAsInt() == x2 &&
-                    possibleMoveObj.get("y2").getAsInt() == y2) {
-                isValid = true;
-                break;
-            }
-        }
-        if (isValid) {
+        MoveEval eval = evaluateMove(x1, y1, x2, y2);
+        if (eval == MoveEval.VALID) {
             boolean isEnPassant = handleEnPassants(x1, y1, x2, y2);
-
-            char[][] boardClone = board.clone();
             char piece = board[y1][x1];
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
-            if (isInCheck(whiteTurn)) {
-                board = boardClone;
-                throw new IllegalArgumentException("Invalid move: King would be in check");
-            }
+
             if (isEnPassant) {
                 messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
-            }
-
-            if (pawnPromotion(x2, y2)) {
-                messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, "QRBN");
-                return;
             }
 
             whiteTurn = !whiteTurn;
@@ -116,12 +100,15 @@ public class Game {
             }
 
             handleNextTurn();
+        } else if (eval == MoveEval.PROMOTION) {
+            throw new IllegalArgumentException("Use different type of message for promotion");
         } else {
             throw new IllegalArgumentException("Invalid move");
         }
     }
 
     public void handleNextTurn() {
+        JsonArray newMoves = getPossibleMoves();
         GameStatus status;
         switch (status = getGameStatus()) {
             case CONTINUE:
@@ -134,19 +121,22 @@ public class Game {
                 gameManager.gameDraw(this, status);
                 break;
         }
-        messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
+        messageHandler.sendPossibleMoves(getCurrentPlayer(), newMoves);
     }
 
     public void makePromotion(JsonElement move, char piece) {
         JsonObject moveObj = move.getAsJsonObject();
-        if (currentLegalMoves.contains(moveObj)) {
-            int x2 = moveObj.get("x2").getAsInt();
-            int y2 = moveObj.get("y2").getAsInt();
+        int x1 = moveObj.get("x1").getAsInt();
+        int y1 = moveObj.get("y1").getAsInt();
+        int x2 = moveObj.get("x2").getAsInt();
+        int y2 = moveObj.get("y2").getAsInt();
+        MoveEval eval = evaluateMove(x1, y1, x2, y2);
+        if (eval == MoveEval.PROMOTION) {
             board[y2][x2] = piece;
 
             whiteTurn = !whiteTurn;
             messageHandler.sendUpdateView(getCurrentPlayer(), move);
-            messageHandler.sendPromotion(getCurrentPlayer(), moveObj, piece);
+            messageHandler.sendPromotion(getCurrentPlayer(), x1, y1, x2, y2, piece);
 
             if (isInCheck(whiteTurn)) {
                 int[] kingPos = getKingPosition(whiteTurn);
@@ -169,6 +159,21 @@ public class Game {
             }
         }
         return null;
+    }
+
+    private MoveEval evaluateMove(Integer x1, Integer y1, Integer x2, Integer y2) {
+        for (ArrayList<Integer> possibleMove : currentLegalMoves) {
+            if (possibleMove.get(0).equals(x1) &&
+                    possibleMove.get(1).equals(y1) &&
+                    possibleMove.get(2).equals(x2) &&
+                    possibleMove.get(3).equals(y2)) {
+                if (isPromotion(y2, board[y1][x1])) {
+                    return MoveEval.PROMOTION;
+                }
+                return MoveEval.VALID;
+            }
+        }
+        return MoveEval.INVALID;
     }
 
     private boolean isInCheck(boolean isWhite) {
@@ -301,7 +306,9 @@ public class Game {
             }
         }
 
-        JsonArray validMovesArray = new JsonArray();
+        ArrayList<ArrayList<Integer>> validMovesArray = new ArrayList<>();
+        JsonArray movesToSend = new JsonArray();
+
         for (JsonElement move : movesArray) {
             JsonObject moveObj = move.getAsJsonObject();
             int x1 = moveObj.get("x1").getAsInt();
@@ -315,7 +322,12 @@ public class Game {
             board[y2][x2] = piece;
 
             if (!isInCheck(whiteTurn)) {
-                validMovesArray.add(move);
+                if (isPromotion(y2, piece)) {
+                    messageHandler.sendAvailablePromotion(getCurrentPlayer(), x1, y1, x2, y2, "QRBN");
+                } else {
+                    movesToSend.add(moveObj);
+                }
+                validMovesArray.add(new ArrayList<Integer>(List.of(x1, y1, x2, y2)));
             }
 
             board[y1][x1] = piece;
@@ -323,7 +335,7 @@ public class Game {
         }
 
         this.currentLegalMoves = validMovesArray;
-        return validMovesArray;
+        return movesToSend;
     }
 
     public GameStatus getGameStatus() {
@@ -507,12 +519,8 @@ public class Game {
         return ret;
     }
 
-    private boolean pawnPromotion(int x2, int y2) {
-        char piece = board[y2][x2];
-        if (piece == 'P' && y2 == 0) {
-            return true;
-        }
-        if (piece == 'p' && y2 == 7) {
+    private boolean isPromotion(int y2, char piece) {
+        if (piece == 'P' && y2 == 0 || piece == 'p' && y2 == 7) {
             return true;
         }
         return false;

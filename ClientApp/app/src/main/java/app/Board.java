@@ -10,7 +10,6 @@ import javax.swing.JLayeredPane;
 import java.awt.Color;
 import java.awt.Image;
 
-
 public class Board {
 
     MessageHandler messageHandler;
@@ -28,8 +27,7 @@ public class Board {
     Promotion selectedPromotion;
     Piece checkedPiece;
 
-    public Board()
-    {
+    public Board() {
         jPane = new JLayeredPane();
         jPane.setBounds(0, 0, 1252, 1056);
 
@@ -44,18 +42,15 @@ public class Board {
         createPane();
     }
 
-    public void setMessageHandler(MessageHandler messageHandler)
-    {
+    public void setMessageHandler(MessageHandler messageHandler) {
         this.messageHandler = messageHandler;
     }
 
-    public JLayeredPane getPane()
-    {
+    public JLayeredPane getPane() {
         return jPane;
     }
 
-    private void createPane()
-    {
+    private void createPane() {
         ImageIcon icon = new ImageIcon(Main.class.getResource("/board.png"));
         Image image = icon.getImage();
 
@@ -66,26 +61,20 @@ public class Board {
         jPane.setLayer(label, 0);
     }
 
-    public void addAvailableMove(Coords from, Coords to)
-    {
+    public void addAvailableMove(Coords from, Coords to) {
         availableMoves.add(new Move(this, from, to));
     }
 
-    public void selectPiece(Coords coords)
-    {
+    public void selectPiece(Coords coords) {
         deselectPromotion();
-        for (Move move : selectableMoves)
-        {
+        for (Move move : selectableMoves) {
             move.getButton().setVisible(false);
             jPane.remove(move.getButton());
         }
         Piece piece = pieces.get(coords);
-        if (piece != null)
-        {
-            for (Move move : availableMoves)
-            {
-                if (move.getFrom().equals(coords))
-                {
+        if (piece != null) {
+            for (Move move : availableMoves) {
+                if (move.getFrom().equals(coords)) {
                     selectableMoves.add(move);
                     jPane.add(move.getButton());
                     jPane.setLayer(move.getButton(), 2);
@@ -95,27 +84,22 @@ public class Board {
         }
     }
 
-    public boolean isOccupied(Coords coords)
-    {
+    public boolean isOccupied(Coords coords) {
         return pieces.containsKey(coords);
     }
 
-    public void clientMove(Coords from, Coords to)
-    {
+    public void clientMove(Coords from, Coords to) {
         makeMove(from, to);
         deselectPromotion();
         clearMoves();
         messageHandler.sendMove(from, to);
     }
 
-    public void makeMove(Coords from, Coords to)
-    {
+    public void makeMove(Coords from, Coords to) {
         uncheckPiece();
-
         Piece piece = pieces.get(from);
         piece.move(to);
-        if (isOccupied(to))
-        {
+        if (isOccupied(to)) {
             jPane.remove(pieces.get(to).getButton());
             pieces.remove(to);
         }
@@ -124,8 +108,7 @@ public class Board {
     }
 
     private void clearMoves() {
-        for (Move move : availableMoves)
-        {
+        for (Move move : availableMoves) {
             move.getButton().setVisible(false);
             jPane.remove(move.getButton());
         }
@@ -133,72 +116,60 @@ public class Board {
         selectableMoves.clear();
     }
 
-    public void addPiece(PieceType type, Coords coords)
-    {
+    public void addPiece(PieceType type, Coords coords) {
         Piece piece = new Piece(this, type, coords);
         pieces.put(coords, piece);
         jPane.add(piece.getButton());
         jPane.setLayer(piece.getButton(), 1);
     }
 
-    public void setGameCode(int code)
-    {
+    public void setGameCode(int code) {
         gameCode = code;
     }
 
-    public void setToBlack()
-    {
+    public void setToBlack() {
         isWhite = false;
     }
 
-    public boolean getIsWhite()
-    {
+    public boolean getIsWhite() {
         return isWhite;
     }
 
-    public void deletePiece(Coords coords)
-    {
+    public void deletePiece(Coords coords) {
         pieces.get(coords).getButton().setVisible(false);
         jPane.remove(pieces.get(coords).getButton());
         pieces.remove(coords);
     }
 
-    public void selectPromotion(Promotion promotion)
-    {
+    public void selectPromotion(Promotion promotion) {
         deselectPromotion();
         selectedPromotion = promotion;
         selectedPromotion.showPromotionButtons();
     }
 
-    private void deselectPromotion()
-    {
-        if (selectedPromotion != null)
-        {
+    private void deselectPromotion() {
+        if (selectedPromotion != null) {
             selectedPromotion.hidePromotionButtons();
             selectedPromotion = null;
         }
     }
 
-    public void clientPromotion(Coords from, Coords to, PieceType type)
-    {
+    public void clientPromotion(Coords from, Coords to, PieceType type) {
         makePromotion(from, to, type);
         deselectPromotion();
         clearMoves();
         messageHandler.sendPromotion(from, to, type);
     }
 
-    public void makePromotion(Coords from, Coords to, PieceType type)
-    {
+    public void makePromotion(Coords from, Coords to, PieceType type) {
+        System.out.println(from + "\n" + to);
         makeMove(from, to);
         pieces.get(to).changeType(type);
     }
 
-    public void addPromotion(Coords from, Coords to, ArrayList<PieceType> promotionOptions)
-    {
-        for (Move move : availableMoves)
-        {
-            if (move.getFrom().equals(from) && move.getTo().equals(to))
-            {
+    public void addPromotion(Coords from, Coords to, ArrayList<PieceType> promotionOptions) {
+        for (Move move : availableMoves) {
+            if (move.getFrom().equals(from) && move.getTo().equals(to)) {
                 availableMoves.remove(move);
             }
         }
@@ -207,21 +178,17 @@ public class Board {
         availableMoves.add(promotion);
     }
 
-    public void checkPiece(Coords coords)
-    {
+    public void checkPiece(Coords coords) {
         Piece piece = pieces.get(coords);
-        if (piece != null)
-        {
+        if (piece != null) {
             piece.getButton().setBackground(new Color(255, 70, 70));
             piece.getButton().setOpaque(true);
         }
         this.checkedPiece = piece;
     }
 
-    private void uncheckPiece()
-    {
-        if (checkedPiece != null)
-        {
+    private void uncheckPiece() {
+        if (checkedPiece != null) {
             checkedPiece.getButton().setBackground(new Color(0, 0, 0, 0));
             checkedPiece.getButton().setOpaque(false);
         }

@@ -70,8 +70,7 @@ public class MessageHandler {
         }
     }
 
-    public void anounceAvailable()
-    {
+    public void anounceAvailable() {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "availability");
         msg.addProperty("avail", 1);
@@ -240,6 +239,7 @@ public class MessageHandler {
             PieceType type = getPieceType(msg.get("pieceType").getAsString().charAt(0));
             board.makePromotion(new Coords(x1, y1), new Coords(x2, y2), type);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             System.out.println("Invalid promotion received.");
         }
     }

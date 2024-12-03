@@ -214,7 +214,7 @@ public class MessageHandler {
         JsonObject response = new JsonObject();
         response.addProperty("type", "availablePromotionsRes");
         JsonObject move = new JsonObject();
-        move.addProperty("x1 ", x1);
+        move.addProperty("x1", x1);
         move.addProperty("y1", y1);
         move.addProperty("x2", x2);
         move.addProperty("y2", y2);
@@ -224,10 +224,15 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendPromotion(Integer userId, JsonObject move, char piece) {
+    public void sendPromotion(Integer userId, Integer x1, Integer y1, Integer x2, Integer y2, char piece) {
         JsonObject response = new JsonObject();
         response.addProperty("type", "promotionRes");
-        response.addProperty("move", move.toString());
+        JsonObject move = new JsonObject();
+        move.addProperty("x1", x1);
+        move.addProperty("y1", y1);
+        move.addProperty("x2", x2);
+        move.addProperty("y2", y2);
+        response.add("move", move);
         response.addProperty("pieceType", piece);
         WebSocket conn = connectionHandler.getClientConn(userId);
         server.sendMessageToClient(conn, response.toString());
