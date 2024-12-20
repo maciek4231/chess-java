@@ -45,7 +45,7 @@ public class Main {
 
     private static String getServerAddress() {
         FileInputStream file = null;
-        String server = "ws://localhost:8887";
+        String server = "wss://illchess.serwerasus.duckdns.org";
 
         try {
             file = new FileInputStream("config.json");
