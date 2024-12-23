@@ -33,7 +33,7 @@ public class Board {
 
     public Board() {
         jPane = new JLayeredPane();
-        jPane.setBounds(0, 0, 1252, 1056);
+        jPane.setBounds(0, 0, 1252, 1024);
 
         pieces = new HashMap<Coords, Piece>();
 
@@ -205,7 +205,7 @@ public class Board {
     }
 
     public void resize(double xScale, double yScale) {
-        jPane.setBounds(0, 0, (int) (1252 * xScale), (int) (1056 * yScale));
+        jPane.setBounds(0, 0, (int) (1252 * xScale), (int) (1024 * yScale));
         boardLabel.setBounds(0, 0, (int) (1024 * xScale), (int) (1024 * yScale));
         icon.setImage(image.getScaledInstance((int) (1024 * xScale), (int) (1024 * yScale), Image.SCALE_SMOOTH));
         boardLabel.setIcon(icon);

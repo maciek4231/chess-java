@@ -14,7 +14,7 @@ public class Game {
         board = new Board();
 
         window = new JLayeredPane();
-        window.setBounds(0, 0, 1252, 1056);
+        window.setBounds(0, 0, 1252, 1024);
         window.setLayout(null);
 
         MessageHandler messageHandler = new MessageHandler(client, this, board);
@@ -48,7 +48,7 @@ public class Game {
     }
 
     public void resize(double xScale, double yScale) {
-        window.setBounds(0, 0, (int) (1252 * xScale), (int) (1056 * yScale));
+        window.setBounds(0, 0, (int) (1252 * xScale), (int) (1024 * yScale));
         board.resize(xScale, yScale);
         ConnectWindow.staticResize(xScale, yScale);
         if (connectWindow != null)

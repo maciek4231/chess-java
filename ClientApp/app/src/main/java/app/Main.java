@@ -25,18 +25,19 @@ public class Main {
 
             JFrame frame = new JFrame("illChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1152, 1056);
+            frame.setSize(1152, 1024);
 
             frame.addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {
                     double xScale = e.getComponent().getWidth() / 1152.0;
-                    double yScale = e.getComponent().getHeight() / 1056.0;
+                    double yScale = e.getComponent().getHeight() / 1024.0;
                     game.resize(xScale, yScale);
                 }
             });
 
-            frame.getContentPane().add(game.getWindow());
+            frame.add(game.getWindow());
+            // frame.setUndecorated(true); // TODO: Remove this line, this enables the game to look correct without cutting off the last row
             frame.setVisible(true);
 
         } catch (URISyntaxException e) {
