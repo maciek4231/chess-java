@@ -16,6 +16,10 @@ public class Board {
 
     JLayeredPane jPane;
 
+    ImageIcon icon;
+    Image image;
+    JLabel boardLabel;
+
     HashMap<Coords, Piece> pieces;
 
     ArrayList<Move> availableMoves;
@@ -51,14 +55,14 @@ public class Board {
     }
 
     private void createPane() {
-        ImageIcon icon = new ImageIcon(Main.class.getResource("/board.png"));
-        Image image = icon.getImage();
+        icon = new ImageIcon(Main.class.getResource("/board.png"));
+        image = icon.getImage();
 
-        JLabel label = new JLabel(new ImageIcon(image));
-        label.setBounds(0, 0, 1024, 1024);
+        boardLabel = new JLabel(new ImageIcon(image));
+        boardLabel.setBounds(0, 0, 1024, 1024);
 
-        jPane.add(label);
-        jPane.setLayer(label, 0);
+        jPane.add(boardLabel);
+        jPane.setLayer(boardLabel, 0);
     }
 
     public void addAvailableMove(Coords from, Coords to) {
@@ -198,5 +202,21 @@ public class Board {
             checkedPiece.getButton().setOpaque(false);
         }
         this.checkedPiece = null;
+    }
+
+    public void resize(double xScale, double yScale) {
+        jPane.setBounds(0, 0, (int) (1252 * xScale), (int) (1056 * yScale));
+        boardLabel.setBounds(0, 0, (int) (1024 * xScale), (int) (1024 * yScale));
+        icon.setImage(image.getScaledInstance((int) (1024 * xScale), (int) (1024 * yScale), Image.SCALE_SMOOTH));
+        boardLabel.setIcon(icon);
+        IconLoader.resizeIcons(xScale, yScale);
+        Piece.staticResize(xScale, yScale);
+        for (Piece piece : pieces.values()) {
+            piece.resize(xScale, yScale);
+        }
+        Move.staticResize(xScale, yScale);
+        for (Move move : availableMoves) {
+            move.resize(xScale, yScale);
+        }
     }
 }

@@ -12,10 +12,18 @@ public class ConnectWindow {
     private int gameCode = -1;
     JLayeredPane panel;
     JLabel responseLabel;
+    JLabel label;
+    JTextField input;
+    JButton button;
+    Game game;
 
-    public ConnectWindow(MessageHandler messageHandler) {
+    private static double xScale = 1.0;
+    private static double yScale = 1.0;
+
+    public ConnectWindow(MessageHandler messageHandler, Game game) {
         messageHandler.setConnectWindow(this);
         messageHandler.anounceAvailable();
+        this.game = game;
         while (gameCode == -1) {
             try {
                 Thread.sleep(1000);
@@ -26,21 +34,21 @@ public class ConnectWindow {
 
         panel = new JLayeredPane();
         panel.setLayout(null);
-        panel.setBounds(262, 457, 500, 150);
+        panel.setBounds((int) (262 * xScale), (int) (457 * yScale), (int) (500 * xScale), (int) (150 * yScale));
         panel.setBackground((java.awt.Color.WHITE));
         panel.setOpaque(true);
 
-        JLabel label = new JLabel("Share your game code: " + gameCode + " or enter a code:");
-        label.setBounds(50, 25, 400, 20);
+        label = new JLabel("Share your game code: " + gameCode + " or enter a code:");
+        label.setBounds((int) (50 * xScale), (int) (25 * yScale), (int) (400 * xScale), (int) (20 * yScale));
         panel.add(label, 1);
 
 
-        JTextField input = new JTextField();
-        input.setBounds(50, 50, 400, 20);
+        input = new JTextField();
+        input.setBounds((int) (50 * xScale), (int) (50 * yScale), (int) (400 * xScale), (int) (20 * yScale));
         panel.add(input, 1);
 
-        JButton button = new JButton("Connect");
-        button.setBounds(50, 75, 400, 20);
+        button = new JButton("Connect");
+        button.setBounds((int) (50 * xScale), (int) (75 * yScale), (int) (400 * xScale), (int) (20 * yScale));
 
         panel.add(button, 1);
 
@@ -53,7 +61,7 @@ public class ConnectWindow {
         });
 
         responseLabel = new JLabel("");
-        responseLabel.setBounds(50, 100, 400, 20);
+        responseLabel.setBounds((int) (50 * xScale), (int) (100 * yScale), (int) (400 * xScale), (int) (20 * yScale));
         panel.add(responseLabel, 1);
 
         button.addActionListener(e -> {
@@ -80,6 +88,7 @@ public class ConnectWindow {
         System.out.println("Game found");
         panel.setVisible(false);
         panel = null;
+        game.closeConnectWindow();
     }
 
     public void gameNotFound() {
@@ -88,5 +97,18 @@ public class ConnectWindow {
 
     public void opponentLeft() {
         responseLabel.setText("The player left the game.");
+    }
+
+    public static void staticResize(double x, double y) {
+        xScale = x;
+        yScale = y;
+    }
+
+    public void resize(double xScale, double yScale) {
+        panel.setBounds((int) (262 * xScale), (int) (457 * yScale), (int) (500 * xScale), (int) (150 * yScale));
+        label.setBounds((int) (50 * xScale), (int) (25 * yScale), (int) (400 * xScale), (int) (20 * yScale));
+        input.setBounds((int) (50 * xScale), (int) (50 * yScale), (int) (400 * xScale), (int) (20 * yScale));
+        button.setBounds((int) (50 * xScale), (int) (75 * yScale), (int) (400 * xScale), (int) (20 * yScale));
+        responseLabel.setBounds((int) (50 * xScale), (int) (100 * yScale), (int) (400 * xScale), (int) (20 * yScale));
     }
 }

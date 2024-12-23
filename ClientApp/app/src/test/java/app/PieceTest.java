@@ -97,13 +97,13 @@ public class PieceTest {
     void testChangeTypeUpdatesIcon() {
         PieceType newType = mock(PieceType.class);
 
-        try (MockedStatic<PieceIcons> mockedIcons = Mockito.mockStatic(PieceIcons.class)) {
-            mockedIcons.when(() -> PieceIcons.getIcon(newType)).thenReturn(null);
+        try (MockedStatic<IconLoader> mockedIcons = Mockito.mockStatic(IconLoader.class)) {
+            mockedIcons.when(() -> IconLoader.getPieceIcon(newType)).thenReturn(null);
 
             piece.changeType(newType);
 
             assertEquals(newType, piece.type);
-            mockedIcons.verify(() -> PieceIcons.getIcon(newType), times(1));
+            mockedIcons.verify(() -> IconLoader.getPieceIcon(newType), times(1));
         }
     }
 }

@@ -8,6 +8,8 @@ public class Move {
     Coords to;
     Board board;
     CustomButton button;
+    protected static double xScale = 1.0;
+    protected static double yScale = 1.0;
 
     public Move(Board board, Coords from, Coords to) {
         if (board == null || from == null || to == null) {
@@ -35,17 +37,26 @@ public class Move {
     protected void createButton() {
         button = new CustomButton();
         button.setIcon(getButtonIcon());
-        button.setBounds(to.getRelX(board.getIsWhite())*128, to.getRelY(board.getIsWhite())*128, 128, 128);
+        button.setBounds((int) (to.getRelX(board.getIsWhite()) * 128 * xScale), (int) (to.getRelY(board.getIsWhite()) * 128 * yScale), (int) (128 * xScale), (int) (128 * yScale));
         button.addActionListener(e -> {
             board.clientMove(from, to);
         });
     }
 
     protected ImageIcon getButtonIcon() {
-        if (board.isOccupied(to))
-        {
-            return new ImageIcon(getClass().getResource("/attack.png"));
+        if (board.isOccupied(to)) {
+            return IconLoader.getAttackIcon();
         }
-        return new ImageIcon(getClass().getResource("/move.png"));
+        return IconLoader.getMoveIcon();
+    }
+
+    public void resize(double xScale, double yScale) {
+        button.setBounds((int) (to.getRelX(board.getIsWhite()) * 128 * xScale), (int) (to.getRelY(board.getIsWhite()) * 128 * yScale), (int) (128 * xScale), (int) (128 * yScale));
+        button.setIcon(getButtonIcon());
+    }
+
+    public static void staticResize(double x, double y) {
+        xScale = x;
+        yScale = y;
     }
 }

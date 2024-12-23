@@ -10,8 +10,10 @@ import javax.swing.JFrame;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class Main {
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
+public class Main {
     public static void main(String[] args) {
         ChessWebSocketClient client;
         String server = getServerAddress();
@@ -24,6 +26,16 @@ public class Main {
             JFrame frame = new JFrame("illChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(1152, 1056);
+
+            frame.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    double xScale = e.getComponent().getWidth() / 1152.0;
+                    double yScale = e.getComponent().getHeight() / 1056.0;
+                    game.resize(xScale, yScale);
+                }
+            });
+
             frame.getContentPane().add(game.getWindow());
             frame.setVisible(true);
 
@@ -68,7 +80,7 @@ public class Main {
                 }
             }
         }
-        
+
         return server;
     }
 }
