@@ -37,7 +37,7 @@ public class Main {
             });
 
             frame.add(game.getWindow());
-            // frame.setUndecorated(true); // TODO: Remove this line, this enables the game to look correct without cutting off the last row
+            frame.setUndecorated(true); // TODO: Remove this line, this enables the game to look correct without cutting off the last row
             frame.setVisible(true);
 
         } catch (URISyntaxException e) {

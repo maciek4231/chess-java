@@ -31,6 +31,9 @@ public class Board {
     Promotion selectedPromotion;
     Piece checkedPiece;
 
+    RequestButton surrenderButton;
+    RequestButton drawButton;
+
     public Board() {
         jPane = new JLayeredPane();
         jPane.setBounds(0, 0, 1252, 1024);
@@ -63,6 +66,14 @@ public class Board {
 
         jPane.add(boardLabel);
         jPane.setLayer(boardLabel, 0);
+
+        surrenderButton = new SurrenderButton(this);
+        jPane.add(surrenderButton.getButton());
+        jPane.setLayer(surrenderButton.getButton(), 1);
+
+        drawButton = new OfferDrawIButton(this);
+        jPane.add(drawButton.getButton());
+        jPane.setLayer(drawButton.getButton(), 1);
     }
 
     public void addAvailableMove(Coords from, Coords to) {
@@ -218,5 +229,8 @@ public class Board {
         for (Move move : availableMoves) {
             move.resize(xScale, yScale);
         }
+        RequestButton.staticResize(xScale, yScale);
+        surrenderButton.resize(xScale, yScale);
+        drawButton.resize(xScale, yScale);
     }
 }

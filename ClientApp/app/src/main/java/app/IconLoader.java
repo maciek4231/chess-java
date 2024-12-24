@@ -10,10 +10,15 @@ public class IconLoader {
     HashMap<PieceType, ImageIcon> pieceIcons;
     ImageIcon moveIcon;
     ImageIcon attackIcon;
+    ImageIcon surrenderActiveIcon;
+    ImageIcon surrenderDisabledIcon;
+    ImageIcon drawActiveIcon;
+    ImageIcon drawDisabledIcon;
 
     private IconLoader() {
         loadPieceIcons();
         loadMoveIcons();
+        loadRequestIcons();
     }
 
     public static ImageIcon getPieceIcon(PieceType type) {
@@ -28,6 +33,22 @@ public class IconLoader {
         return instance.attackIcon;
     }
 
+    public static ImageIcon getSurrenderActiveIcon() {
+        return instance.surrenderActiveIcon;
+    }
+
+    public static ImageIcon getSurrenderDisabledIcon() {
+        return instance.surrenderDisabledIcon;
+    }
+
+    public static ImageIcon getDrawActiveIcon() {
+        return instance.drawActiveIcon;
+    }
+
+    public static ImageIcon getDrawDisabledIcon() {
+        return instance.drawDisabledIcon;
+    }
+
     public static void resizeIcons(double xScale, double yScale) {
         instance.loadPieceIcons();
         for (PieceType type : instance.pieceIcons.keySet()) {
@@ -38,6 +59,12 @@ public class IconLoader {
         instance.loadMoveIcons();
         instance.moveIcon = new ImageIcon(instance.moveIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
         instance.attackIcon = new ImageIcon(instance.attackIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
+
+        instance.loadRequestIcons();
+        instance.surrenderActiveIcon = new ImageIcon(instance.surrenderActiveIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
+        instance.surrenderDisabledIcon = new ImageIcon(instance.surrenderDisabledIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
+        instance.drawActiveIcon = new ImageIcon(instance.drawActiveIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
+        instance.drawDisabledIcon = new ImageIcon(instance.drawDisabledIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
     }
 
 
@@ -61,6 +88,13 @@ public class IconLoader {
     private void loadMoveIcons() {
         moveIcon = new ImageIcon(getClass().getResource("/move.png"));
         attackIcon = new ImageIcon(getClass().getResource("/attack.png"));
+    }
+
+    private void loadRequestIcons() {
+        surrenderActiveIcon = new ImageIcon(getClass().getResource("/white-flag.png"));
+        surrenderDisabledIcon = new ImageIcon(getClass().getResource("/white-flag-disabled.png"));
+        drawActiveIcon = new ImageIcon(getClass().getResource("/draw-active.png"));
+        drawDisabledIcon = new ImageIcon(getClass().getResource("/draw-disabled.png"));
     }
 
 }
