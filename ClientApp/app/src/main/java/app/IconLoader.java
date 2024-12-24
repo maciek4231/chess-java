@@ -92,7 +92,7 @@ public class IconLoader {
 
     private void loadRequestIcons() {
         surrenderActiveIcon = new ImageIcon(getClass().getResource("/white-flag.png"));
-        surrenderDisabledIcon = new ImageIcon(getClass().getResource("/white-flag-disabled.png"));
+        surrenderDisabledIcon = new ImageIcon(getClass().getResource("/empty-flag.png"));
         drawActiveIcon = new ImageIcon(getClass().getResource("/draw-active.png"));
         drawDisabledIcon = new ImageIcon(getClass().getResource("/draw-disabled.png"));
     }

@@ -27,6 +27,5 @@ public class RequestButton {
 
     public void resize(double xScale, double yScale) {
         button.setBounds((int) (xPos * xScale), (int) (yPos * yScale), (int) (128 * xScale), (int) (128 * yScale));
-        button.setIcon(IconLoader.getSurrenderActiveIcon());
     }
 }

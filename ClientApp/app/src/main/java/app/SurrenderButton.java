@@ -10,4 +10,8 @@ public class SurrenderButton extends RequestButton {
         });
     }
 
+    public void resize(double xScale, double yScale) {
+        super.resize(xScale, yScale);
+        button.setIcon(IconLoader.getSurrenderDisabledIcon());
+    }
 }

@@ -71,7 +71,7 @@ public class Board {
         jPane.add(surrenderButton.getButton());
         jPane.setLayer(surrenderButton.getButton(), 1);
 
-        drawButton = new OfferDrawIButton(this);
+        drawButton = new OfferDrawButton(this);
         jPane.add(drawButton.getButton());
         jPane.setLayer(drawButton.getButton(), 1);
     }
