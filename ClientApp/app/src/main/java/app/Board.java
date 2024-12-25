@@ -33,6 +33,7 @@ public class Board {
 
     RequestButton surrenderButton;
     RequestButton drawButton;
+    RequestButton rewindButton;
 
     public Board() {
         jPane = new JLayeredPane();
@@ -74,6 +75,10 @@ public class Board {
         drawButton = new OfferDrawButton(this);
         jPane.add(drawButton.getButton());
         jPane.setLayer(drawButton.getButton(), 1);
+
+        rewindButton = new RewindButton(this);
+        jPane.add(rewindButton.getButton());
+        jPane.setLayer(rewindButton.getButton(), 1);
     }
 
     public void addAvailableMove(Coords from, Coords to) {
@@ -232,5 +237,6 @@ public class Board {
         RequestButton.staticResize(xScale, yScale);
         surrenderButton.resize(xScale, yScale);
         drawButton.resize(xScale, yScale);
+        rewindButton.resize(xScale, yScale);
     }
 }

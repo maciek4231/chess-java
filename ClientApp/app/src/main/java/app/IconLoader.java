@@ -10,10 +10,13 @@ public class IconLoader {
     HashMap<PieceType, ImageIcon> pieceIcons;
     ImageIcon moveIcon;
     ImageIcon attackIcon;
+
     ImageIcon surrenderActiveIcon;
     ImageIcon surrenderDisabledIcon;
     ImageIcon drawActiveIcon;
     ImageIcon drawDisabledIcon;
+    ImageIcon rewindActiveIcon;
+    ImageIcon rewindDisabledIcon;
 
     private IconLoader() {
         loadPieceIcons();
@@ -49,6 +52,14 @@ public class IconLoader {
         return instance.drawDisabledIcon;
     }
 
+    public static ImageIcon getRewindActiveIcon() {
+        return instance.rewindActiveIcon;
+    }
+
+    public static ImageIcon getRewindDisabledIcon() {
+        return instance.rewindDisabledIcon;
+    }
+
     public static void resizeIcons(double xScale, double yScale) {
         instance.loadPieceIcons();
         for (PieceType type : instance.pieceIcons.keySet()) {
@@ -65,6 +76,8 @@ public class IconLoader {
         instance.surrenderDisabledIcon = new ImageIcon(instance.surrenderDisabledIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
         instance.drawActiveIcon = new ImageIcon(instance.drawActiveIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
         instance.drawDisabledIcon = new ImageIcon(instance.drawDisabledIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
+        instance.rewindActiveIcon = new ImageIcon(instance.rewindActiveIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
+        instance.rewindDisabledIcon = new ImageIcon(instance.rewindDisabledIcon.getImage().getScaledInstance((int)(128*xScale), (int)(128*yScale), java.awt.Image.SCALE_SMOOTH));
     }
 
 
@@ -95,6 +108,8 @@ public class IconLoader {
         surrenderDisabledIcon = new ImageIcon(getClass().getResource("/empty-flag.png"));
         drawActiveIcon = new ImageIcon(getClass().getResource("/draw-active.png"));
         drawDisabledIcon = new ImageIcon(getClass().getResource("/draw-disabled.png"));
+        rewindActiveIcon = new ImageIcon(getClass().getResource("/rewind-active.png"));
+        rewindDisabledIcon = new ImageIcon(getClass().getResource("/rewind-disabled.png"));
     }
 
 }
