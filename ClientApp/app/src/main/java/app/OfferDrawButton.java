@@ -1,18 +1,26 @@
 package app;
 
+import javax.swing.Icon;
+
 public class OfferDrawButton extends RequestButton {
 
     public OfferDrawButton(Board board) {
         super(board, 1024, 768);
-        button.setIcon(IconLoader.getDrawDisabledIcon());
         button.addActionListener(e -> {
-            board.addPopUpWindow(new OfferDrawSureWindow(board));
+            if (active) {
+                board.addPopUpWindow(new OfferDrawSureWindow(board));
+            }
         });
     }
 
-    public void resize(double xScale, double yScale) {
-        super.resize(xScale, yScale);
-        button.setIcon(IconLoader.getDrawDisabledIcon());
+    @Override
+    Icon getIcon()
+    {
+        if (active) {
+            return IconLoader.getDrawActiveIcon();
+        } else {
+            return IconLoader.getDrawDisabledIcon();
+        }
     }
 
 }

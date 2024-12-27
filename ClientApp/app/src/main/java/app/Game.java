@@ -63,5 +63,8 @@ public class Game {
 
     public void endGame() {
         board.clearPopUpWindows();
+        board.setSurrenderActive(false);
+        board.setDrawActive(false);
+        board.setRewindActive(false);
     }
 }

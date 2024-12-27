@@ -37,6 +37,9 @@ public class Board {
     RequestButton rewindButton;
 
     Queue<PopUpWindow> popUpWindowQueue;
+    boolean surrenderActive = false;
+    boolean drawActive = false;
+    boolean rewindActive = false;
 
     public Board() {
         jPane = new JLayeredPane();
@@ -273,5 +276,20 @@ public class Board {
         popUpWindowQueue.peek().hidePanel();
         jPane.remove(popUpWindowQueue.poll().getPanel());
         popUpWindowQueue.clear();
+    }
+
+    public void setSurrenderActive(boolean active) {
+        surrenderActive = active;
+        surrenderButton.setActive(active);
+    }
+
+    public void setDrawActive(boolean active) {
+        drawActive = active;
+        drawButton.setActive(active);
+    }
+
+    public void setRewindActive(boolean active) {
+        rewindActive = active;
+        rewindButton.setActive(active);
     }
 }

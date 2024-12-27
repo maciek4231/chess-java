@@ -1,17 +1,25 @@
 package app;
 
+import javax.swing.Icon;
+
 public class SurrenderButton extends RequestButton {
 
     public SurrenderButton(Board board) {
         super(board, 1024, 896);
-        button.setIcon(IconLoader.getSurrenderDisabledIcon());
         button.addActionListener(e -> {
-            board.addPopUpWindow(new SurrenderSureWindow(board));
+            if (active) {
+                board.addPopUpWindow(new SurrenderSureWindow(board));
+            }
         });
     }
 
-    public void resize(double xScale, double yScale) {
-        super.resize(xScale, yScale);
-        button.setIcon(IconLoader.getSurrenderDisabledIcon());
+    @Override
+    Icon getIcon()
+    {
+        if (active) {
+            return IconLoader.getSurrenderActiveIcon();
+        } else {
+            return IconLoader.getSurrenderDisabledIcon();
+        }
     }
 }
