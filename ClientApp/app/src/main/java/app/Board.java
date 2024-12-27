@@ -243,6 +243,10 @@ public class Board {
         surrenderButton.resize(xScale, yScale);
         drawButton.resize(xScale, yScale);
         rewindButton.resize(xScale, yScale);
+        PopUpWindow.staticResize(xScale, yScale);
+        for (PopUpWindow popUpWindow : popUpWindowQueue) {
+            popUpWindow.resize(xScale, yScale);
+        }
     }
 
     public void addPopUpWindow(PopUpWindow popUpWindow) {

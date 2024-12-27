@@ -21,4 +21,8 @@ public class PopUpWindow {
     public void hidePanel() {
         panel.setVisible(false);
     }
+
+    public void resize(double xScale, double yScale) {
+        // Method is shoud be overridden in subclasses
+    }
 }

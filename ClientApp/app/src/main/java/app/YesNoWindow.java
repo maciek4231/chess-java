@@ -42,6 +42,7 @@ public class YesNoWindow extends PopUpWindow {
         return panel;
     }
 
+    @Override
     public void resize(double xScale, double yScale) {
         panel.setBounds((int) (262 * xScale), (int) (457 * yScale), (int) (500 * xScale), (int) (150 * yScale));
         label.setBounds((int) (50 * xScale), (int) (25 * yScale), (int) (400 * xScale), (int) (50 * yScale));
