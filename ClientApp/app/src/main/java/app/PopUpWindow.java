@@ -23,6 +23,6 @@ public class PopUpWindow {
     }
 
     public void resize(double xScale, double yScale) {
-        // Method is shoud be overridden in subclasses
+        // Method should be overridden in subclasses
     }
 }
