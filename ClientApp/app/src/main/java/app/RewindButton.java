@@ -6,7 +6,7 @@ public class RewindButton extends RequestButton {
         super(board, 1024, 640);
         button.setIcon(IconLoader.getRewindDisabledIcon());
         button.addActionListener(e -> {
-            System.out.println("Ask for rewind");
+            board.addPopUpWindow(new RewindSureWindow(board));
         });
     }
 

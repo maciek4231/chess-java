@@ -187,6 +187,8 @@ public class MessageHandler {
     private void handleGameOver(JsonObject msg) {
         String status = msg.get("status").getAsString();
 
+        game.endGame();
+
         switch (status) {
             case "won":
                 game.showPromptWindow("You won!");
@@ -274,6 +276,7 @@ public class MessageHandler {
 
     private void handleOpponentDisconnected(JsonObject msg) {
         game.showPromptWindow("Your opponent disconnected.");
+        game.endGame();
     }
 
     private PieceType getPieceType(char type) {

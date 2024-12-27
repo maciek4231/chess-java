@@ -6,7 +6,7 @@ public class OfferDrawButton extends RequestButton {
         super(board, 1024, 768);
         button.setIcon(IconLoader.getDrawDisabledIcon());
         button.addActionListener(e -> {
-            System.out.println("Offer Draw");
+            board.addPopUpWindow(new OfferDrawSureWindow(board));
         });
     }
 

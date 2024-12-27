@@ -2,6 +2,7 @@ package app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Queue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -35,6 +36,8 @@ public class Board {
     RequestButton drawButton;
     RequestButton rewindButton;
 
+    Queue<PopUpWindow> popUpWindowQueue;
+
     public Board() {
         jPane = new JLayeredPane();
         jPane.setBounds(0, 0, 1252, 1024);
@@ -46,6 +49,8 @@ public class Board {
 
         gameCode = -1;
         isWhite = true;
+
+        popUpWindowQueue = new java.util.LinkedList<PopUpWindow>();
 
         createPane();
     }
@@ -238,5 +243,31 @@ public class Board {
         surrenderButton.resize(xScale, yScale);
         drawButton.resize(xScale, yScale);
         rewindButton.resize(xScale, yScale);
+    }
+
+    public void addPopUpWindow(PopUpWindow popUpWindow) {
+        popUpWindowQueue.add(popUpWindow);
+        if (popUpWindowQueue.size() == 1) {
+            jPane.add(popUpWindow.getPanel());
+            jPane.setLayer(popUpWindow.getPanel(), 3);
+        }
+    }
+
+    public void cyclePopUpWindows() {
+        popUpWindowQueue.peek().hidePanel();
+        jPane.remove(popUpWindowQueue.poll().getPanel());
+        if (popUpWindowQueue.size() > 0) {
+            jPane.add(popUpWindowQueue.peek().getPanel());
+            jPane.setLayer(popUpWindowQueue.peek().getPanel(), 3);
+        }
+    }
+
+    public void clearPopUpWindows() {
+        if (popUpWindowQueue.size() == 0) {
+            return;
+        }
+        popUpWindowQueue.peek().hidePanel();
+        jPane.remove(popUpWindowQueue.poll().getPanel());
+        popUpWindowQueue.clear();
     }
 }

@@ -60,4 +60,8 @@ public class Game {
             promptWindow.resize(xScale, yScale);
         }
     }
+
+    public void endGame() {
+        board.clearPopUpWindows();
+    }
 }
