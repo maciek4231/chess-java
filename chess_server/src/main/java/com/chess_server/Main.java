@@ -11,8 +11,6 @@ public class Main {
             server.start();
             System.out.println("Chess server started on port: " + port);
 
-            // String clientId = "127.0.0.1"; // Replace with the actual client ID
-            // server.sendMessageToClient(clientId, "Hello, specific client!");
         } catch (Exception e) {
             System.out.println("Error occurred while starting chess-server: " + e.getMessage());
         }
