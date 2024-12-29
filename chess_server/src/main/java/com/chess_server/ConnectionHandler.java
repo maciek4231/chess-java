@@ -86,7 +86,7 @@ public class ConnectionHandler {
             joinablePlayers.values().remove(clientId);
         }
         for (Map.Entry<Integer, List<Integer>> entry : activeGames.entrySet()) { // na razie usuwamy gre jak gracz sie
-                                                                                 // rozlaczy
+            // rozlaczy
             List<Integer> players = entry.getValue();
             if (players.contains(clientId)) { // w przyszlosci moze szybsza implementacja na 3? mapy
                 Integer gameCode = entry.getKey();

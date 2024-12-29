@@ -91,7 +91,7 @@ public class MessageHandler {
         int joinCode = msg.get("gameCode").getAsInt();
 
         Integer opponentId = connectionHandler.joinGame(clientId, joinCode);
-        if (opponentId.equals(-1)) {
+        if (opponentId.equals(-1) || opponentId.equals(clientId)) {
             response.addProperty("status", -1); // game not found
         } else {
             response.addProperty("status", 0);
