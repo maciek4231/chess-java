@@ -37,12 +37,10 @@ public class Game {
     ArrayList<ArrayList<Integer>> currentLegalMoves;
     Integer gameId;
 
-    private boolean whiteKingMoved = false;
-    private boolean blackKingMoved = false;
-    private boolean whiteRookKingSideMoved = false;
-    private boolean whiteRookQueenSideMoved = false;
-    private boolean blackRookKingSideMoved = false;
-    private boolean blackRookQueenSideMoved = false;
+    private boolean whiteCastleKingSide = true;
+    private boolean whiteCastleQueenSide = true;
+    private boolean blackCastleKingSide = true;
+    private boolean blackCastleQueenSide = true;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
@@ -95,7 +93,8 @@ public class Game {
             board[y2][x2] = piece;
 
             if (piece == 'K') {
-                whiteKingMoved = true;
+                whiteCastleKingSide = false;
+                whiteCastleQueenSide = false;
                 if (x1 == 4 && x2 == 6) {
                     board[7][5] = 'R';
                     board[7][7] = ' ';
@@ -106,7 +105,8 @@ public class Game {
                     messageHandler.sendUpdateToPlayers(gameId, 0, 7, 3, 7);
                 }
             } else if (piece == 'k') {
-                blackKingMoved = true;
+                blackCastleKingSide = false;
+                blackCastleQueenSide = false;
                 if (x1 == 4 && x2 == 6) {
                     board[0][5] = 'r';
                     board[0][7] = ' ';
@@ -117,13 +117,13 @@ public class Game {
                     messageHandler.sendUpdateToPlayers(gameId, 0, 0, 3, 0);
                 }
             } else if (piece == 'R' && y1 == 7 && x1 == 7) {
-                whiteRookKingSideMoved = true;
+                whiteCastleKingSide = false;
             } else if (piece == 'R' && y1 == 7 && x1 == 0) {
-                whiteRookQueenSideMoved = true;
+                whiteCastleQueenSide = false;
             } else if (piece == 'r' && y1 == 0 && x1 == 7) {
-                blackRookKingSideMoved = true;
+                blackCastleKingSide = false;
             } else if (piece == 'r' && y1 == 0 && x1 == 0) {
-                blackRookQueenSideMoved = true;
+                blackCastleQueenSide = false;
             }
 
             if (isEnPassant) {
@@ -601,7 +601,7 @@ public class Game {
                 !isSquareAttacked(row, 4, !isWhite) &&
                 !isSquareAttacked(row, 5, !isWhite) &&
                 !isSquareAttacked(row, 6, !isWhite) &&
-                !(isWhite ? whiteKingMoved || whiteRookKingSideMoved : blackKingMoved || blackRookKingSideMoved);
+                (isWhite ? whiteCastleKingSide : blackCastleKingSide);
     }
 
     private boolean canCastleQueenSide(boolean isWhite) {
@@ -614,6 +614,6 @@ public class Game {
                 !isSquareAttacked(row, 4, !isWhite) &&
                 !isSquareAttacked(row, 3, !isWhite) &&
                 !isSquareAttacked(row, 2, !isWhite) &&
-                !(isWhite ? whiteKingMoved || whiteRookQueenSideMoved : blackKingMoved || blackRookQueenSideMoved);
+                (isWhite ? whiteCastleQueenSide : blackCastleQueenSide);
     }
 }
