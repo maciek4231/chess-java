@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS chess_db;
+USE chess_db;
+
