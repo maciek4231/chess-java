@@ -41,7 +41,7 @@ public class GameManager {
             Game game = getGame(gameId);
             game.makeMove(move);
         } else {
-            System.out.println("Invalid player");
+            System.out.println("Player" + clientId + "didn't pass verification");
         }
     }
 
@@ -50,7 +50,27 @@ public class GameManager {
             Game game = getGame(gameId);
             game.makePromotion(move, piece);
         } else {
-            System.out.println("Invalid player");
+            System.out.println("Player" + clientId + "didn't pass verification");
+        }
+    }
+
+    public void handleSurrender(Integer clientId, Integer gameId) {
+        if (verifyPlayer(clientId, gameId)) {
+            Game game = getGame(gameId);
+            gameLost(game); // for now let's just use gameLost when surrendering
+        } else {
+            System.out.println("Player" + clientId + "didn't pass verification");
+        }
+    }
+
+    public void handleDrawOffer(Integer clientId, Integer gameId) {
+        if (verifyPlayer(clientId, gameId)) {
+            Game game = getGame(gameId);
+            if (game.isAbleToOfferDraw(clientId)) {
+                messageHandler.sendDrawOffer(game.getOpponentPlayer());
+            }
+        } else {
+            System.out.println("Player" + clientId + "didn't pass verification");
         }
     }
 
@@ -73,10 +93,7 @@ public class GameManager {
 
     public boolean verifyPlayer(Integer clientId, Integer gameId) {
         Game game = games.get(gameId);
-        if (game == null) {
-            return false;
-        }
-        if (!game.isPlayerRound(clientId)) {
+        if (game == null || !game.isPlayerRound(clientId)) {
             return false;
         }
         return true;

@@ -42,6 +42,8 @@ public class Game {
     private boolean blackCastleKingSide = true;
     private boolean blackCastleQueenSide = true;
 
+    private Integer[] drawOffer = { 0, 0 };
+
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
         this.gameManager = gameManager;
@@ -147,6 +149,7 @@ public class Game {
     }
 
     public void handleNextTurn() {
+        drawOffer[0] = drawOffer[1] = 0; // reset draw offers enabling players to offer draw again
         JsonArray newMoves = getPossibleMoves();
         GameStatus status;
         switch (status = getGameStatus()) {
@@ -616,4 +619,21 @@ public class Game {
                 !isSquareAttacked(row, 2, !isWhite) &&
                 (isWhite ? whiteCastleQueenSide : blackCastleQueenSide);
     }
+
+    public boolean isAbleToOfferDraw(Integer clientId) {
+        boolean isWhite = clientId.equals(playerWhite);
+        if (isWhite) {
+            if (drawOffer[0].equals(0)) {
+                drawOffer[0] = 1;
+                return true;
+            }
+        } else {
+            if (drawOffer[1].equals(0)) {
+                drawOffer[1] = 1;
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

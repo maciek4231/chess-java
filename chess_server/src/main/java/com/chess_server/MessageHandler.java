@@ -30,9 +30,6 @@ public class MessageHandler {
                 case "pickMove":
                     handleMove(clientId, msg);
                     break;
-                case "abort":
-                    handleAbort(clientId, msg);
-                    break;
                 case "takeback":
                     handleTakeback(clientId, msg);
                     break;
@@ -45,6 +42,12 @@ public class MessageHandler {
                 case "makePromotion":
                     handlePromotion(clientId, msg);
                     break;
+                case "surrender":
+                    handleSurrender(clientId, msg);
+                    break;
+                case "drawOffer":
+                    handleDrawOffer(clientId, msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -53,20 +56,30 @@ public class MessageHandler {
         }
     }
 
+    private void sendToClientById(Integer clientId, String message) {
+        WebSocket conn = connectionHandler.getClientConn(clientId);
+        server.sendMessageToClient(conn, message);
+    }
+
     private void handleMove(Integer clientId, JsonObject msg) {
         int gameId = msg.get("gameId").getAsInt();
         JsonElement move = msg.get("move");
         gameManager.handleMove(clientId, gameId, move);
     }
 
-    private void handleAbort(Integer clientId, JsonObject msg) {
-        // Handle abort message
-        System.out.println("Handling abort");
-    }
-
     private void handleTakeback(Integer clientId, JsonObject msg) {
         // Handle takeback message
         System.out.println("Handling takeback");
+    }
+
+    private void handleSurrender(Integer clientId, JsonObject msg) {
+        int gameId = msg.get("gameId").getAsInt();
+        gameManager.handleSurrender(clientId, gameId);
+    }
+
+    private void handleDrawOffer(Integer clientId, JsonObject msg) {
+        int gameId = msg.get("gameId").getAsInt();
+        gameManager.handleDrawOffer(clientId, gameId);
     }
 
     private void handleAvailability(Integer clientId, JsonObject msg) {
@@ -175,6 +188,12 @@ public class MessageHandler {
 
     public void sendMaterial(Integer gameId) {
         sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+    }
+
+    public void sendDrawOffer(Integer opponentId) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "drawOfferRes");
+        sendToClientById(opponentId, response.toString());
     }
 
     public void sendPlayerIsBlack(Integer userId) {
