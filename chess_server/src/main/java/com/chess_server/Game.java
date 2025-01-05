@@ -4,7 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Random;
 
@@ -43,6 +45,9 @@ public class Game {
     private boolean blackCastleQueenSide = true;
 
     private Integer[] drawOffer = { 0, 0 };
+
+    Integer numOfBoardsStored = 10;
+    private Deque<char[][]> lastBoardStates = new ArrayDeque<>(numOfBoardsStored);
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
@@ -92,7 +97,24 @@ public class Game {
         return ret;
     }
 
+    private void saveBoardState() {
+        if (lastBoardStates.size() == numOfBoardsStored) {
+            lastBoardStates.removeFirst();
+        }
+        lastBoardStates.addLast(copyBoard(board));
+    }
+
+    private char[][] copyBoard(char[][] board) {
+        char[][] newBoard = new char[board.length][];
+        for (int i = 0; i < board.length; i++) {
+            newBoard[i] = board[i].clone();
+        }
+        return newBoard;
+    }
+
     public void makeMove(JsonElement move) {
+        saveBoardState();
+        System.out.println(lastBoardStates.peekLast()[0][0]);
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
