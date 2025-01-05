@@ -62,6 +62,12 @@ public class MessageHandler {
                 case "opponentDisconnectedRes":
                     handleOpponentDisconnected(msg);
                     break;
+                case "drawOfferRes":
+                    handleDrawOffer(msg);
+                    break;
+                case "drawDeclinedRes":
+                    handleDrawDeclined(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -202,6 +208,9 @@ public class MessageHandler {
             case "material":
                 game.showPromptWindow("You drew, because there is not enough material to win.");
                 break;
+            case "drawAccept":
+                game.showPromptWindow("You drew, because both players agreed to a draw.");
+                break;
             default:
                 break;
         }
@@ -269,6 +278,30 @@ public class MessageHandler {
         msg.addProperty("type", "surrender");
         msg.addProperty("gameId", gameCode);
         client.send(msg.toString());
+    }
+
+    public void sendDrawOffer() {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "drawOffer");
+        msg.addProperty("gameId", gameCode);
+        client.send(msg.toString());
+    }
+
+    private void handleDrawOffer(JsonObject msg) {
+        board.addPopUpWindow(new AcceptDrawWindow(board));
+    }
+
+    public void sendAcceptDraw(boolean isAccepted) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "acceptDraw");
+        msg.addProperty("status", isAccepted ? "accept" : "decline");
+        msg.addProperty("gameId", gameCode);
+        client.send(msg.toString());
+    }
+
+    private void handleDrawDeclined(JsonObject msg) {
+        board.cyclePopUpWindows();
+        game.showPromptWindow("Your opponent declined the draw offer.");
     }
 
     private void handleCheck(JsonObject msg) {

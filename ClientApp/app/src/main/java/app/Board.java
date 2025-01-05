@@ -84,6 +84,7 @@ public class Board {
         drawButton = new OfferDrawButton(this);
         jPane.add(drawButton.getButton());
         jPane.setLayer(drawButton.getButton(), 1);
+        setDrawActive(true); // temporary solution
 
         rewindButton = new RewindButton(this);
         jPane.add(rewindButton.getButton());

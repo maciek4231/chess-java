@@ -14,7 +14,7 @@ public class Game {
     private final GameManager gameManager;
 
     public enum GameStatus {
-        LOST, MATERIAL, STALEMATE, CONTINUE
+        LOST, MATERIAL, STALEMATE, DRAWACCEPT, CONTINUE
     }
 
     private enum MoveEval {
@@ -171,6 +171,7 @@ public class Game {
                 break;
             case MATERIAL:
             case STALEMATE:
+            case DRAWACCEPT:
                 gameManager.gameDraw(this, status);
                 break;
         }
@@ -647,4 +648,8 @@ public class Game {
         return false;
     }
 
+    public boolean isAbleToAcceptDraw(Integer clientId) {
+        boolean isWhite = clientId.equals(playerWhite);
+        return isWhite ? drawOffer[1].equals(1) : drawOffer[0].equals(1);
+    }
 }

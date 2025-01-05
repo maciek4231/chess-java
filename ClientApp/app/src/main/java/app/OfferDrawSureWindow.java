@@ -8,7 +8,7 @@ public class OfferDrawSureWindow extends YesNoWindow {
             board.cyclePopUpWindows();
         });
         yesButton.addActionListener(e -> {
-            // TODO: Send offer draw message
+            board.messageHandler.sendDrawOffer();
         });
     }
 }

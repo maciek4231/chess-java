@@ -48,6 +48,9 @@ public class MessageHandler {
                 case "drawOffer":
                     handleDrawOffer(clientId, msg);
                     break;
+                case "acceptDraw":
+                    handleAcceptDraw(clientId, msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -131,6 +134,12 @@ public class MessageHandler {
         gameManager.handlePromotion(clientId, gameId, move, piece);
     }
 
+    private void handleAcceptDraw(Integer clientId, JsonObject msg) {
+        int gameId = msg.get("gameId").getAsInt();
+        String status = msg.get("status").getAsString();
+        gameManager.handleAcceptDraw(clientId, gameId, status);
+    }
+
     public void playerDisconnected(Integer clientId) {
         Integer opponentId = connectionHandler.removeActiveUser(clientId);
         if (opponentId.equals(-1)) {
@@ -188,6 +197,17 @@ public class MessageHandler {
 
     public void sendMaterial(Integer gameId) {
         sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+    }
+
+    public void sendDrawAccepted(Integer gameId) {
+        sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"drawAccept\"}");
+    }
+
+    public void sendDrawDeclined(Integer userId) {
+        WebSocket conn = connectionHandler.getClientConn(userId);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "drawDeclinedRes");
+        server.sendMessageToClient(conn, response.toString());
     }
 
     public void sendDrawOffer(Integer opponentId) {

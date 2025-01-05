@@ -41,7 +41,7 @@ public class GameManager {
             Game game = getGame(gameId);
             game.makeMove(move);
         } else {
-            System.out.println("Player" + clientId + "didn't pass verification");
+            System.out.println("Player " + clientId + " didn't pass verification");
         }
     }
 
@@ -50,7 +50,7 @@ public class GameManager {
             Game game = getGame(gameId);
             game.makePromotion(move, piece);
         } else {
-            System.out.println("Player" + clientId + "didn't pass verification");
+            System.out.println("Player " + clientId + " didn't pass verification");
         }
     }
 
@@ -59,7 +59,7 @@ public class GameManager {
             Game game = getGame(gameId);
             gameLost(game, clientId);
         } else {
-            System.out.println("Player" + clientId + "didn't pass verification");
+            System.out.println("Player " + clientId + " didn't pass verification");
         }
     }
 
@@ -70,7 +70,22 @@ public class GameManager {
                 messageHandler.sendDrawOffer(game.getOpponentPlayer());
             }
         } else {
-            System.out.println("Player" + clientId + "didn't pass verification");
+            System.out.println("Player " + clientId + " didn't pass verification");
+        }
+    }
+
+    public void handleAcceptDraw(Integer clientId, Integer gameId, String status) {
+        if (verifyPlayerInGame(clientId, gameId)) {
+            Game game = getGame(gameId);
+            if (game.isAbleToAcceptDraw(clientId)) {
+                if (status.equals("accept")) {
+                    gameDraw(game, GameStatus.DRAWACCEPT);
+                } else {
+                    messageHandler.sendDrawDeclined(game.getTheOtherPlayer(clientId));
+                }
+            }
+        } else {
+            System.out.println("Player " + clientId + " didn't pass verification");
         }
     }
 
@@ -91,8 +106,10 @@ public class GameManager {
     public void gameDraw(Game game, GameStatus status) {
         if (status == GameStatus.STALEMATE) {
             messageHandler.sendStalemate(game.gameId);
-        } else {
+        } else if (status == GameStatus.MATERIAL) {
             messageHandler.sendMaterial(game.gameId);
+        } else {
+            messageHandler.sendDrawAccepted(game.gameId);
         }
         messageHandler.connectionHandler.removeGame(game);
         removeGame(game);
