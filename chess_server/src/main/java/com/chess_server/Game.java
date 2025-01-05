@@ -65,12 +65,23 @@ public class Game {
         return false;
     }
 
+    public boolean isPlayerInGame(Integer clientId) {
+        if (clientId.equals(playerWhite) || clientId.equals(playerBlack)) {
+            return true;
+        }
+        return false;
+    }
+
     public Integer getCurrentPlayer() {
         return whiteTurn ? playerWhite : playerBlack;
     }
 
     public Integer getOpponentPlayer() {
         return whiteTurn ? playerBlack : playerWhite;
+    }
+
+    public Integer getTheOtherPlayer(Integer clientId) {
+        return clientId.equals(playerWhite) ? playerBlack : clientId.equals(playerBlack) ? playerWhite : null;
     }
 
     public ArrayList<String> getBoard() {

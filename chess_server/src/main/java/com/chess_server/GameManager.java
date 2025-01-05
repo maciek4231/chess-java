@@ -37,7 +37,7 @@ public class GameManager {
     }
 
     public void handleMove(Integer clientId, Integer gameId, JsonElement move) {
-        if (verifyPlayer(clientId, gameId)) {
+        if (verifyCurrentPlayer(clientId, gameId)) {
             Game game = getGame(gameId);
             game.makeMove(move);
         } else {
@@ -46,7 +46,7 @@ public class GameManager {
     }
 
     public void handlePromotion(Integer clientId, Integer gameId, JsonElement move, char piece) {
-        if (verifyPlayer(clientId, gameId)) {
+        if (verifyCurrentPlayer(clientId, gameId)) {
             Game game = getGame(gameId);
             game.makePromotion(move, piece);
         } else {
@@ -55,16 +55,16 @@ public class GameManager {
     }
 
     public void handleSurrender(Integer clientId, Integer gameId) {
-        if (verifyPlayer(clientId, gameId)) {
+        if (verifyPlayerInGame(clientId, gameId)) {
             Game game = getGame(gameId);
-            gameLost(game); // for now let's just use gameLost when surrendering
+            gameLost(game, clientId);
         } else {
             System.out.println("Player" + clientId + "didn't pass verification");
         }
     }
 
     public void handleDrawOffer(Integer clientId, Integer gameId) {
-        if (verifyPlayer(clientId, gameId)) {
+        if (verifyCurrentPlayer(clientId, gameId)) {
             Game game = getGame(gameId);
             if (game.isAbleToOfferDraw(clientId)) {
                 messageHandler.sendDrawOffer(game.getOpponentPlayer());
@@ -81,6 +81,13 @@ public class GameManager {
         removeGame(game);
     }
 
+    public void gameLost(Game game, Integer loser) {
+        messageHandler.sendLost(loser);
+        messageHandler.sendWin(game.getTheOtherPlayer(loser));
+        messageHandler.connectionHandler.removeGame(game);
+        removeGame(game);
+    }
+
     public void gameDraw(Game game, GameStatus status) {
         if (status == GameStatus.STALEMATE) {
             messageHandler.sendStalemate(game.gameId);
@@ -91,9 +98,17 @@ public class GameManager {
         removeGame(game);
     }
 
-    public boolean verifyPlayer(Integer clientId, Integer gameId) {
+    public boolean verifyCurrentPlayer(Integer clientId, Integer gameId) {
         Game game = games.get(gameId);
         if (game == null || !game.isPlayerRound(clientId)) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean verifyPlayerInGame(Integer clientId, Integer gameId) {
+        Game game = games.get(gameId);
+        if (game == null || !game.isPlayerInGame(clientId)) {
             return false;
         }
         return true;
