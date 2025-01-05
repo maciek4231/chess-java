@@ -8,7 +8,7 @@ public class SurrenderSureWindow extends YesNoWindow {
             board.cyclePopUpWindows();
         });
         yesButton.addActionListener(e -> {
-            // TODO: Send surrender message
+            board.messageHandler.sendSurrenderMessage();
         });
     }
 

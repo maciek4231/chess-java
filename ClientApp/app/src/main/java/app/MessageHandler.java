@@ -264,6 +264,13 @@ public class MessageHandler {
         }
     }
 
+    public void sendSurrenderMessage() {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "surrender");
+        msg.addProperty("gameId", gameCode);
+        client.send(msg.toString());
+    }
+
     private void handleCheck(JsonObject msg) {
         try {
             int x = msg.get("x").getAsInt();

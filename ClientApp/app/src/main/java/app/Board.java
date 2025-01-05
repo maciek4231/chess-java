@@ -79,6 +79,7 @@ public class Board {
         surrenderButton = new SurrenderButton(this);
         jPane.add(surrenderButton.getButton());
         jPane.setLayer(surrenderButton.getButton(), 1);
+        setSurrenderActive(true); // temporary solution
 
         drawButton = new OfferDrawButton(this);
         jPane.add(drawButton.getButton());
