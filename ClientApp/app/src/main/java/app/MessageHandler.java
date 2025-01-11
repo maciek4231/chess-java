@@ -132,6 +132,8 @@ public class MessageHandler {
         } catch (Exception e) {
             System.out.println("Invalid placement received.");
         }
+
+        board.setSurrenderActive(true); // TODO: this probably should be somewhere else but it works
     }
 
     private void placePiece(char type, Coords coords) {
@@ -158,6 +160,7 @@ public class MessageHandler {
         } catch (Exception e) {
             System.out.println("Invalid possible moves received.");
         }
+        board.startMyMove();
     }
 
     public void sendMove(Coords from, Coords to) {
@@ -171,6 +174,7 @@ public class MessageHandler {
         move.addProperty("y2", to.getY());
         msg.add("move", move);
         client.send(msg.toString());
+        board.endMyMove();
     }
 
     private void handleServerMove(JsonObject msg) {
@@ -238,6 +242,7 @@ public class MessageHandler {
         msg.add("move", move);
         msg.addProperty("pieceType", getPieceChar(type));
         client.send(msg.toString());
+        board.endMyMove();
     }
 
     public void handlePromotion(JsonObject msg) {
@@ -289,6 +294,7 @@ public class MessageHandler {
 
     private void handleDrawOffer(JsonObject msg) {
         board.addPopUpWindow(new AcceptDrawWindow(board));
+        game.showPromptWindow("Your opponent offered a draw.");
     }
 
     public void sendAcceptDraw(boolean isAccepted) {

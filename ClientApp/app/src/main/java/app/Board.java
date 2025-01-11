@@ -79,12 +79,10 @@ public class Board {
         surrenderButton = new SurrenderButton(this);
         jPane.add(surrenderButton.getButton());
         jPane.setLayer(surrenderButton.getButton(), 1);
-        setSurrenderActive(true); // temporary solution
 
         drawButton = new OfferDrawButton(this);
         jPane.add(drawButton.getButton());
         jPane.setLayer(drawButton.getButton(), 1);
-        setDrawActive(true); // temporary solution
 
         rewindButton = new RewindButton(this);
         jPane.add(rewindButton.getButton());
@@ -293,5 +291,22 @@ public class Board {
     public void setRewindActive(boolean active) {
         rewindActive = active;
         rewindButton.setActive(active);
+    }
+
+    public void endGame() {
+        clearMoves();
+        deselectPromotion();
+        clearPopUpWindows();
+        setSurrenderActive(false);
+        setDrawActive(false);
+        setRewindActive(false);
+    }
+
+    public void startMyMove() {
+        setDrawActive(true);
+    }
+
+    public void endMyMove() {
+        setDrawActive(false);
     }
 }
