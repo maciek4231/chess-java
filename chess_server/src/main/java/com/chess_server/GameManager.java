@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 
 public class GameManager {
     private ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, Integer[]> timedGames = new ConcurrentHashMap<>(); // gameId -> [time, inc]
+    private ConcurrentHashMap<Integer, Integer[]> gameProperties = new ConcurrentHashMap<>(); // gameId -> [time, inc]
     private final MessageHandler messageHandler;
 
     public GameManager(MessageHandler messageHandler) {
@@ -16,8 +16,8 @@ public class GameManager {
     }
 
     public Game newGame(Integer gameCode, Integer player1, Integer player2) {
-        Integer time = timedGames.get(gameCode)[0];
-        Integer inc = timedGames.get(gameCode)[1];
+        Integer time = gameProperties.get(gameCode)[0];
+        Integer inc = gameProperties.get(gameCode)[1];
         if (time == null) {
             System.out.println("Warning: Time is null");
             time = -1;
@@ -30,17 +30,21 @@ public class GameManager {
         return game;
     }
 
-    public void setTimedGame(Integer gameCode, Integer time, Integer inc) {
-        timedGames.put(gameCode, new Integer[] { time, inc });
+    public void setGameProperties(Integer gameCode, Integer time, Integer inc, Integer isRanked) {
+        gameProperties.put(gameCode, new Integer[] { time, inc, isRanked });
+    }
+
+    public Integer[] getGameProperties(Integer gameCode) {
+        return gameProperties.get(gameCode);
     }
 
     public void removeTime(Integer gameCode) {
-        timedGames.remove(gameCode);
+        gameProperties.remove(gameCode);
     }
 
     public void removeGameAndTime(Integer gameId) {
         games.remove(gameId);
-        timedGames.remove(gameId);
+        gameProperties.remove(gameId);
     }
 
     public Game getGame(int gameId) {

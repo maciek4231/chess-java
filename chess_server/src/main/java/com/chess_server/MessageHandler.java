@@ -91,6 +91,7 @@ public class MessageHandler {
             JsonObject response = new JsonObject();
             response.addProperty("type", "availabilityRes");
             Integer isTimed = msg.get("timedGameEnabled").getAsInt();
+            Integer isRanked = msg.get("rankedGameEnabled").getAsInt();
             Integer time = -1;
             Integer inc = 0;
             if (isTimed.equals(1)) {
@@ -99,7 +100,7 @@ public class MessageHandler {
             }
 
             Integer gameCode = connectionHandler.generateJoinCode(clientId);
-            gameManager.setTimedGame(gameCode, time, inc);
+            gameManager.setGameProperties(gameCode, time, inc, isRanked);
             response.addProperty("gameCode", gameCode);
             server.sendMessageToClient(conn, response.toString());
         }
@@ -118,6 +119,10 @@ public class MessageHandler {
         } else {
             response.addProperty("status", 0);
             response.addProperty("gameCode", joinCode);
+            Integer[] properties = gameManager.getGameProperties(joinCode);
+            boolean isTimed = properties[0] != -1;
+            response.addProperty("isTimed", isTimed ? 1 : 0);
+            response.addProperty("isRanked", properties[2]);
             WebSocket connOpp = connectionHandler.getClientConn(opponentId);
             if (connOpp != null) {
                 server.sendMessageToClient(connOpp, response.toString()); // if successful both players get the same

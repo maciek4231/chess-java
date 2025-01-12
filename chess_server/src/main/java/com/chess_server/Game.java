@@ -72,6 +72,7 @@ public class Game {
         }
         this.playerWhite = player1Id;
         this.playerBlack = player2Id;
+        System.out.println("Time white: " + ZonedDateTime.now(ZoneId.of("UTC")));
 
         this.inc = inc;
         if (time > 0) {
@@ -195,28 +196,7 @@ public class Game {
                 messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
             }
 
-            if (timed) {
-                Integer pastMoveLength = (int) (ZonedDateTime.now(
-                        ZoneId.of("UTC")).toEpochSecond() - currentTime.toEpochSecond());
-                if (whiteTurn) {
-                    timeWhite = timeWhite.plusSeconds(inc);
-                    timeBlack = timeBlack.plusSeconds(pastMoveLength);
-                } else {
-                    timeBlack = timeBlack.plusSeconds(inc);
-                    timeWhite = timeWhite.plusSeconds(pastMoveLength);
-                }
-
-                currentTime = ZonedDateTime.now(ZoneId.of("UTC"));
-                if (moveCounter == 2) {
-                    timeBlack = timeWhite = currentTime.plusSeconds(time);
-                }
-
-                messageHandler.sendTimeUpdate(this.gameId, playerWhite, timeWhite.toString(),
-                        timeBlack.toString(), !whiteTurn, whiteTurn);
-                messageHandler.sendTimeUpdate(this.gameId, playerBlack, timeBlack.toString(),
-                        timeWhite.toString(), whiteTurn, !whiteTurn);
-
-            }
+            timeCalc();
 
             whiteTurn = !whiteTurn;
 
@@ -231,6 +211,31 @@ public class Game {
             throw new IllegalArgumentException("Use different type of message for promotion");
         } else {
             throw new IllegalArgumentException("Invalid move");
+        }
+    }
+
+    private void timeCalc() {
+        if (timed) {
+            Integer pastMoveLength = (int) (ZonedDateTime.now(
+                    ZoneId.of("UTC")).toEpochSecond() - currentTime.toEpochSecond());
+            if (whiteTurn) {
+                timeWhite = timeWhite.plusSeconds(inc);
+                timeBlack = timeBlack.plusSeconds(pastMoveLength);
+            } else {
+                timeBlack = timeBlack.plusSeconds(inc);
+                timeWhite = timeWhite.plusSeconds(pastMoveLength);
+            }
+
+            currentTime = ZonedDateTime.now(ZoneId.of("UTC"));
+            if (moveCounter == 2) {
+                timeBlack = timeWhite = currentTime.plusSeconds(time);
+            }
+
+            messageHandler.sendTimeUpdate(this.gameId, playerWhite, timeWhite.toString(),
+                    timeBlack.toString(), !whiteTurn, whiteTurn);
+            messageHandler.sendTimeUpdate(this.gameId, playerBlack, timeBlack.toString(),
+                    timeWhite.toString(), whiteTurn, !whiteTurn);
+
         }
     }
 
@@ -263,6 +268,8 @@ public class Game {
         if (eval == MoveEval.PROMOTION) {
             board[y1][x1] = ' ';
             board[y2][x2] = piece;
+
+            timeCalc();
 
             whiteTurn = !whiteTurn;
             messageHandler.sendUpdateView(getCurrentPlayer(), move);
