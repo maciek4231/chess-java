@@ -12,6 +12,7 @@ import javax.swing.JLayeredPane;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.time.ZonedDateTime;
 
 public class Board {
 
@@ -371,5 +372,21 @@ public class Board {
 
         playerClock.setRunning(true);   // TODO: Remove this later
         playerClock.updateTimeStamp(java.time.ZonedDateTime.now()); // This as well
+    }
+
+    public void updatePlayerClock(ZonedDateTime timeStamp) {
+        playerClock.updateTimeStamp(timeStamp);
+    }
+
+    public void updateOpponentClock(ZonedDateTime timeStamp) {
+        opponentClock.updateTimeStamp(timeStamp);
+    }
+
+    public void setPlayerClockActive(boolean active) {
+        playerClock.setRunning(active);
+    }
+
+    public void setOpponentClockActive(boolean active) {
+        opponentClock.setRunning(active);
     }
 }

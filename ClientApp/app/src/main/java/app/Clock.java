@@ -71,8 +71,11 @@ public class Clock {
 
     void textUpdate()
     {
-        ZonedDateTime period = timeStamp.minus(ZonedDateTime.now().toEpochSecond(), ChronoUnit.SECONDS);
-        label.setText(period.toString().substring(11, 19));
+        long hours = Math.abs(ChronoUnit.HOURS.between(timeStamp, ZonedDateTime.now(ZoneId.of("UTC"))));
+        long minutes = Math.abs(ChronoUnit.MINUTES.between(timeStamp, ZonedDateTime.now(ZoneId.of("UTC"))) % 60);
+        long seconds = Math.abs(ChronoUnit.SECONDS.between(timeStamp, ZonedDateTime.now(ZoneId.of("UTC"))) % 60);
+        String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        label.setText(time);
     }
 
     public void update()

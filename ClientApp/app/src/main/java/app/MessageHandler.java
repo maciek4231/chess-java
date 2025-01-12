@@ -1,5 +1,6 @@
 package app;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
@@ -67,6 +68,9 @@ public class MessageHandler {
                     break;
                 case "drawDeclinedRes":
                     handleDrawDeclined(msg);
+                    break;
+                case "timeUpdateRes":
+                    handleTimeUpdate(msg);
                     break;
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -340,6 +344,24 @@ public class MessageHandler {
 
     private void handleOpponentDisconnected(JsonObject msg) {
         game.showPromptWindow("Your opponent disconnected.");
+    }
+
+    private void handleTimeUpdate(JsonObject msg) {
+        boolean playerClockActive = msg.get("yourClockActive").getAsInt() == 1;
+        boolean opponentClockActive = msg.get("opponentClockActive").getAsInt() == 1;
+        ZonedDateTime playerTime, opponentTime;
+        try {
+            playerTime = ZonedDateTime.parse(msg.get("playerTime").getAsString());
+            opponentTime = ZonedDateTime.parse(msg.get("opponentTime").getAsString());
+        } catch (Exception e) {
+            System.out.println("Invalid time update received.");
+            return;
+        }
+
+        board.updatePlayerClock(playerTime);
+        board.updateOpponentClock(opponentTime);
+        board.setPlayerClockActive(playerClockActive);
+        board.setOpponentClockActive(opponentClockActive);
     }
 
     private PieceType getPieceType(char type) {
