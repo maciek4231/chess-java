@@ -10,6 +10,8 @@ public class Game {
     Board board;
     ConnectWindow connectWindow;
     GameConclusionWindow gameConclusionWindow;
+    String playerName = "You", opponentName = "Opp";
+    boolean isRanked = false, isTimed = false;
 
     public Game(ChessWebSocketClient client) {
         board = new Board();
@@ -28,8 +30,6 @@ public class Game {
         connectWindow = new ConnectWindow(messageHandler, this);
 
         window.add(connectWindow.getPanel(), 1, 1);
-
-        // showGameConclusionWindow(new GameConclusionWindow(this, GameConclusionStatus.DRAW_STALEMATE, 0, 0, 0, 0)); // TODO: Remove this line
     }
 
     public JLayeredPane getWindow() {
@@ -80,5 +80,37 @@ public class Game {
     public void closeGameConclusionWindow() {
         window.remove(gameConclusionWindow.getWindow());
         gameConclusionWindow = null;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public void setOpponentName(String opponentName) {
+        this.opponentName = opponentName;
+    }
+
+    public void setRanked(boolean ranked) {
+        isRanked = ranked;
+    }
+
+    public void setTimed(boolean timed) {
+        isTimed = timed;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getOpponentName() {
+        return opponentName;
+    }
+
+    public boolean isRanked() {
+        return isRanked;
+    }
+
+    public boolean isTimed() {
+        return isTimed;
     }
 }

@@ -203,25 +203,39 @@ public class MessageHandler {
 
         game.endGame();
 
+        GameConclusionStatus conclusionStatus = GameConclusionStatus.DRAW_OFFERED;
+        int playerRank = 0, playerDelta = 0, opponentRank = 0, opponentDelta = 0;
+
         switch (status) {
+
             case "won":
-                game.showPromptWindow("You won!");
+                conclusionStatus = GameConclusionStatus.WIN;
                 break;
             case "lost":
-                game.showPromptWindow("You lost!");
+                conclusionStatus = GameConclusionStatus.LOSE;
                 break;
             case "stalemate":
-                game.showPromptWindow("You drew, because there are no legal moves left.");
+                conclusionStatus = GameConclusionStatus.DRAW_STALEMATE;
                 break;
             case "material":
-                game.showPromptWindow("You drew, because there is not enough material to win.");
+                conclusionStatus = GameConclusionStatus.DRAW_MATERIAL;
                 break;
             case "drawAccept":
-                game.showPromptWindow("You drew, because both players agreed to a draw.");
+                conclusionStatus = GameConclusionStatus.DRAW_OFFERED;
                 break;
             default:
                 break;
         }
+
+        if (game.isRanked())
+        {
+            playerRank = msg.get("playerRank").getAsInt();
+            playerDelta = msg.get("playerDelta").getAsInt();
+            opponentRank = msg.get("opponentRank").getAsInt();
+            opponentDelta = msg.get("opponentDelta").getAsInt();
+        }
+
+        game.showGameConclusionWindow(new GameConclusionWindow(game, conclusionStatus, playerRank, playerDelta, opponentRank, opponentDelta));
     }
 
     private void handleDeletePiece(JsonObject msg) {
