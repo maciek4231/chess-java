@@ -15,7 +15,7 @@ public class Clock {
     int xPos;
     int yPos;
 
-    ZonedDateTime timeStamp = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
+    ZonedDateTime timeStamp = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC"));
     boolean running = false;
 
     JLabel label;
