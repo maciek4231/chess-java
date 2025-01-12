@@ -3,6 +3,8 @@ package app;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -40,6 +42,10 @@ public class Board {
     boolean surrenderActive = false;
     boolean drawActive = false;
     boolean rewindActive = false;
+
+    Clock playerClock;
+    Clock opponentClock;
+    Timer clockTimer;
 
     public Board() {
         jPane = new JLayeredPane();
@@ -87,6 +93,8 @@ public class Board {
         rewindButton = new RewindButton(this);
         jPane.add(rewindButton.getButton());
         jPane.setLayer(rewindButton.getButton(), 1);
+
+        createClocks();
     }
 
     public void addAvailableMove(Coords from, Coords to) {
@@ -178,6 +186,7 @@ public class Board {
         deselectPromotion();
         selectedPromotion = promotion;
         selectedPromotion.showPromotionButtons();
+        moveClocksDown();
     }
 
     private void deselectPromotion() {
@@ -185,6 +194,7 @@ public class Board {
             selectedPromotion.hidePromotionButtons();
             selectedPromotion = null;
         }
+        moveClocksNormal();
     }
 
     public void clientPromotion(Coords from, Coords to, PieceType type) {
@@ -250,6 +260,9 @@ public class Board {
         for (PopUpWindow popUpWindow : popUpWindowQueue) {
             popUpWindow.resize(xScale, yScale);
         }
+        Clock.staticResize(xScale, yScale);
+        playerClock.resize(xScale, yScale);
+        opponentClock.resize(xScale, yScale);
     }
 
     public void addPopUpWindow(PopUpWindow popUpWindow) {
@@ -300,6 +313,10 @@ public class Board {
         setSurrenderActive(false);
         setDrawActive(false);
         setRewindActive(false);
+
+        if (clockTimer != null) {
+            clockTimer.cancel();
+        }
     }
 
     public void startMyMove() {
@@ -308,5 +325,35 @@ public class Board {
 
     public void endMyMove() {
         setDrawActive(false);
+    }
+
+    void moveClocksNormal() {
+        playerClock.move(1024, 512);
+        opponentClock.move(1024, 448);
+    }
+
+    void moveClocksDown() {
+        playerClock.move(1024, 576);
+        opponentClock.move(1024, 512);
+    }
+
+    void createClocks() {
+        playerClock = new Clock(1024, 512);
+        jPane.add(playerClock.getLabel());
+        jPane.setLayer(playerClock.getLabel(), 4);
+        opponentClock = new Clock(1024, 448);
+        jPane.add(opponentClock.getLabel());
+        jPane.setLayer(opponentClock.getLabel(), 4);
+
+        clockTimer = new Timer();
+        clockTimer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                playerClock.update();
+                opponentClock.update();
+            }
+        }, 0, 100);
+
+        playerClock.setRunning(true);   // TODO: Remove this later
+        playerClock.updateTimeStamp(java.time.ZonedDateTime.now()); // This as well
     }
 }
