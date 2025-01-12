@@ -86,17 +86,23 @@ public class MessageHandler {
     }
 
     private void handleAvailability(Integer clientId, JsonObject msg) {
-        Integer availability = msg.get("avail").getAsInt();
-        WebSocket conn = connectionHandler.getClientConn(clientId);
-        JsonObject response = new JsonObject();
-        if (availability.equals(1)) {
-            Integer gameCode = connectionHandler.generateJoinCode(clientId);
+        if (msg.get("avail").getAsInt() == 1) {
+            WebSocket conn = connectionHandler.getClientConn(clientId);
+            JsonObject response = new JsonObject();
             response.addProperty("type", "availabilityRes");
+            Integer isTimed = msg.get("timedGameEnabled").getAsInt();
+            Integer time = -1;
+            Integer inc = 0;
+            if (isTimed.equals(1)) {
+                time = msg.get("time").getAsInt();
+                inc = msg.get("inc").getAsInt();
+            }
+
+            Integer gameCode = connectionHandler.generateJoinCode(clientId);
+            gameManager.setTimedGame(gameCode, time, inc);
             response.addProperty("gameCode", gameCode);
-        } else {
-            connectionHandler.removeJoinCode(clientId);
+            server.sendMessageToClient(conn, response.toString());
         }
-        server.sendMessageToClient(conn, response.toString());
     }
 
     private void handleJoinGame(Integer clientId, JsonObject msg) {
@@ -287,5 +293,17 @@ public class MessageHandler {
         move.addProperty("y2", y2);
         response.add("move", move);
         sendToPlayers(gameId, response.toString());
+    }
+
+    public void sendTimeUpdate(Integer gameId, Integer userId, String timeWhite, String timeBlack, boolean isPlayer) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "timeUpdateRes");
+        response.addProperty("timeWhite", timeWhite);
+        response.addProperty("timeBlack", timeBlack);
+        response.addProperty("yourTime", isPlayer ? 1 : 0);
+        response.addProperty("opponentTime", isPlayer ? 0 : 1);
+        response.addProperty("gameId", gameId);
+        WebSocket conn = connectionHandler.getClientConn(userId);
+        server.sendMessageToClient(conn, response.toString());
     }
 }

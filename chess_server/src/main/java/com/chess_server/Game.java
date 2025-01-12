@@ -4,11 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class Game {
 
@@ -48,7 +50,15 @@ public class Game {
 
     private char[][] lastBoardState;
 
-    Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
+    boolean timed = false;
+    Timer gameTimer;
+    ZonedDateTime timeWhite;
+    ZonedDateTime timeBlack;
+    ZonedDateTime currentTime;
+    Integer inc;
+
+    Game(Integer player1Id, Integer player2Id, Integer gameId, Integer time, Integer inc, MessageHandler messageHandler,
+            GameManager gameManager) {
         this.messageHandler = messageHandler;
         this.gameManager = gameManager;
         this.gameId = gameId;
@@ -59,7 +69,37 @@ public class Game {
         }
         this.playerWhite = player1Id;
         this.playerBlack = player2Id;
+
+        this.inc = inc;
+        if (time > 0) {
+            timed = true;
+            currentTime = ZonedDateTime.now(ZoneId.of("UTC"));
+            timeBlack = timeWhite = currentTime.plusSeconds(time);
+            setGameTimer();
+        }
+
         System.out.println("Game started!");
+    }
+
+    private void setGameTimer() {
+        gameTimer = new Timer();
+        gameTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (whiteTurn) {
+                    if (timeWhite.isBefore(ZonedDateTime.now(ZoneId.of("UTC")))) {
+                        gameTimer.cancel();
+                        gameManager.gameLost(Game.this, playerWhite);
+                    }
+                } else {
+                    if (timeBlack.isBefore(ZonedDateTime.now(ZoneId.of("UTC")))) {
+                        gameTimer.cancel();
+                        gameManager.gameLost(Game.this, playerBlack);
+                    }
+                }
+            }
+        }, 0, 100);
+
     }
 
     public boolean isPlayerRound(Integer clientId) {
@@ -146,6 +186,23 @@ public class Game {
 
             if (isEnPassant) {
                 messageHandler.sendDeleteToPlayers(this.gameId, x2, y2 == 2 ? 3 : 4);
+            }
+
+            if (timed) {
+                Integer pastMoveLength = (int) (ZonedDateTime.now(
+                        ZoneId.of("UTC")).toEpochSecond() - currentTime.toEpochSecond());
+                if (whiteTurn) {
+                    timeWhite = timeWhite.plusSeconds(inc);
+                    timeBlack = timeBlack.plusSeconds(pastMoveLength);
+                } else {
+                    timeBlack = timeBlack.plusSeconds(inc);
+                    timeWhite = timeWhite.plusSeconds(pastMoveLength);
+                }
+                messageHandler.sendTimeUpdate(this.gameId, getCurrentPlayer(), timeWhite.toString(),
+                        timeBlack.toString(), false);
+                messageHandler.sendTimeUpdate(this.gameId, getOpponentPlayer(), timeWhite.toString(),
+                        timeBlack.toString(), true);
+                currentTime = ZonedDateTime.now(ZoneId.of("UTC"));
             }
 
             whiteTurn = !whiteTurn;

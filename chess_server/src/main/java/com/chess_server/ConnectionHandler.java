@@ -35,7 +35,7 @@ public class ConnectionHandler {
         }
         Integer randN;
         do {
-            randN = rand.nextInt(0, 1_000_000); // id od 000000 do 999999
+            randN = rand.nextInt(0, 1_000_000); // ids from 000000 to 999999
         } while (joinablePlayers.containsKey(randN) || activeGames.containsKey(randN)); // poki nie zaczniemy doganiac
                                                                                         // lichessa to powinno byc ok
         joinablePlayers.put(randN, clientId);
@@ -44,7 +44,7 @@ public class ConnectionHandler {
 
     public void removeJoinCode(Integer clientId) {
         if (joinablePlayers.containsValue(clientId)) {
-            joinablePlayers.values().remove(clientId); // to trzeba bedzie lepiej robic
+            joinablePlayers.values().remove(clientId);
         }
     }
 
@@ -85,20 +85,19 @@ public class ConnectionHandler {
         if (joinablePlayers.containsValue(clientId)) {
             joinablePlayers.values().remove(clientId);
         }
-        for (Map.Entry<Integer, List<Integer>> entry : activeGames.entrySet()) { // na razie usuwamy gre jak gracz sie
-            // rozlaczy
+        for (Map.Entry<Integer, List<Integer>> entry : activeGames.entrySet()) {
             List<Integer> players = entry.getValue();
-            if (players.contains(clientId)) { // w przyszlosci moze szybsza implementacja na 3? mapy
+            if (players.contains(clientId)) {
                 Integer gameCode = entry.getKey();
                 activeGames.remove(gameCode);
-                gameManager.removeGame(gameCode);
+                gameManager.removeGameAndTime(gameCode);
                 opponentId = players.get(0).equals(clientId) ? players.get(1)
                         : players.get(0);
-                break; // na razie zakladamy ze gracz jest w jednej grze
+                break;
             }
         }
         activeUsers.remove(clientId);
-        return opponentId; //  w przyszlosci potencjalnie wielu przeciwnikow
+        return opponentId;
     }
 
     public WebSocket getClientConn(Integer clientId) {

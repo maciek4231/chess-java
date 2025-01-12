@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 
 public class GameManager {
     private ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Integer[]> timedGames = new ConcurrentHashMap<>(); // gameId -> [time, inc]
     private final MessageHandler messageHandler;
 
     public GameManager(MessageHandler messageHandler) {
@@ -15,8 +16,13 @@ public class GameManager {
     }
 
     public Game newGame(Integer gameCode, Integer player1, Integer player2) {
-
-        Game game = new Game(player1, player2, gameCode, this.messageHandler, this);
+        Integer time = timedGames.get(gameCode)[0];
+        Integer inc = timedGames.get(gameCode)[1];
+        if (time == null) {
+            System.out.println("Warning: Time is null");
+            time = -1;
+        }
+        Game game = new Game(player1, player2, gameCode, time, inc, this.messageHandler, this);
         games.put(gameCode, game); // gameCode now becomes gameId
         messageHandler.sendPlayerIsBlack(game.playerBlack);
         messageHandler.sendBoardState(game.gameId, game.getBoard());
@@ -24,12 +30,17 @@ public class GameManager {
         return game;
     }
 
-    public void removeGame(Integer gameId) {
-        games.remove(gameId);
+    public void setTimedGame(Integer gameCode, Integer time, Integer inc) {
+        timedGames.put(gameCode, new Integer[] { time, inc });
     }
 
-    public void removeGame(Game game) {
-        games.remove(game.gameId);
+    public void removeTime(Integer gameCode) {
+        timedGames.remove(gameCode);
+    }
+
+    public void removeGameAndTime(Integer gameId) {
+        games.remove(gameId);
+        timedGames.remove(gameId);
     }
 
     public Game getGame(int gameId) {
@@ -89,18 +100,29 @@ public class GameManager {
         }
     }
 
+    public void eraseGame(Integer gameId) {
+        Game game = games.get(gameId);
+        eraseGame(game);
+    }
+
+    private void eraseGame(Game game) {
+        if (game != null) {
+            messageHandler.connectionHandler.removeGame(game);
+            removeTime(game.gameId);
+            games.remove(game.gameId);
+        }
+    }
+
     public void gameLost(Game game) {
         messageHandler.sendLost(game.getCurrentPlayer());
         messageHandler.sendWin(game.getOpponentPlayer());
-        messageHandler.connectionHandler.removeGame(game);
-        removeGame(game);
+        eraseGame(game);
     }
 
     public void gameLost(Game game, Integer loser) {
         messageHandler.sendLost(loser);
         messageHandler.sendWin(game.getTheOtherPlayer(loser));
-        messageHandler.connectionHandler.removeGame(game);
-        removeGame(game);
+        eraseGame(game);
     }
 
     public void gameDraw(Game game, GameStatus status) {
@@ -111,8 +133,7 @@ public class GameManager {
         } else {
             messageHandler.sendDrawAccepted(game.gameId);
         }
-        messageHandler.connectionHandler.removeGame(game);
-        removeGame(game);
+        eraseGame(game);
     }
 
     public boolean verifyCurrentPlayer(Integer clientId, Integer gameId) {
