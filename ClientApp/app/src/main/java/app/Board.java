@@ -369,9 +369,6 @@ public class Board {
                 opponentClock.update();
             }
         }, 0, 100);
-
-        playerClock.setRunning(true);   // TODO: Remove this later
-        playerClock.updateTimeStamp(java.time.ZonedDateTime.now()); // This as well
     }
 
     public void updatePlayerClock(ZonedDateTime timeStamp) {
@@ -388,5 +385,13 @@ public class Board {
 
     public void setOpponentClockActive(boolean active) {
         opponentClock.setRunning(active);
+    }
+
+    public void setPlayerClockVisible(boolean visible) {
+        playerClock.setVisible(visible);
+    }
+
+    public void setOpponentClockVisible(boolean visible) {
+        opponentClock.setVisible(visible);
     }
 }

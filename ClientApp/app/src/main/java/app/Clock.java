@@ -26,7 +26,7 @@ public class Clock {
 
         label = new JLabel("00:00:00", SwingConstants.CENTER);
         label.setBounds((int) (xPos * xScale), (int) (yPos * yScale), (int) (128 * xScale), (int) (64 * yScale));
-        setVisible(true); // TODO: turn this to false later
+        setVisible(false);
         correctFontSize();
     }
 
@@ -75,6 +75,12 @@ public class Clock {
         long minutes = Math.abs(ChronoUnit.MINUTES.between(timeStamp, ZonedDateTime.now(ZoneId.of("UTC"))) % 60);
         long seconds = Math.abs(ChronoUnit.SECONDS.between(timeStamp, ZonedDateTime.now(ZoneId.of("UTC"))) % 60);
         String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        if (hours == 0 && minutes == 0 && seconds < 10)
+            label.setForeground(java.awt.Color.RED);
+        else
+            label.setForeground(java.awt.Color.BLACK);
+
         label.setText(time);
     }
 

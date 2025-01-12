@@ -96,6 +96,8 @@ public class Game {
 
     public void setTimed(boolean timed) {
         isTimed = timed;
+        board.setPlayerClockVisible(timed);
+        board.setOpponentClockVisible(timed);
     }
 
     public String getPlayerName() {

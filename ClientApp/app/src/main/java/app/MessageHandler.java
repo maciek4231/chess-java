@@ -110,6 +110,8 @@ public class MessageHandler {
     private void handleJoinGame(JsonObject msg) {
         int status = -1;
         int code = -1;
+        boolean isTimed = false;
+        boolean isRanked = false;
         try {
             status = msg.get("status").getAsInt();
             code = msg.get("gameCode").getAsInt();
@@ -120,6 +122,14 @@ public class MessageHandler {
             connectWindow.gameFound();
             gameCode = code;
             board.setGameCode(code);
+            try {
+                isTimed = msg.get("isTimed").getAsInt() == 1;
+                isRanked = msg.get("isRanked").getAsInt() == 1;
+            } catch (Exception e) {
+                System.out.println("Invalid game settings received.");
+            }
+            game.setRanked(isRanked);
+            game.setTimed(isTimed);
         } else {
             if (status == -1) {
                 connectWindow.gameNotFound();
