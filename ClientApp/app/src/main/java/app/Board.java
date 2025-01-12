@@ -46,6 +46,8 @@ public class Board {
     Clock playerClock;
     Clock opponentClock;
     Timer clockTimer;
+    PlayerLabel playerLabel;
+    PlayerLabel opponentLabel;
 
     public Board() {
         jPane = new JLayeredPane();
@@ -95,6 +97,13 @@ public class Board {
         jPane.setLayer(rewindButton.getButton(), 1);
 
         createClocks();
+        playerLabel = new PlayerLabel(1024, 512);
+        jPane.add(playerLabel.getLabel());
+        jPane.setLayer(playerLabel.getLabel(), 4);
+        opponentLabel = new PlayerLabel(1024, 448);
+        jPane.add(opponentLabel.getLabel());
+        jPane.setLayer(opponentLabel.getLabel(), 4);
+        opponentLabel.setText("SkibidiToilet");
     }
 
     public void addAvailableMove(Coords from, Coords to) {
@@ -238,7 +247,7 @@ public class Board {
         this.checkedPiece = null;
     }
 
-    public void resize(double xScale, double yScale) {
+    public void resize(double xScale, double yScale) { // TODO: Seperate static resizes
         jPane.setBounds(0, 0, (int) (1252 * xScale), (int) (1024 * yScale));
         boardLabel.setBounds(0, 0, (int) (1024 * xScale), (int) (1024 * yScale));
         icon.setImage(image.getScaledInstance((int) (1024 * xScale), (int) (1024 * yScale), Image.SCALE_SMOOTH));
@@ -263,6 +272,9 @@ public class Board {
         Clock.staticResize(xScale, yScale);
         playerClock.resize(xScale, yScale);
         opponentClock.resize(xScale, yScale);
+        PlayerLabel.staticResize(xScale, yScale);
+        playerLabel.resize(xScale, yScale);
+        opponentLabel.resize(xScale, yScale);
     }
 
     public void addPopUpWindow(PopUpWindow popUpWindow) {
@@ -328,20 +340,24 @@ public class Board {
     }
 
     void moveClocksNormal() {
-        playerClock.move(1024, 512);
-        opponentClock.move(1024, 448);
+        playerClock.move(1024, 576);
+        opponentClock.move(1024, 384);
+        playerLabel.setVisible(true);
+        opponentLabel.setVisible(true);
     }
 
     void moveClocksDown() {
         playerClock.move(1024, 576);
         opponentClock.move(1024, 512);
+        playerLabel.setVisible(false);
+        opponentLabel.setVisible(false);
     }
 
     void createClocks() {
-        playerClock = new Clock(1024, 512);
+        playerClock = new Clock(1024, 576);
         jPane.add(playerClock.getLabel());
         jPane.setLayer(playerClock.getLabel(), 4);
-        opponentClock = new Clock(1024, 448);
+        opponentClock = new Clock(1024, 384);
         jPane.add(opponentClock.getLabel());
         jPane.setLayer(opponentClock.getLabel(), 4);
 
