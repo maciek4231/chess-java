@@ -56,6 +56,9 @@ public class Game {
     ZonedDateTime timeBlack;
     ZonedDateTime currentTime;
     Integer inc;
+    Integer time;
+
+    Integer moveCounter = 0;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, Integer time, Integer inc, MessageHandler messageHandler,
             GameManager gameManager) {
@@ -72,10 +75,13 @@ public class Game {
 
         this.inc = inc;
         if (time > 0) {
+            this.time = time;
             timed = true;
             currentTime = ZonedDateTime.now(ZoneId.of("UTC"));
-            timeBlack = timeWhite = currentTime.plusSeconds(time);
+            timeBlack = timeWhite = currentTime.plusSeconds(30);
             setGameTimer();
+            messageHandler.sendTimeUpdate(gameId, playerWhite, timeWhite.toString(), timeBlack.toString(), true, false);
+            messageHandler.sendTimeUpdate(gameId, playerBlack, timeWhite.toString(), timeBlack.toString(), false, true);
         }
 
         System.out.println("Game started!");
@@ -137,6 +143,7 @@ public class Game {
     }
 
     public void makeMove(JsonElement move) {
+        moveCounter++;
         lastBoardState = board.clone();
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
@@ -198,11 +205,17 @@ public class Game {
                     timeBlack = timeBlack.plusSeconds(inc);
                     timeWhite = timeWhite.plusSeconds(pastMoveLength);
                 }
-                messageHandler.sendTimeUpdate(this.gameId, getCurrentPlayer(), timeWhite.toString(),
-                        timeBlack.toString(), false);
-                messageHandler.sendTimeUpdate(this.gameId, getOpponentPlayer(), timeWhite.toString(),
-                        timeBlack.toString(), true);
+
                 currentTime = ZonedDateTime.now(ZoneId.of("UTC"));
+                if (moveCounter == 2) {
+                    timeBlack = timeWhite = currentTime.plusSeconds(time);
+                }
+
+                messageHandler.sendTimeUpdate(this.gameId, playerWhite, timeWhite.toString(),
+                        timeBlack.toString(), !whiteTurn, whiteTurn);
+                messageHandler.sendTimeUpdate(this.gameId, playerBlack, timeBlack.toString(),
+                        timeWhite.toString(), whiteTurn, !whiteTurn);
+
             }
 
             whiteTurn = !whiteTurn;

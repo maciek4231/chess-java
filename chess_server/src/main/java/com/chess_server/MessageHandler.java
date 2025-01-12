@@ -295,13 +295,14 @@ public class MessageHandler {
         sendToPlayers(gameId, response.toString());
     }
 
-    public void sendTimeUpdate(Integer gameId, Integer userId, String timeWhite, String timeBlack, boolean isPlayer) {
+    public void sendTimeUpdate(Integer gameId, Integer userId, String playerTime, String opponentTime, boolean isPlayer,
+            boolean isOpponent) {
         JsonObject response = new JsonObject();
         response.addProperty("type", "timeUpdateRes");
-        response.addProperty("timeWhite", timeWhite);
-        response.addProperty("timeBlack", timeBlack);
-        response.addProperty("yourTime", isPlayer ? 1 : 0);
-        response.addProperty("opponentTime", isPlayer ? 0 : 1);
+        response.addProperty("playerTime", playerTime);
+        response.addProperty("opponentTime", opponentTime);
+        response.addProperty("yourClockActive", isPlayer ? 1 : 0);
+        response.addProperty("opponentClockActive", isOpponent ? 1 : 0);
         response.addProperty("gameId", gameId);
         WebSocket conn = connectionHandler.getClientConn(userId);
         server.sendMessageToClient(conn, response.toString());
