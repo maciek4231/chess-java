@@ -46,8 +46,7 @@ public class Game {
 
     private Integer[] drawOffer = { 0, 0 };
 
-    Integer numOfBoardsStored = 10;
-    private Deque<char[][]> lastBoardStates = new ArrayDeque<>(numOfBoardsStored);
+    private char[][] lastBoardState;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, MessageHandler messageHandler, GameManager gameManager) {
         this.messageHandler = messageHandler;
@@ -97,24 +96,8 @@ public class Game {
         return ret;
     }
 
-    private void saveBoardState() {
-        if (lastBoardStates.size() == numOfBoardsStored) {
-            lastBoardStates.removeFirst();
-        }
-        lastBoardStates.addLast(copyBoard(board));
-    }
-
-    private char[][] copyBoard(char[][] board) {
-        char[][] newBoard = new char[board.length][];
-        for (int i = 0; i < board.length; i++) {
-            newBoard[i] = board[i].clone();
-        }
-        return newBoard;
-    }
-
     public void makeMove(JsonElement move) {
-        saveBoardState();
-        System.out.println(lastBoardStates.peekLast()[0][0]);
+        lastBoardState = board.clone();
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
