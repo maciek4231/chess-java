@@ -9,6 +9,7 @@ public class Game {
     PromptWindow promptWindow;
     Board board;
     ConnectWindow connectWindow;
+    GameConclusionWindow gameConclusionWindow;
 
     public Game(ChessWebSocketClient client) {
         board = new Board();
@@ -27,6 +28,8 @@ public class Game {
         connectWindow = new ConnectWindow(messageHandler, this);
 
         window.add(connectWindow.getPanel(), 1, 1);
+
+        // showGameConclusionWindow(new GameConclusionWindow(this, GameConclusionStatus.DRAW_STALEMATE, 0, 0, 0, 0)); // TODO: Remove this line
     }
 
     public JLayeredPane getWindow() {
@@ -59,9 +62,23 @@ public class Game {
         if (promptWindow != null) {
             promptWindow.resize(xScale, yScale);
         }
+        GameConclusionWindow.staticResize(xScale, yScale);
+        if (gameConclusionWindow != null) {
+            gameConclusionWindow.resize(xScale, yScale);
+        }
     }
 
     public void endGame() {
         board.endGame();
+    }
+
+    public void showGameConclusionWindow(GameConclusionWindow gameConclusionWindow) {
+        this.gameConclusionWindow = gameConclusionWindow;
+        window.add(gameConclusionWindow.getWindow(), 3, 3);
+    }
+
+    public void closeGameConclusionWindow() {
+        window.remove(gameConclusionWindow.getWindow());
+        gameConclusionWindow = null;
     }
 }

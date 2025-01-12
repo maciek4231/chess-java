@@ -326,7 +326,6 @@ public class MessageHandler {
 
     private void handleOpponentDisconnected(JsonObject msg) {
         game.showPromptWindow("Your opponent disconnected.");
-        game.endGame();
     }
 
     private PieceType getPieceType(char type) {
