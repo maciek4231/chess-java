@@ -76,10 +76,11 @@ public class MessageHandler {
         }
     }
 
-    public void announceAvailable(boolean timedGameEnabled, int time, int inc) {
+    public void announceAvailable(boolean rankedGameEnabled, boolean timedGameEnabled, int time, int inc) {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "availability");
         msg.addProperty("avail", 1);
+        msg.addProperty("rankedGameEnabled", rankedGameEnabled ? 1 : 0);
         msg.addProperty("timedGameEnabled", timedGameEnabled ? 1 : 0);
         msg.addProperty("time", time);
         msg.addProperty("inc", inc);
