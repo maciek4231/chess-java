@@ -247,7 +247,7 @@ public class ConnectWindow {
                 }
             }
 
-            if (gameCode == -1)
+            if (gameCode != -1)
             {
                 // TODO: Implement abandoning codes.
             }
