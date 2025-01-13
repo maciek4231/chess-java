@@ -3,10 +3,11 @@ package com.chess_server;
 import java.net.InetSocketAddress;
 
 public class Main {
+    static DatabaseConnector db;
+
     public static void main(String[] args) {
         int port = 8887; // Port for WebSocket server
-        DatabaseConnector db = new DatabaseConnector();
-        db.test();
+        db = new DatabaseConnector();
         try {
             ChessWebSocketServer server = new ChessWebSocketServer(new InetSocketAddress(port));
             server.setReuseAddr(true); // allows quickly restarting the server
