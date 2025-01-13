@@ -97,9 +97,15 @@ public class Application {
                 game.resize(xScale, yScale);
             }
         });
+        mainPanelLayout.show(mainPanel, "login");
+
+        menu.setVisible(false);
+        mainPanel.setVisible(false);
+
+        mainFrame.add(menu, BorderLayout.WEST);
+        mainFrame.add(mainPanel, BorderLayout.CENTER);
 
         mainFrame.setVisible(true);
-        mainPanelLayout.show(mainPanel, "login");
     }
 
     private void showAwaitingConnection()
@@ -118,10 +124,11 @@ public class Application {
     }
 
     private void showGame() {
-        mainFrame.add(menu, BorderLayout.WEST);
-        mainFrame.add(mainPanel, BorderLayout.CENTER);
+        menu.setVisible(true);
+        mainPanel.setVisible(true);
         awaitingConnectionPanel.setVisible(false);
         mainFrame.remove(awaitingConnectionPanel);
+        mainFrame.repaint();
     }
 
     private void loadImages() {
