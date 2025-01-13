@@ -20,6 +20,7 @@ public class Application {
     JFrame mainFrame;
     JPanel awaitingConnectionPanel;
     JPanel mainPanel;
+    JPanel gamePanel;
     CardLayout mainPanelLayout;
     JPanel menu;
     JPanel loginPanel;
@@ -58,13 +59,18 @@ public class Application {
     }
 
     private void createComps() {
-        game = new Game(client);
+        game = new Game(client, this);
 
         mainPanel = new JPanel();
         mainPanel.setPreferredSize(new Dimension(1152, 1024));
         mainPanelLayout = new CardLayout();
         mainPanel.setLayout(mainPanelLayout);
-        mainPanel.add(game.getWindow(), "game");
+
+        gamePanel = new JPanel();
+        gamePanel.setPreferredSize(new Dimension(1152, 1024));
+        gamePanel.setLayout(new BorderLayout());
+        gamePanel.add(game.getWindow(), BorderLayout.CENTER);
+        mainPanel.add(gamePanel, "game");
 
         menu = new JPanel();
         menu.setPreferredSize(new Dimension(384, 1024));
@@ -121,5 +127,13 @@ public class Application {
 
     public void changeCard(String cardName) {
         mainPanelLayout.show(mainPanel, cardName);
+    }
+
+    public void resetGame() { // TODO: also reset game when the opponent leaves.
+        game = new Game(client, this);
+        gamePanel.removeAll();
+        gamePanel.add(game.getWindow(), BorderLayout.CENTER);
+        gamePanel.revalidate();
+        gamePanel.repaint();
     }
 }
