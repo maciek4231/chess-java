@@ -13,8 +13,9 @@ public class Game {
     GameConclusionWindow gameConclusionWindow;
     String playerName = "You", opponentName = "Opp";
     boolean isRanked = false, isTimed = false;
+    MessageHandler messageHandler;
 
-    public Game(ChessWebSocketClient client, Application application) {
+    public Game(Application application, MessageHandler messageHandler) {
         this.application = application;
         board = new Board();
 
@@ -22,9 +23,6 @@ public class Game {
         window.setBounds(0, 0, 1252, 1024);
         window.setLayout(null);
 
-        MessageHandler messageHandler = new MessageHandler(client, this, board);
-
-        client.setHandler(messageHandler);
         board.setMessageHandler(messageHandler);
 
         window.add(board.getPane(), 0, 0);
@@ -120,5 +118,9 @@ public class Game {
 
     public void appResetGame() {
         application.resetGame();
+    }
+
+    public Board getBoard() {
+        return board;
     }
 }

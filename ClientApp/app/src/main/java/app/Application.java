@@ -24,10 +24,13 @@ public class Application {
     CardLayout mainPanelLayout;
     JPanel menu;
     JPanel loginPanel;
+    MessageHandler messageHandler;
 
     public Application(ChessWebSocketClient client)
     {
         this.client = client;
+        messageHandler = new MessageHandler(this, client);
+        client.setHandler(messageHandler);
 
         mainFrame = new JFrame("illChess");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,7 +62,8 @@ public class Application {
     }
 
     private void createComps() {
-        game = new Game(client, this);
+        game = new Game(this, messageHandler);
+        messageHandler.setGame(game);
 
         mainPanel = new JPanel();
         mainPanel.setPreferredSize(new Dimension(1152, 1024));
@@ -130,9 +134,11 @@ public class Application {
     }
 
     public void resetGame() { // TODO: also reset game when the opponent leaves.
-        game = new Game(client, this);
+        game = new Game(this, messageHandler);
+        messageHandler.setGame(game);
         gamePanel.removeAll();
         gamePanel.add(game.getWindow(), BorderLayout.CENTER);
+        game.resize(gamePanel.getSize().getWidth() / 1152.0, gamePanel.getSize().getHeight() / 1024.0);
         gamePanel.revalidate();
         gamePanel.repaint();
     }
