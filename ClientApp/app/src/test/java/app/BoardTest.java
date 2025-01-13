@@ -3,13 +3,8 @@ package app;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.JLayeredPane;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class BoardTest {
 
