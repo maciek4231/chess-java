@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -66,6 +68,11 @@ public class Application {
 
         menu = new JPanel();
         menu.setPreferredSize(new Dimension(384, 1024));
+        menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
+
+        menu.add(new MenuButton(this, "Play", "game"));
+        menu.add(Box.createVerticalGlue());
+        menu.add(new MenuButton(this, "Account", "login"));
 
         loginPanel = new JPanel();
         loginPanel.setPreferredSize(new Dimension(1152, 1024));
@@ -103,10 +110,16 @@ public class Application {
     private void showGame() {
         mainFrame.add(menu, BorderLayout.WEST);
         mainFrame.add(mainPanel, BorderLayout.CENTER);
+        awaitingConnectionPanel.setVisible(false);
         mainFrame.remove(awaitingConnectionPanel);
     }
 
     private void loadImages() {
         IconLoader.getMoveIcon();
+        ImageLoader.getMenuButtonIcon("game");
+    }
+
+    public void changeCard(String cardName) {
+        mainPanelLayout.show(mainPanel, cardName);
     }
 }
