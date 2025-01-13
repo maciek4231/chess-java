@@ -9,6 +9,7 @@ public class AcceptRewindWindow extends YesNoWindow {
             board.messageHandler.sendAcceptDraw(false);
         });
         yesButton.addActionListener(e -> {
+            board.cyclePopUpWindows();
             board.messageHandler.sendAcceptDraw(true);
         });
     }
