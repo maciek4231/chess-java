@@ -396,21 +396,17 @@ public class Board {
     }
 
     public void rewindMove() {
-        System.out.println("Rewind move");
         deselectPromotion();
-        System.out.println("Promotion deselected");
         for (Move move : selectableMoves) {
             move.getButton().setVisible(false);
             jPane.remove(move.getButton());
         }
         selectableMoves.clear();
         availableMoves.clear();
-        System.out.println("Moves cleared");
         for (Piece piece : pieces.values()) {
             piece.getButton().setVisible(false);
             jPane.remove(piece.getButton());
         }
         pieces.clear();
-        System.out.println("Pieces cleared");
     }
 }
