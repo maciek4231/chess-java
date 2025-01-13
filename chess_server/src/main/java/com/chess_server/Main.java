@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 public class Main {
     public static void main(String[] args) {
         int port = 8887; // Port for WebSocket server
+        DatabaseConnector db = new DatabaseConnector();
+        db.test();
         try {
             ChessWebSocketServer server = new ChessWebSocketServer(new InetSocketAddress(port));
             server.setReuseAddr(true); // allows quickly restarting the server
