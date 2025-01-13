@@ -394,4 +394,17 @@ public class Board {
     public void setOpponentClockVisible(boolean visible) {
         opponentClock.setVisible(visible);
     }
+
+    public void rewindMove() {
+        deselectPromotion();
+        for (Move move : selectableMoves) {
+            move.getButton().setVisible(false);
+            jPane.remove(move.getButton());
+        }
+        for (Piece piece : pieces.values()) {
+            piece.getButton().setVisible(false);
+            jPane.remove(piece.getButton());
+            pieces.clear();
+        }
+    }
 }
