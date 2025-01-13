@@ -120,10 +120,10 @@ public class GameManager {
             Game game = getGame(gameId);
             if (game.isAbleToAcceptTakeback(clientId)) {
                 if (status.equals("accept")) {
-                    messageHandler.sendTakebackResponse(game.getTheOtherPlayer(clientId), "accept");
+                    messageHandler.sendTakebackResponse(gameId, "accept");
                     game.takeback(game.getTheOtherPlayer(clientId));
                 } else {
-                    messageHandler.sendTakebackResponse(game.getTheOtherPlayer(clientId), "decline");
+                    messageHandler.sendTakebackResponse(gameId, "decline");
                 }
             }
         } else {

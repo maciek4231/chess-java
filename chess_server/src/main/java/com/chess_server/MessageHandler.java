@@ -231,12 +231,11 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendTakebackResponse(Integer userId, String status) {
-        WebSocket conn = connectionHandler.getClientConn(userId);
+    public void sendTakebackResponse(Integer gameId, String status) {
         JsonObject response = new JsonObject();
         response.addProperty("type", "takebackResponseRes");
         response.addProperty("status", status);
-        server.sendMessageToClient(conn, response.toString());
+        sendToPlayers(gameId, response.toString());
     }
 
     public void sendDrawOffer(Integer opponentId) {
