@@ -214,7 +214,7 @@ public class Game {
 
             if (moveCounter.equals(moveUnlockTakeback)) {
                 takebackBlocked = false;
-                messageHandler.sendTakebackStatus(gameId, false);
+                messageHandler.sendTakebackStatus(gameId, true);
             }
 
             whiteTurn = !whiteTurn;
@@ -787,6 +787,7 @@ public class Game {
             whiteTurn = !whiteTurn;
         }
         messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
+        messageHandler.sendTakebackStatus(gameId, false);
         moveUnlockTakeback = moveCounter + 2;
         takebackBlocked = true;
         messageHandler.sendBoardState(gameId, getBoard());
