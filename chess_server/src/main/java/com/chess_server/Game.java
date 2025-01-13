@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -50,8 +51,8 @@ public class Game {
     private Integer[] takebackOffer = { 0, 0 };
     boolean takebackBlocked = true;
 
-    private char[][] lastBoardState;
-    private char[][] lastLastBoardState;
+    private char[][] lastBoardState = new char[8][8];
+    private char[][] lastLastBoardState = new char[8][8];
 
     boolean timed = false;
     Timer gameTimer;
@@ -147,14 +148,25 @@ public class Game {
         return ret;
     }
 
+    private char[][] cloneBoard(char[][] oldBoard, char[][] newBoard) {
+
+        for (int i = 0; i < 8; i++) {
+            newBoard[i] = Arrays.copyOf(oldBoard[i], 8);
+        }
+        return newBoard;
+    }
+
     public void makeMove(JsonElement move) {
         moveCounter++;
 
         if (lastBoardState != null) {
-            lastLastBoardState = lastBoardState.clone();
+            lastLastBoardState = cloneBoard(lastBoardState, lastLastBoardState);
         }
-        lastBoardState = board.clone();
-        System.out.println("Last board state: " + lastBoardState.toString());
+        lastBoardState = cloneBoard(board, lastBoardState);
+
+        System.out.println("Last board state: " + Arrays.deepToString(lastBoardState));
+        System.out.println("Last last board state: " + Arrays.deepToString(lastLastBoardState));
+
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
