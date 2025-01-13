@@ -8,7 +8,7 @@ public class RewindSureWindow extends YesNoWindow {
             board.cyclePopUpWindows();
         });
         yesButton.addActionListener(e -> {
-            // TODO: Send rewind message
+            board.messageHandler.sendRewindOffer();
         });
     }
 }

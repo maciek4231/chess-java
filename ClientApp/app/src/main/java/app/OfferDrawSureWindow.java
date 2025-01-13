@@ -9,6 +9,7 @@ public class OfferDrawSureWindow extends YesNoWindow {
         });
         yesButton.addActionListener(e -> {
             board.messageHandler.sendDrawOffer();
+            board.cyclePopUpWindows();
         });
     }
 }

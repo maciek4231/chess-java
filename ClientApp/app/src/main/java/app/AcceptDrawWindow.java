@@ -6,10 +6,11 @@ public class AcceptDrawWindow extends YesNoWindow {
         super(board, "Your opponent has offered a draw. Do you accept?");
         noButton.addActionListener(e -> {
             board.cyclePopUpWindows();
-            board.messageHandler.sendAcceptDraw(false);
+            board.messageHandler.sendAcceptRewind(false);
         });
         yesButton.addActionListener(e -> {
-            board.messageHandler.sendAcceptDraw(true);
+            board.cyclePopUpWindows();
+            board.messageHandler.sendAcceptRewind(true);
         });
     }
 

@@ -72,6 +72,12 @@ public class MessageHandler {
                 case "timeUpdateRes":
                     handleTimeUpdate(msg);
                     break;
+                case "takebackRequestRes":
+                    handleRewindOffer(msg);
+                    break;
+                case "takebackDeclinedRes":
+                    handleRewindDeclined(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -338,8 +344,31 @@ public class MessageHandler {
     }
 
     private void handleDrawDeclined(JsonObject msg) {
-        board.cyclePopUpWindows();
         game.showPromptWindow("Your opponent declined the draw offer.");
+    }
+
+    public void sendRewindOffer() {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "takebackRequest");
+        msg.addProperty("gameId", gameCode);
+        client.send(msg.toString());
+    }
+
+    private void handleRewindOffer(JsonObject msg) {
+        board.addPopUpWindow(new AcceptRewindWindow(board));
+        game.showPromptWindow("Your opponent has asked for a rewind.");
+    }
+
+    public void sendAcceptRewind(boolean isAccepted) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "acceptTakeback");
+        msg.addProperty("status", isAccepted ? "accept" : "decline");
+        msg.addProperty("gameId", gameCode);
+        client.send(msg.toString());
+    }
+
+    private void handleRewindDeclined(JsonObject msg) {
+        game.showPromptWindow("Your opponent declined the rewind.");
     }
 
     private void handleCheck(JsonObject msg) {
