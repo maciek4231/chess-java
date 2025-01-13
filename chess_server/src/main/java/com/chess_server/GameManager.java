@@ -93,7 +93,7 @@ public class GameManager {
         if (verifyPlayerInGame(clientId, gameId)) {
             Game game = getGame(gameId);
             if (game.isAbleToOfferTakeback(clientId)) {
-                messageHandler.sendTakebackRequest(game.getOpponentPlayer());
+                messageHandler.sendTakebackRequest(game.getTheOtherPlayer(clientId));
             }
         } else {
             System.out.println("Player " + clientId + " didn't pass verification");
