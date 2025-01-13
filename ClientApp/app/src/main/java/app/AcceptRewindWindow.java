@@ -6,11 +6,11 @@ public class AcceptRewindWindow extends YesNoWindow {
         super(board, "Your opponent has asked for a rewind. Do you accept?");
         noButton.addActionListener(e -> {
             board.cyclePopUpWindows();
-            board.messageHandler.sendAcceptDraw(false);
+            board.messageHandler.sendAcceptRewind(false);
         });
         yesButton.addActionListener(e -> {
             board.cyclePopUpWindows();
-            board.messageHandler.sendAcceptDraw(true);
+            board.messageHandler.sendAcceptRewind(true);
         });
     }
 
