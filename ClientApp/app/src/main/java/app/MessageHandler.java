@@ -250,15 +250,15 @@ public class MessageHandler {
                 break;
         }
 
-        if (game.isRanked())
-        {
+        if (game.isRanked()) {
             playerRank = msg.get("playerRank").getAsInt();
             playerDelta = msg.get("playerDelta").getAsInt();
             opponentRank = msg.get("opponentRank").getAsInt();
             opponentDelta = msg.get("opponentDelta").getAsInt();
         }
 
-        game.showGameConclusionWindow(new GameConclusionWindow(game, conclusionStatus, playerRank, playerDelta, opponentRank, opponentDelta));
+        game.showGameConclusionWindow(
+                new GameConclusionWindow(game, conclusionStatus, playerRank, playerDelta, opponentRank, opponentDelta));
     }
 
     private void handleDeletePiece(JsonObject msg) {
@@ -359,7 +359,7 @@ public class MessageHandler {
 
     private void handleRewindOffer(JsonObject msg) {
         board.addPopUpWindow(new AcceptRewindWindow(board));
-        game.showPromptWindow("Your opponent has asked for a rewind.");
+        game.showPromptWindow("Your opponent has asked for a takeback.");
     }
 
     public void sendAcceptRewind(boolean isAccepted) {
@@ -374,7 +374,7 @@ public class MessageHandler {
         if (msg.get("status").getAsString().equals("accept")) {
             board.rewindMove();
         } else
-            game.showPromptWindow("Your opponent declined the rewind.");
+            game.showPromptWindow("Your opponent declined the takeback.");
     }
 
     private void handleRewindStatus(JsonObject msg) {
