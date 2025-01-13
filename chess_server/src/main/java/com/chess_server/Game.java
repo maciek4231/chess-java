@@ -154,7 +154,7 @@ public class Game {
             lastLastBoardState = lastBoardState.clone();
         }
         lastBoardState = board.clone();
-
+        System.out.println("Last board state: " + lastBoardState.toString());
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
