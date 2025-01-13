@@ -786,10 +786,10 @@ public class Game {
             timeCalc();
             whiteTurn = !whiteTurn;
         }
+        messageHandler.sendBoardState(gameId, getBoard());
         messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
         messageHandler.sendTakebackStatus(gameId, false);
         moveUnlockTakeback = moveCounter + 2;
         takebackBlocked = true;
-        messageHandler.sendBoardState(gameId, getBoard());
     }
 }
