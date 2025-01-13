@@ -30,8 +30,11 @@ public class MessageHandler {
                 case "pickMove":
                     handleMove(clientId, msg);
                     break;
-                case "takeback":
-                    handleTakeback(clientId, msg);
+                case "takebackRequest":
+                    handleTakebackRequest(clientId, msg);
+                    break;
+                case "acceptTakeback":
+                    acceptTakeback(clientId, msg);
                     break;
                 case "availability":
                     handleAvailability(clientId, msg);
@@ -51,6 +54,7 @@ public class MessageHandler {
                 case "acceptDraw":
                     handleAcceptDraw(clientId, msg);
                     break;
+
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -70,9 +74,9 @@ public class MessageHandler {
         gameManager.handleMove(clientId, gameId, move);
     }
 
-    private void handleTakeback(Integer clientId, JsonObject msg) {
-        // Handle takeback message
-        System.out.println("Handling takeback");
+    private void handleTakebackRequest(Integer clientId, JsonObject msg) {
+        Integer gameId = msg.get("gameId").getAsInt();
+        gameManager.handleTakebackRequest(clientId, gameId);
     }
 
     private void handleSurrender(Integer clientId, JsonObject msg) {
@@ -151,6 +155,12 @@ public class MessageHandler {
         gameManager.handleAcceptDraw(clientId, gameId, status);
     }
 
+    private void acceptTakeback(Integer clientId, JsonObject msg) {
+        int gameId = msg.get("gameId").getAsInt();
+        String status = msg.get("status").getAsString();
+        gameManager.handleAcceptTakeback(clientId, gameId, status);
+    }
+
     public void playerDisconnected(Integer clientId) {
         Integer opponentId = connectionHandler.removeActiveUser(clientId);
         if (opponentId.equals(-1)) {
@@ -221,10 +231,31 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
     }
 
+    public void sendTakebackResponse(Integer userId, String status) {
+        WebSocket conn = connectionHandler.getClientConn(userId);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "takebackResponseRes");
+        response.addProperty("status", status);
+        server.sendMessageToClient(conn, response.toString());
+    }
+
     public void sendDrawOffer(Integer opponentId) {
         JsonObject response = new JsonObject();
         response.addProperty("type", "drawOfferRes");
         sendToClientById(opponentId, response.toString());
+    }
+
+    public void sendTakebackRequest(Integer opponentId) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "takebackRequestRes");
+        sendToClientById(opponentId, response.toString());
+    }
+
+    public void sendTakebackStatus(Integer gameId, boolean isActive) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "takebackStatusRes");
+        response.addProperty("status", isActive ? 1 : 0);
+        sendToPlayers(gameId, response.toString());
     }
 
     public void sendPlayerIsBlack(Integer userId) {

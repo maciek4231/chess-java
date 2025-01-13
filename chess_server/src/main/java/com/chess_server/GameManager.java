@@ -89,6 +89,17 @@ public class GameManager {
         }
     }
 
+    public void handleTakebackRequest(Integer clientId, Integer gameId) {
+        if (verifyPlayerInGame(clientId, gameId)) {
+            Game game = getGame(gameId);
+            if (game.isAbleToOfferTakeback(clientId)) {
+                messageHandler.sendTakebackRequest(game.getOpponentPlayer());
+            }
+        } else {
+            System.out.println("Player " + clientId + " didn't pass verification");
+        }
+    }
+
     public void handleAcceptDraw(Integer clientId, Integer gameId, String status) {
         if (verifyPlayerInGame(clientId, gameId)) {
             Game game = getGame(gameId);
@@ -97,6 +108,22 @@ public class GameManager {
                     gameDraw(game, GameStatus.DRAWACCEPT);
                 } else {
                     messageHandler.sendDrawDeclined(game.getTheOtherPlayer(clientId));
+                }
+            }
+        } else {
+            System.out.println("Player " + clientId + " didn't pass verification");
+        }
+    }
+
+    public void handleAcceptTakeback(Integer clientId, Integer gameId, String status) {
+        if (verifyPlayerInGame(clientId, gameId)) {
+            Game game = getGame(gameId);
+            if (game.isAbleToAcceptTakeback(clientId)) {
+                if (status.equals("accept")) {
+                    game.takeback(game.getTheOtherPlayer(clientId));
+                    messageHandler.sendTakebackResponse(game.getTheOtherPlayer(clientId), "accept");
+                } else {
+                    messageHandler.sendTakebackResponse(game.getTheOtherPlayer(clientId), "decline");
                 }
             }
         } else {

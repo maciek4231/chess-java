@@ -47,8 +47,11 @@ public class Game {
     private boolean blackCastleQueenSide = true;
 
     private Integer[] drawOffer = { 0, 0 };
+    private Integer[] takebackOffer = { 0, 0 };
+    boolean takebackBlocked = true;
 
     private char[][] lastBoardState;
+    private char[][] lastLastBoardState;
 
     boolean timed = false;
     Timer gameTimer;
@@ -59,6 +62,7 @@ public class Game {
     Integer time;
 
     Integer moveCounter = 0;
+    Integer moveUnlockTakeback = -1;
 
     Game(Integer player1Id, Integer player2Id, Integer gameId, Integer time, Integer inc, MessageHandler messageHandler,
             GameManager gameManager) {
@@ -145,7 +149,12 @@ public class Game {
 
     public void makeMove(JsonElement move) {
         moveCounter++;
+
+        if (lastBoardState != null) {
+            lastLastBoardState = lastBoardState.clone();
+        }
         lastBoardState = board.clone();
+
         int x1 = move.getAsJsonObject().get("x1").getAsInt();
         int y1 = move.getAsJsonObject().get("y1").getAsInt();
         int x2 = move.getAsJsonObject().get("x2").getAsInt();
@@ -198,6 +207,16 @@ public class Game {
 
             timeCalc();
 
+            if (moveCounter.equals(2)) {
+                takebackBlocked = false;
+                messageHandler.sendTakebackStatus(gameId, true);
+            }
+
+            if (moveCounter.equals(moveUnlockTakeback)) {
+                takebackBlocked = false;
+                messageHandler.sendTakebackStatus(gameId, false);
+            }
+
             whiteTurn = !whiteTurn;
 
             messageHandler.sendUpdateView(getCurrentPlayer(), move);
@@ -235,12 +254,12 @@ public class Game {
                     timeBlack.toString(), !whiteTurn, whiteTurn);
             messageHandler.sendTimeUpdate(this.gameId, playerBlack, timeBlack.toString(),
                     timeWhite.toString(), whiteTurn, !whiteTurn);
-
         }
     }
 
     public void handleNextTurn() {
         drawOffer[0] = drawOffer[1] = 0; // reset draw offers enabling players to offer draw again
+        takebackOffer[0] = takebackOffer[1] = 0; // reset takeback offers enabling players to offer takeback again
         JsonArray newMoves = getPossibleMoves();
         GameStatus status;
         switch (status = getGameStatus()) {
@@ -733,5 +752,43 @@ public class Game {
     public boolean isAbleToAcceptDraw(Integer clientId) {
         boolean isWhite = clientId.equals(playerWhite);
         return isWhite ? drawOffer[1].equals(1) : drawOffer[0].equals(1);
+    }
+
+    public boolean isAbleToOfferTakeback(Integer clientId) {
+        if (takebackBlocked) {
+            return false;
+        }
+        boolean isWhite = clientId.equals(playerWhite);
+        if (isWhite) {
+            if (takebackOffer[0].equals(0)) {
+                takebackOffer[0] = 1;
+                return true;
+            }
+        } else {
+            if (takebackOffer[1].equals(0)) {
+                takebackOffer[1] = 1;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAbleToAcceptTakeback(Integer clientId) {
+        boolean isWhite = clientId.equals(playerWhite);
+        return isWhite ? takebackOffer[1].equals(1) : takebackOffer[0].equals(1);
+    }
+
+    public void takeback(Integer clientId) {
+        if (clientId.equals(getCurrentPlayer())) {
+            board = lastLastBoardState.clone();
+        } else {
+            board = lastBoardState.clone();
+            timeCalc();
+            whiteTurn = !whiteTurn;
+        }
+        messageHandler.sendPossibleMoves(getCurrentPlayer(), getPossibleMoves());
+        moveUnlockTakeback = moveCounter + 2;
+        takebackBlocked = true;
+        messageHandler.sendBoardState(gameId, getBoard());
     }
 }
