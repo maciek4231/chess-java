@@ -175,4 +175,8 @@ public class Application {
     public boolean isLoggedIn() {
         return loggedIn;
     }
+
+    public void showLoginError(String message) {
+        loginCard.showLoginError(message);
+    }
 }

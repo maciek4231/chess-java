@@ -53,4 +53,8 @@ public class LoginCard {
     public void logOut() {
         changeCard("login");
     }
+
+    public void showLoginError(String message) {
+        loginPanel.setResponseError(message);
+    }
 }

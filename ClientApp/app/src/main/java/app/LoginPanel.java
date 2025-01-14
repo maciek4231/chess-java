@@ -111,7 +111,7 @@ public class LoginPanel {
         contentPanel.add(Box.createRigidArea(new Dimension(0, 8)));
 
         responseLabel = new JLabel("");
-        responseLabel.setFont(responseLabel.getFont().deriveFont(24.0f));
+        responseLabel.setFont(responseLabel.getFont().deriveFont(20.0f));
         responseLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         responseLabel.setForeground(Color.RED);
         responseLabel.setMaximumSize(new Dimension(384, 32));
