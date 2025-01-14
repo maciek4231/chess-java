@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess_server.LoginManager.RegistrationStatus;
-
 // TODO: proper database mocking
 public class LoginTest {
 

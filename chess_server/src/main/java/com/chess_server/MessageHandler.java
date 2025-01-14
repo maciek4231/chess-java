@@ -57,7 +57,9 @@ public class MessageHandler {
                 case "loginRequest":
                     handleLoginRequest(conn, msg, clientId);
                     break;
-
+                case "registerRequest":
+                    handleRegisterRequest(conn, msg, clientId);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -185,6 +187,16 @@ public class MessageHandler {
         response.addProperty("type", "loginRes");
         response.addProperty("status", success ? "OK" : "ERROR");
         response.addProperty("username", success ? username : "");
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    private void handleRegisterRequest(WebSocket conn, JsonObject msg, Integer clientId) {
+        String username = msg.get("username").getAsString();
+        String password = msg.get("password").getAsString();
+        RegistrationStatus status = server.loginManager.registerUser(username, password);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "registerRes");
+        response.addProperty("status", status.name());
         server.sendMessageToClient(conn, response.toString());
     }
 

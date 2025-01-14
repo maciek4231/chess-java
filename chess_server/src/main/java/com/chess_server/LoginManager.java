@@ -12,10 +12,6 @@ import javax.crypto.spec.PBEKeySpec;
 public class LoginManager {
     private Connection connection;
 
-    enum RegistrationStatus {
-        SUCCESS, USERNAME_EXISTS, ERROR
-    }
-
     public LoginManager(Connection connection) {
         this.connection = connection;
     }
