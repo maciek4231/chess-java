@@ -133,8 +133,8 @@ public class StatsCard {
         return panel;
     }
 
-    public void setStats(String username, int elo, int games, int wins, int losses, int draws) {
-        usernameResLabel.setText(username);
+    public void setStats(int elo, int games, int wins, int losses, int draws) {
+        usernameResLabel.setText(usernameField.getText());
         eloLabel.setText("ELO: " + elo);
         gamesLabel.setText("Games: " + games);
         winsLabel.setText("Wins: " + wins);

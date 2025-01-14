@@ -93,6 +93,9 @@ public class MessageHandler {
                 case "myStatsRes":
                     handleMyStatsRes(msg);
                     break;
+                case "playerStatsRes":
+                    handleStatsRes(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -596,5 +599,14 @@ public class MessageHandler {
         int draws = msg.get("draws").getAsInt();
         int games = wins + losses + draws;
         application.setMyStats(elo, games, wins, losses, draws);
+    }
+
+    private void handleStatsRes(JsonObject msg) {
+        int elo = msg.get("elo").getAsInt();
+        int wins = msg.get("wins").getAsInt();
+        int losses = msg.get("losses").getAsInt();
+        int draws = msg.get("draws").getAsInt();
+        int games = wins + losses + draws;
+        application.setStats(elo, games, wins, losses, draws);
     }
 }

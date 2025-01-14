@@ -202,4 +202,8 @@ public class Application {
     public void setMyStats(int elo, int games, int wins, int losses, int draws) {
         loginCard.setStats(username, elo, games, wins, losses, draws);
     }
+
+    public void setStats(int elo, int games, int wins, int losses, int draws) {
+        statsCard.setStats(elo, games, wins, losses, draws);
+    }
 }
