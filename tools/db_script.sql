@@ -1,6 +1,9 @@
 CREATE DATABASE IF NOT EXISTS chess_db;
 USE chess_db;
 
+CREATE USER IF NOT EXISTS'admin'@'localhost' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON chess_db.* TO 'admin'@'localhost';
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
@@ -8,7 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     salt varbinary(255) NOT NULL
 );
 
--- insert into users (username, password, email) values ('admin', 'admin', 'admin@szachy.pl');
 
 CREATE TABLE IF NOT EXISTS stats (
     user_id INT,
@@ -21,10 +23,12 @@ CREATE TABLE IF NOT EXISTS stats (
 
 CREATE TABLE IF NOT EXISTS games (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    white_id INT NOT NULL,
+    black_id INT NOT NULL,
     white_user VARCHAR(50) NOT NULL,
     black_user VARCHAR(50) NOT NULL,
     winner INT,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (white_id) REFERENCES users(id),
-    FOREIGN KEY (black_id) REFERENCES users(id),
+    FOREIGN KEY (black_id) REFERENCES users(id)
 );
