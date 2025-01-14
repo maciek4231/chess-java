@@ -27,6 +27,7 @@ public class Application {
     MessageHandler messageHandler;
     LoginCard loginCard;
     StatsCard statsCard;
+    LeaderboardCard leaderboardCard;
 
     boolean loggedIn = false;
     String username = "";
@@ -87,6 +88,7 @@ public class Application {
         menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
 
         menu.add(new MenuButton(this, "Play", "game"));
+        menu.add(new MenuButton(this, "Leaderboard", "leaderboard"));
         menu.add(new MenuButton(this, "Statistics", "statistics"));
         menu.add(Box.createVerticalGlue());
         menu.add(new MenuButton(this, "Account", "login"));
@@ -100,6 +102,9 @@ public class Application {
 
         statsCard = new StatsCard(this, messageHandler);
         mainPanel.add(statsCard.getPanel(), "statistics");
+
+        leaderboardCard = new LeaderboardCard(this, messageHandler);
+        mainPanel.add(leaderboardCard.getPanel(), "leaderboard");
 
         mainPanel.addComponentListener(new ComponentAdapter() {
             @Override

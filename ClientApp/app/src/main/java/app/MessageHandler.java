@@ -559,4 +559,11 @@ public class MessageHandler {
     private void handleLogOutRes(JsonObject msg) {
         application.logOut();
     }
+
+    public void getLeaderboard(int page) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getLeaderboard");
+        msg.addProperty("page", page);
+        client.send(msg.toString());
+    }
 }
