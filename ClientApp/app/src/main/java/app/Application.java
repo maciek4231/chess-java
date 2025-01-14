@@ -179,4 +179,8 @@ public class Application {
     public void showLoginError(String message) {
         loginCard.showLoginError(message);
     }
+
+    public void showSignupError(String message) {
+        loginCard.showSignupError(message);
+    }
 }

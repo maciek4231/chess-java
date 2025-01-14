@@ -57,4 +57,8 @@ public class LoginCard {
     public void showLoginError(String message) {
         loginPanel.setResponseError(message);
     }
+
+    public void showSignupError(String message) {
+        registerPanel.setResponseError(message);
+    }
 }
