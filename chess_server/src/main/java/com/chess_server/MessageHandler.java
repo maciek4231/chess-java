@@ -11,7 +11,7 @@ import com.google.gson.JsonParser;
 
 public class MessageHandler {
 
-    private final ChessWebSocketServer server;
+    final ChessWebSocketServer server;
     public final ConnectionHandler connectionHandler;
     private final GameManager gameManager;
 
@@ -127,31 +127,57 @@ public class MessageHandler {
         }
     }
 
-    private void handleJoinGame(Integer clientId, JsonObject msg) {
+    private void handleJoinGame(Integer clientId, JsonObject msg) {// TODO: clean up this method
+
         JsonObject response = new JsonObject();
         response.addProperty("type", "joinGameRes");
-        boolean isSuccess = false;
+        boolean isSuccess = true;
         WebSocket conn = connectionHandler.getClientConn(clientId);
         int joinCode = msg.get("gameCode").getAsInt();
 
         Integer opponentId = connectionHandler.joinGame(clientId, joinCode);
         if (opponentId.equals(-1) || opponentId.equals(clientId)) {
             response.addProperty("status", -1); // game not found
+            isSuccess = false;
         } else {
+            String userName = connectionHandler.getActiveUserLoggedIn(clientId);
+            String oppName = connectionHandler.getActiveUserLoggedIn(opponentId);
+
             response.addProperty("status", 0);
             response.addProperty("gameCode", joinCode);
+
             Integer[] properties = gameManager.getGameProperties(joinCode);
             boolean isTimed = properties[0] != -1;
+            Integer isRanked = properties[2];
             response.addProperty("isTimed", isTimed ? 1 : 0);
-            response.addProperty("isRanked", properties[2]);
+            response.addProperty("isRanked", isRanked);
+
+            if (oppName == null) {
+                oppName = "Guest";
+                if (isRanked.equals(1)) {
+                    response.addProperty("status", -3); // not logged in but game is ranked
+                    isSuccess = false;
+                }
+            }
+            if (userName == null) {
+                userName = "Guest";
+                if (isRanked.equals(1)) {
+                    response.addProperty("status", -3); // not logged in but game is ranked
+                    isSuccess = false;
+                }
+            }
             WebSocket connOpp = connectionHandler.getClientConn(opponentId);
             if (connOpp != null) {
+                response.addProperty("userName", oppName);
+                response.addProperty("opponentName", userName);
                 server.sendMessageToClient(connOpp, response.toString()); // if successful both players get the same
                                                                           // response
                 isSuccess = true;
             } else {
                 response.addProperty("status", -2); // opponent is not available
             }
+            response.addProperty("userName", userName);
+            response.addProperty("opponentName", oppName);
         }
         server.sendMessageToClient(conn, response.toString());
         if (isSuccess) {
@@ -191,7 +217,7 @@ public class MessageHandler {
     private void handleLoginRequest(Integer clientId, JsonObject msg, WebSocket conn) {
         String username = msg.get("username").getAsString();
         String password = msg.get("password").getAsString();
-        boolean success = server.loginManager.checkLogin(username, password);
+        boolean success = server.databaseManager.loginManager.checkLogin(username, password);
         JsonObject response = new JsonObject();
         String status = success ? "OK" : "INVALID";
         if (success) {
@@ -208,7 +234,7 @@ public class MessageHandler {
     private void handleRegisterRequest(Integer clientId, JsonObject msg, WebSocket conn) {
         String username = msg.get("username").getAsString();
         String password = msg.get("password").getAsString();
-        RegistrationStatus status = server.loginManager.registerUser(username, password);
+        RegistrationStatus status = server.databaseManager.loginManager.registerUser(username, password);
         JsonObject response = new JsonObject();
         boolean success = status == RegistrationStatus.SUCCESS;
         if (success) {
