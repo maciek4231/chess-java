@@ -8,7 +8,8 @@ import com.google.gson.JsonElement;
 
 public class GameManager {
     private ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, Integer[]> gameProperties = new ConcurrentHashMap<>(); // gameId -> [time, inc]
+    private ConcurrentHashMap<Integer, Integer[]> gameProperties = new ConcurrentHashMap<>(); // gameId -> [time, inc,
+                                                                                              // isRanked]
     private final MessageHandler messageHandler;
 
     public GameManager(MessageHandler messageHandler) {
@@ -161,8 +162,9 @@ public class GameManager {
     public void gameLost(Game game, Integer loser) {
         messageHandler.sendLost(loser);
         messageHandler.sendWin(game.getTheOtherPlayer(loser));
-        // messageHandler.server.databaseManager.statsAndRankingManager.updateStats(loser,
-        // game.getTheOtherPlayer(loser));
+        if (gameProperties.get(game.gameId)[2] == 1) {
+            messageHandler.updateStats(loser, game.getTheOtherPlayer(loser), false);
+        }
         eraseGame(game);
     }
 
@@ -173,6 +175,9 @@ public class GameManager {
             messageHandler.sendMaterial(game.gameId);
         } else {
             messageHandler.sendDrawAccepted(game.gameId);
+        }
+        if (gameProperties.get(game.gameId)[2] == 1) {
+            messageHandler.updateStats(game.playerWhite, game.playerBlack, true);
         }
         eraseGame(game);
     }

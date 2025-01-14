@@ -83,7 +83,7 @@ public class ConnectionHandler {
         return true;
     }
 
-    public String getActiveUserLoggedIn(Integer clientId) {
+    public String getActiveUserLoggedIn(Integer clientId) { // returns username
         return activeUsersLoggedIn.get(clientId); // null if not logged in (guest)
     }
 
@@ -114,6 +114,7 @@ public class ConnectionHandler {
                 break;
             }
         }
+        removeActiveUserLoggedIn(clientId);
         activeUsers.remove(clientId);
         return opponentId;
     }

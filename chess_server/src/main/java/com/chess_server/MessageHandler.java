@@ -11,7 +11,7 @@ import com.google.gson.JsonParser;
 
 public class MessageHandler {
 
-    final ChessWebSocketServer server;
+    private final ChessWebSocketServer server;
     public final ConnectionHandler connectionHandler;
     private final GameManager gameManager;
 
@@ -71,6 +71,15 @@ public class MessageHandler {
                     break;
                 case "abandonGame":
                     handleAbandonGame(clientId, msg);
+                    break;
+                case "getLeaderboard":
+                    sendLeaderboard(clientId, conn);
+                    break;
+                case "getPlayerStats":
+                    sendPlayerStats(clientId, msg, conn);
+                    break;
+                case "getMyStats":
+                    sendMyStats(clientId, msg, conn);
                     break;
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -431,6 +440,44 @@ public class MessageHandler {
         response.addProperty("opponentClockActive", isOpponent ? 1 : 0);
         response.addProperty("gameId", gameId);
         WebSocket conn = connectionHandler.getClientConn(userId);
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    public void updateStats(int winnerId, int loserId, boolean isDraw) {
+        server.databaseManager.statsAndRankingManager.updateStats(connectionHandler.getActiveUserLoggedIn(winnerId),
+                connectionHandler.getActiveUserLoggedIn(loserId),
+                isDraw);
+    }
+
+    private void sendLeaderboard(Integer clientId, WebSocket conn) {
+        JsonArray leaderboard = server.databaseManager.statsAndRankingManager.getLeaderboard();
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "leaderboardRes");
+        response.add("leaderboard", leaderboard);
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    private void sendPlayerStats(Integer clientId, JsonObject msg, WebSocket conn) {
+        String username = msg.get("username").getAsString();
+        int[] stats = server.databaseManager.statsAndRankingManager.getPlayerStats(username);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "playerStatsRes");
+        response.addProperty("wins", stats[0]);
+        response.addProperty("losses", stats[1]);
+        response.addProperty("draws", stats[2]);
+        response.addProperty("elo", stats[3]);
+        server.sendMessageToClient(conn, response.toString());
+    }
+
+    private void sendMyStats(Integer clientId, JsonObject msg, WebSocket conn) {
+        String username = connectionHandler.getActiveUserLoggedIn(clientId);
+        int[] stats = server.databaseManager.statsAndRankingManager.getPlayerStats(username);
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "myStatsRes");
+        response.addProperty("wins", stats[0]);
+        response.addProperty("losses", stats[1]);
+        response.addProperty("draws", stats[2]);
+        response.addProperty("elo", stats[3]);
         server.sendMessageToClient(conn, response.toString());
     }
 }

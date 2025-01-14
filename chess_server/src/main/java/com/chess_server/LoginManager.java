@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Arrays;
 
 import javax.crypto.SecretKeyFactory;
@@ -48,13 +49,16 @@ public class LoginManager {
         // Insert new user into database
         String query = "INSERT INTO users (username, passwordHash, salt) VALUES (?, ?, ?)";
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setString(1, username);
             statement.setBytes(2, hash);
             statement.setBytes(3, salt);
             statement.executeUpdate();
 
-            statsAndRankingManager.addStatsEntry(statement.getGeneratedKeys().getInt(1));
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                statsAndRankingManager.addStatsEntry(rs.getInt(1));
+            }
         } catch (Exception e) {
             System.out.println("Error occurred while registering user: " + e.getMessage());
             return RegistrationStatus.ERROR;
