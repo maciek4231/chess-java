@@ -84,6 +84,9 @@ public class MessageHandler {
                 case "loginRes":
                     handleLoginRes(msg);
                     break;
+                case "registerRes":
+                    handleRegisterRes(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -530,6 +533,27 @@ public class MessageHandler {
         else
         {
             application.showLoginError("Invalid username or password.");
+        }
+    }
+
+    private void handleRegisterRes(JsonObject msg)
+    {
+        String status = msg.get("status").getAsString();
+        if (status.equals("SUCCESS"))
+        {
+            application.logIn(msg.get("username").getAsString());
+        }
+        else if (status.equals("USERNAME_EXISTS"))
+        {
+            application.showSignupError("Username already taken.");
+        }
+        else if (status.equals("ERROR"))
+        {
+            application.showSignupError("Something went wrong.");
+        }
+        else
+        {
+            System.out.println("Invalid registration status received.");
         }
     }
 }
