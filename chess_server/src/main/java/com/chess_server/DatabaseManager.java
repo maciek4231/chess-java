@@ -7,6 +7,8 @@ import java.sql.SQLException;
 public class DatabaseManager {
 
     Connection connection;
+    final LoginManager loginManager;
+    final StatsAndRankingManager statsAndRankingManager;
 
     public DatabaseManager() {
         int port = 3306; // default port for MySQL
@@ -28,6 +30,8 @@ public class DatabaseManager {
             System.exit(1);
             // e.printStackTrace();
         }
+        this.statsAndRankingManager = new StatsAndRankingManager(connection);
+        this.loginManager = new LoginManager(connection, statsAndRankingManager);
     }
 
     public void closeConnection() {

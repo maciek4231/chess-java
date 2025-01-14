@@ -18,3 +18,13 @@ CREATE TABLE IF NOT EXISTS stats (
     elo INT DEFAULT 1200,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS games (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    white_user VARCHAR(50) NOT NULL,
+    black_user VARCHAR(50) NOT NULL,
+    winner INT,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (white_id) REFERENCES users(id),
+    FOREIGN KEY (black_id) REFERENCES users(id),
+);

@@ -143,8 +143,7 @@ public class GameManager {
     }
 
     public void eraseGame(Integer gameId) {
-        Game game = games.get(gameId);
-        eraseGame(game);
+        eraseGame(games.get(gameId));
     }
 
     private void eraseGame(Game game) {
@@ -156,14 +155,14 @@ public class GameManager {
     }
 
     public void gameLost(Game game) {
-        messageHandler.sendLost(game.getCurrentPlayer());
-        messageHandler.sendWin(game.getOpponentPlayer());
-        eraseGame(game);
+        gameLost(game, game.getCurrentPlayer());
     }
 
     public void gameLost(Game game, Integer loser) {
         messageHandler.sendLost(loser);
         messageHandler.sendWin(game.getTheOtherPlayer(loser));
+        // messageHandler.server.databaseManager.statsAndRankingManager.updateStats(loser,
+        // game.getTheOtherPlayer(loser));
         eraseGame(game);
     }
 

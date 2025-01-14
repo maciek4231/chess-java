@@ -11,9 +11,11 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class LoginManager {
     private Connection connection;
+    private StatsAndRankingManager statsAndRankingManager;
 
-    public LoginManager(Connection connection) {
+    public LoginManager(Connection connection, StatsAndRankingManager statsAndRankingManager) {
         this.connection = connection;
+        this.statsAndRankingManager = statsAndRankingManager;
     }
 
     public RegistrationStatus registerUser(String username, String password) {
@@ -51,6 +53,8 @@ public class LoginManager {
             statement.setBytes(2, hash);
             statement.setBytes(3, salt);
             statement.executeUpdate();
+
+            statsAndRankingManager.addStatsEntry(statement.getGeneratedKeys().getInt(1));
         } catch (Exception e) {
             System.out.println("Error occurred while registering user: " + e.getMessage());
             return RegistrationStatus.ERROR;
