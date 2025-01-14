@@ -526,36 +526,26 @@ public class MessageHandler {
         client.send(msg.toString());
     }
 
-    private void handleLoginRes(JsonObject msg)
-    {
-        boolean success = msg.get("status").getAsString().equals("OK");
-        if (success)
-        {
+    private void handleLoginRes(JsonObject msg) {
+        String status = msg.get("status").getAsString();
+        if (status.equals("OK")) {
             application.logIn(msg.get("username").getAsString());
-        }
-        else
-        {
+        } else if (status.equals("ALREADY_LOGGED_IN")) {
+            application.showLoginError("User already logged in.");
+        } else {
             application.showLoginError("Invalid username or password.");
         }
     }
 
-    private void handleRegisterRes(JsonObject msg)
-    {
+    private void handleRegisterRes(JsonObject msg) {
         String status = msg.get("status").getAsString();
-        if (status.equals("SUCCESS"))
-        {
+        if (status.equals("SUCCESS")) {
             application.logIn(msg.get("username").getAsString());
-        }
-        else if (status.equals("USERNAME_EXISTS"))
-        {
+        } else if (status.equals("USERNAME_EXISTS")) {
             application.showSignupError("Username already taken.");
-        }
-        else if (status.equals("ERROR"))
-        {
+        } else if (status.equals("ERROR")) {
             application.showSignupError("Something went wrong.");
-        }
-        else
-        {
+        } else {
             System.out.println("Invalid registration status received.");
         }
     }

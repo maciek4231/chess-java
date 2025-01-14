@@ -75,8 +75,12 @@ public class ConnectionHandler {
         activeUsers.put(clientId, conn);
     }
 
-    public void addActiveUserLoggedIn(Integer clientId, String username) {
+    public boolean addActiveUserLoggedIn(Integer clientId, String username) {
+        if (activeUsersLoggedIn.containsValue(username)) {
+            return false;
+        }
         activeUsersLoggedIn.put(clientId, username);
+        return true;
     }
 
     public String getActiveUserLoggedIn(Integer clientId) {

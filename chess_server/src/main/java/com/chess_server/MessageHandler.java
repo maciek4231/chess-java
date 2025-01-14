@@ -187,12 +187,15 @@ public class MessageHandler {
         String password = msg.get("password").getAsString();
         boolean success = server.loginManager.checkLogin(username, password);
         JsonObject response = new JsonObject();
+        String status = success ? "OK" : "INVALID";
         if (success) {
-            connectionHandler.addActiveUserLoggedIn(clientId, username);
+            if (!connectionHandler.addActiveUserLoggedIn(clientId, username)) {
+                status = "ALREADY_LOGGED_IN";
+            }
         }
         response.addProperty("type", "loginRes");
-        response.addProperty("status", success ? "OK" : "ERROR");
-        response.addProperty("username", success ? username : "");
+        response.addProperty("status", status);
+        response.addProperty("username", username);
         server.sendMessageToClient(conn, response.toString());
     }
 
@@ -207,7 +210,7 @@ public class MessageHandler {
         }
         response.addProperty("type", "registerRes");
         response.addProperty("status", status.name());
-        response.addProperty("username", success ? username : "");
+        response.addProperty("username", username);
 
         server.sendMessageToClient(conn, response.toString());
     }
