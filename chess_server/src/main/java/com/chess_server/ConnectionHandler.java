@@ -75,13 +75,16 @@ public class ConnectionHandler {
         activeUsers.put(clientId, conn);
     }
 
-    public void addActiveUserLoggedIn(Integer clientId, WebSocket conn, String username) {
-        activeUsers.put(clientId, conn);
+    public void addActiveUserLoggedIn(Integer clientId, String username) {
         activeUsersLoggedIn.put(clientId, username);
     }
 
     public String getActiveUserLoggedIn(Integer clientId) {
         return activeUsersLoggedIn.get(clientId); // null if not logged in (guest)
+    }
+
+    public void removeActiveUserLoggedIn(Integer clientId) {
+        activeUsersLoggedIn.remove(clientId);
     }
 
     /**

@@ -55,10 +55,16 @@ public class MessageHandler {
                     handleAcceptDraw(clientId, msg);
                     break;
                 case "loginRequest":
-                    handleLoginRequest(conn, msg, clientId);
+                    handleLoginRequest(clientId, msg, conn);
                     break;
                 case "registerRequest":
-                    handleRegisterRequest(conn, msg, clientId);
+                    handleRegisterRequest(clientId, msg, conn);
+                    break;
+                case "logoutRequest":
+                    handleLogoutRequest(clientId, conn);
+                    break;
+                case "abandonGame":
+                    handleAbandonGame(clientId, msg);
                     break;
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -176,13 +182,13 @@ public class MessageHandler {
         }
     }
 
-    private void handleLoginRequest(WebSocket conn, JsonObject msg, Integer clientId) {
+    private void handleLoginRequest(Integer clientId, JsonObject msg, WebSocket conn) {
         String username = msg.get("username").getAsString();
         String password = msg.get("password").getAsString();
         boolean success = server.loginManager.checkLogin(username, password);
         JsonObject response = new JsonObject();
         if (success) {
-            connectionHandler.addActiveUserLoggedIn(clientId, conn, username);
+            connectionHandler.addActiveUserLoggedIn(clientId, username);
         }
         response.addProperty("type", "loginRes");
         response.addProperty("status", success ? "OK" : "ERROR");
@@ -190,20 +196,34 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
     }
 
-    private void handleRegisterRequest(WebSocket conn, JsonObject msg, Integer clientId) {
+    private void handleRegisterRequest(Integer clientId, JsonObject msg, WebSocket conn) {
         String username = msg.get("username").getAsString();
         String password = msg.get("password").getAsString();
         RegistrationStatus status = server.loginManager.registerUser(username, password);
         JsonObject response = new JsonObject();
         boolean success = status == RegistrationStatus.SUCCESS;
         if (success) {
-            connectionHandler.addActiveUserLoggedIn(clientId, conn, username); // login after registration
+            connectionHandler.addActiveUserLoggedIn(clientId, username); // login after registration
         }
         response.addProperty("type", "registerRes");
         response.addProperty("status", status.name());
         response.addProperty("username", success ? username : "");
 
         server.sendMessageToClient(conn, response.toString());
+    }
+
+    private void handleLogoutRequest(Integer clientId, WebSocket conn) {
+        connectionHandler.removeActiveUserLoggedIn(clientId);
+        server.sendMessageToClient(conn, "{\"type\":\"logoutRes\"}");
+    }
+
+    private void handleAbandonGame(Integer clientId, JsonObject msg) {
+        int gameId = msg.get("gameId").getAsInt();
+        Integer opponentId = gameManager.removePlayerFromGame(clientId, gameId);
+        if (opponentId != null) {
+            WebSocket conn = connectionHandler.getClientConn(opponentId);
+            server.sendMessageToClient(conn, "{\"type\":\"opponentDisconnectedRes\"}");
+        }
     }
 
     public void sendToPlayers(Integer gameId, String message) {

@@ -38,13 +38,23 @@ public class GameManager {
         return gameProperties.get(gameCode);
     }
 
-    public void removeTime(Integer gameCode) {
+    public void removeProperties(Integer gameCode) {
         gameProperties.remove(gameCode);
     }
 
     public void removeGameAndTime(Integer gameId) {
         games.remove(gameId);
         gameProperties.remove(gameId);
+    }
+
+    public Integer removePlayerFromGame(Integer clientId, Integer gameId) {
+        if (verifyPlayerInGame(clientId, gameId)) {
+            Game game = getGame(gameId);
+            Integer theOtherPlayer = game.getTheOtherPlayer(clientId);
+            eraseGame(game);
+            return theOtherPlayer;
+        }
+        return null;
     }
 
     public Game getGame(int gameId) {
@@ -140,7 +150,7 @@ public class GameManager {
     private void eraseGame(Game game) {
         if (game != null) {
             messageHandler.connectionHandler.removeGame(game);
-            removeTime(game.gameId);
+            removeProperties(game.gameId);
             games.remove(game.gameId);
         }
     }
