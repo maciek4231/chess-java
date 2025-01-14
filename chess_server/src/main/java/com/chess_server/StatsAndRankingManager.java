@@ -118,6 +118,7 @@ public class StatsAndRankingManager {
             ResultSet res = statement.getResultSet();
             JsonArray leaderboard = new JsonArray();
             for (int i = 0; i < 10; i++) {
+                res.next();
                 JsonObject entry = new JsonObject();
                 if (res.isAfterLast()) {
                     break;
@@ -126,7 +127,7 @@ public class StatsAndRankingManager {
                 entry.addProperty("username", res.getString(1));
                 entry.addProperty("elo", res.getInt(2));
                 leaderboard.add(entry);
-                res.next();
+
             }
             return leaderboard;
         } catch (Exception e) {
@@ -148,7 +149,6 @@ public class StatsAndRankingManager {
                 stats[1] = res.getInt(2);
                 stats[2] = res.getInt(3);
                 stats[3] = res.getInt(4);
-                System.out.println(res.getInt(1));
                 return stats;
             }
         } catch (Exception e) {
