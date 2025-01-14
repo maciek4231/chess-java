@@ -198,4 +198,8 @@ public class Application {
     public void showSignupError(String message) {
         loginCard.showSignupError(message);
     }
+
+    public void setMyStats(int elo, int games, int wins, int losses, int draws) {
+        loginCard.setStats(username, elo, games, wins, losses, draws);
+    }
 }

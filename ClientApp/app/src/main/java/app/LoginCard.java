@@ -61,4 +61,8 @@ public class LoginCard {
     public void showSignupError(String message) {
         registerPanel.setResponseError(message);
     }
+
+    public void setStats(String username, int elo, int games, int wins, int losses, int draws) {
+        profilePanel.setStats(elo, games, wins, losses, draws);
+    }
 }
