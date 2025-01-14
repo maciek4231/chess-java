@@ -196,12 +196,13 @@ public class MessageHandler {
         RegistrationStatus status = server.loginManager.registerUser(username, password);
         JsonObject response = new JsonObject();
         boolean success = status == RegistrationStatus.SUCCESS;
-        response.addProperty("type", "registerRes");
-        response.addProperty("status", status.name());
-        response.addProperty("username", success ? username : "");
         if (success) {
             connectionHandler.addActiveUserLoggedIn(clientId, conn, username); // login after registration
         }
+        response.addProperty("type", "registerRes");
+        response.addProperty("status", status.name());
+        response.addProperty("username", success ? username : "");
+
         server.sendMessageToClient(conn, response.toString());
     }
 
