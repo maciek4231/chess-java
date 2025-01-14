@@ -1,8 +1,8 @@
 package com.chess_server;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+// import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.Test;
 
 // TODO: proper database mocking
 public class LoginTest {
