@@ -487,8 +487,6 @@ public class MessageHandler {
         msg.addProperty("username", username);
         msg.addProperty("password", password);
         client.send(msg.toString());
-
-        application.logIn("Vivaloor"); // TODO: remove this line
     }
 
     public void sendRegisterRequest(String username, String password) {
@@ -503,6 +501,5 @@ public class MessageHandler {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "logoutRequest");
         client.send(msg.toString());
-        application.logOut(); // TODO: remove this line
     }
 }
