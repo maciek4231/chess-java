@@ -25,6 +25,7 @@ public class Application {
     JPanel menu;
     JPanel loginPanel;
     MessageHandler messageHandler;
+    LoginCard loginCard;
 
     public Application(ChessWebSocketClient client)
     {
@@ -78,6 +79,7 @@ public class Application {
 
         menu = new JPanel();
         menu.setPreferredSize(new Dimension(384, 1024));
+        menu.setBackground(Color.LIGHT_GRAY);
         menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
 
         menu.add(new MenuButton(this, "Play", "game"));
@@ -86,7 +88,9 @@ public class Application {
 
         loginPanel = new JPanel();
         loginPanel.setPreferredSize(new Dimension(1152, 1024));
-        loginPanel.setBackground(Color.RED);
+        loginPanel.setLayout(new BorderLayout());
+        loginCard = new LoginCard();
+        loginPanel.add(loginCard.getMainPanel(), BorderLayout.CENTER);
         mainPanel.add(loginPanel, "login");
 
         mainPanel.addComponentListener(new ComponentAdapter() {
