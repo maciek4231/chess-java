@@ -142,13 +142,15 @@ public class StatsAndRankingManager {
             statement.setString(1, username);
             statement.executeQuery();
             ResultSet res = statement.getResultSet();
-            int[] stats = new int[4];
-            stats[0] = res.getInt(2);
-            stats[1] = res.getInt(3);
-            stats[2] = res.getInt(4);
-            stats[3] = res.getInt(5);
-            System.out.println(res.getInt(2));
-            return stats;
+            if (res.next()) {
+                int[] stats = new int[4];
+                stats[0] = res.getInt(1);
+                stats[1] = res.getInt(2);
+                stats[2] = res.getInt(3);
+                stats[3] = res.getInt(4);
+                System.out.println(res.getInt(1));
+                return stats;
+            }
         } catch (Exception e) {
             System.out.println("Error occurred while getting player stats: " + e.getMessage());
         }
