@@ -147,7 +147,7 @@ public class Application {
         mainPanelLayout.show(mainPanel, cardName);
     }
 
-    public void resetGame() { // TODO: also reset game when the opponent leaves.
+    public void resetGame() { // TODO: also reset game when the opponent leaves. (MAYBE NOT?!)
         messageHandler.abandonGame();
         game = new Game(this, messageHandler);
         messageHandler.setGame(game);

@@ -510,4 +510,10 @@ public class MessageHandler {
         client.send(msg.toString());
         gameCode = -1;
     }
+
+    public void askForMyStats() {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getMyStats");
+        client.send(msg.toString());
+    }
 }

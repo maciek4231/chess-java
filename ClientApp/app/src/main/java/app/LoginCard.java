@@ -34,6 +34,9 @@ public class LoginCard {
 
     public void changeCard(String cardName) {
         layout.show(mainPanel, cardName);
+        if (cardName.equals("profile")) {
+            messageHandler.askForMyStats();
+        }
     }
 
     public void logIn(String username) {
