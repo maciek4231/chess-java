@@ -5,55 +5,23 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.JFrame;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Main {
     public static void main(String[] args) {
-        ChessWebSocketClient client;
+        ChessWebSocketClient client = null;
         String server = getServerAddress();
 
         try {
             client = new ChessWebSocketClient(new URI(server));
-            setUpConnection(client);
-            Game game = new Game(client);
-
-            JFrame frame = new JFrame("illChess");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1152, 1024);
-
-            frame.addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    double xScale = e.getComponent().getWidth() / 1152.0;
-                    double yScale = e.getComponent().getHeight() / 1024.0;
-                    game.resize(xScale, yScale);
-                }
-            });
-
-            frame.add(game.getWindow());
-            // frame.setUndecorated(true); // TODO: Remove this line, this enables the game to look correct without cutting off the last row
-            frame.setVisible(true);
-
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-    }
 
-    private static void setUpConnection(ChessWebSocketClient client) {
-        client.connect();
-        while (!client.isOpen()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        new Application(client);
     }
 
     private static String getServerAddress() {

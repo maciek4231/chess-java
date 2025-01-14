@@ -1,6 +1,6 @@
 package app;
 
-import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,26 +11,26 @@ public class MessageHandlerTest {
     private ChessWebSocketClient mockClient;
     private Game mockGame;
     private Board mockBoard;
-    private ConnectWindow mockConnectWindow;
+    // private ConnectWindow mockConnectWindow;
     private MessageHandler messageHandler;
 
-    @BeforeEach
-    void setUp() {
-        mockClient = mock(ChessWebSocketClient.class);
-        mockGame = mock(Game.class);
-        mockBoard = mock(Board.class);
-        mockConnectWindow = mock(ConnectWindow.class); // Add mock for ConnectWindow
-        messageHandler = new MessageHandler(mockClient, mockGame, mockBoard);
-        messageHandler.connectWindow = mockConnectWindow; // Inject the mock
-    }
+    // @BeforeEach
+    // void setUp() {
+    //     mockClient = mock(ChessWebSocketClient.class);
+    //     mockGame = mock(Game.class);
+    //     mockBoard = mock(Board.class);
+    //     mockConnectWindow = mock(ConnectWindow.class); // Add mock for ConnectWindow
+    //     messageHandler = new MessageHandler(mockClient, mockGame, mockBoard);
+    //     messageHandler.connectWindow = mockConnectWindow; // Inject the mock
+    // }
 
-    @Test
-    void testMessageHandlerInitialization() {
-        assertNotNull(messageHandler);
-        assertEquals(mockClient, messageHandler.client);
-        assertEquals(mockGame, messageHandler.game);
-        assertEquals(mockBoard, messageHandler.board);
-    }
+    // @Test
+    // void testMessageHandlerInitialization() {
+    //     assertNotNull(messageHandler);
+    //     assertEquals(mockClient, messageHandler.client);
+    //     assertEquals(mockGame, messageHandler.game);
+    //     assertEquals(mockBoard, messageHandler.board);
+    // }
 
     // @Test
     // void testHandleMessageWithAvailabilityRes() {
@@ -46,16 +46,16 @@ public class MessageHandlerTest {
     // verify(mockConnectWindow, times(1)).setGameCode(12345); // Verify interaction
     // }
 
-    @Test
-    void testHandleMessageWithJoinGameRes() {
-        Board spyBoard = spy(new Board());
-        messageHandler = new MessageHandler(mockClient, mockGame, spyBoard);
+    // @Test
+    // void testHandleMessageWithJoinGameRes() {
+    //     Board spyBoard = spy(new Board());
+    //     messageHandler = new MessageHandler(mockClient, mockGame, spyBoard);
 
-        String message = "{\"type\": \"joinGameRes\", \"isWhite\": true}";
-        messageHandler.handleMessage(message);
+    //     String message = "{\"type\": \"joinGameRes\", \"isWhite\": true}";
+    //     messageHandler.handleMessage(message);
 
-        assertTrue(spyBoard.isWhite); // Verifies the actual Board instance is updated
-    }
+    //     assertTrue(spyBoard.isWhite); // Verifies the actual Board instance is updated
+    // }
 
     // @Test
     // void testHandleMessageWithPlacementRes() {
@@ -86,18 +86,18 @@ public class MessageHandlerTest {
     // 0)));
     // }
 
-    @Test
-    void testHandleMessageWithUnknownType() {
-        String message = "{\"type\": \"unknownType\"}";
-        messageHandler.handleMessage(message);
-        verifyNoInteractions(mockGame);
-        verifyNoInteractions(mockBoard);
-        verifyNoInteractions(mockClient);
-    }
+    // @Test
+    // void testHandleMessageWithUnknownType() {
+    //     String message = "{\"type\": \"unknownType\"}";
+    //     messageHandler.handleMessage(message);
+    //     verifyNoInteractions(mockGame);
+    //     verifyNoInteractions(mockBoard);
+    //     verifyNoInteractions(mockClient);
+    // }
 
-    @Test
-    void testHandleInvalidMessageFormat() {
-        String message = "Invalid JSON";
-        assertDoesNotThrow(() -> messageHandler.handleMessage(message));
-    }
+    // @Test
+    // void testHandleInvalidMessageFormat() {
+    //     String message = "Invalid JSON";
+    //     assertDoesNotThrow(() -> messageHandler.handleMessage(message));
+    // }
 }

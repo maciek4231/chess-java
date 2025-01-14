@@ -10,16 +10,16 @@ import com.google.gson.JsonParser;
 
 public class MessageHandler {
 
+    Application application;
     ChessWebSocketClient client;
     Game game;
     Board board;
     ConnectWindow connectWindow;
     int gameCode;
 
-    public MessageHandler(ChessWebSocketClient client, Game game, Board board) {
+    public MessageHandler(Application application, ChessWebSocketClient client) {
+        this.application = application;
         this.client = client;
-        this.game = game;
-        this.board = board;
     }
 
     public void handleMessage(String message) {
@@ -474,5 +474,35 @@ public class MessageHandler {
             default:
                 return ' ';
         }
+    }
+
+    void setGame(Game game) {
+        this.game = game;
+        this.board = game.getBoard();
+    }
+
+    public void sendLoginRequest(String username, String password) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "loginRequest");
+        msg.addProperty("username", username);
+        msg.addProperty("password", password);
+        client.send(msg.toString());
+
+        application.logIn("Vivaloor");
+    }
+
+    public void sendRegisterRequest(String username, String password) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "registerRequest");
+        msg.addProperty("username", username);
+        msg.addProperty("password", password);
+        client.send(msg.toString());
+    }
+
+    public void sendLogoutRequest() {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "logoutRequest");
+        client.send(msg.toString());
+        application.logOut(); // TODO: remove this line
     }
 }

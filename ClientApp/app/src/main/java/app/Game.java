@@ -4,6 +4,7 @@ package app;
 import javax.swing.JLayeredPane;
 
 public class Game {
+    Application application;
 
     JLayeredPane window;
     PromptWindow promptWindow;
@@ -12,17 +13,16 @@ public class Game {
     GameConclusionWindow gameConclusionWindow;
     String playerName = "You", opponentName = "Opp";
     boolean isRanked = false, isTimed = false;
+    MessageHandler messageHandler;
 
-    public Game(ChessWebSocketClient client) {
+    public Game(Application application, MessageHandler messageHandler) {
+        this.application = application;
         board = new Board();
 
         window = new JLayeredPane();
         window.setBounds(0, 0, 1252, 1024);
         window.setLayout(null);
 
-        MessageHandler messageHandler = new MessageHandler(client, this, board);
-
-        client.setHandler(messageHandler);
         board.setMessageHandler(messageHandler);
 
         window.add(board.getPane(), 0, 0);
@@ -114,5 +114,13 @@ public class Game {
 
     public boolean isTimed() {
         return isTimed;
+    }
+
+    public void appResetGame() {
+        application.resetGame();
+    }
+
+    public Board getBoard() {
+        return board;
     }
 }

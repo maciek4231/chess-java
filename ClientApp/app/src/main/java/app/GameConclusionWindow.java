@@ -64,6 +64,7 @@ public class GameConclusionWindow {
         button.addActionListener(e -> {
             window.setVisible(false);
             game.closeGameConclusionWindow();
+            game.appResetGame();
         });
     }
 
