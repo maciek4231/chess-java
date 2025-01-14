@@ -77,6 +77,12 @@ public class StatsCard {
         button.setFont(button.getFont().deriveFont(32.0f));
         button.setAlignmentX(JButton.CENTER_ALIGNMENT);
         button.addActionListener(e -> {
+            setResponse("");
+            if(usernameField.getText().equals("")) {
+                setResponse("Please enter a username.");
+                return;
+            }
+
             messageHandler.getPlayerStats(usernameField.getText());
         });
         contentPanel.add(button);
