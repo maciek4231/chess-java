@@ -9,10 +9,12 @@ import java.util.Random;
 
 public class ConnectionHandler {
     // thread safe for future use
-    private ConcurrentHashMap<Integer, Integer> joinablePlayers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, WebSocket> activeUsers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Integer> joinablePlayers = new ConcurrentHashMap<>(); // joinCode -> clientId
+    private ConcurrentHashMap<Integer, WebSocket> activeUsers = new ConcurrentHashMap<>(); // clientId -> connection
     private ConcurrentHashMap<Integer, List<Integer>> activeGames = new ConcurrentHashMap<>(); // gameCode -> [player1,
                                                                                                // player2]
+    private ConcurrentHashMap<Integer, String> activeUsersLoggedIn = new ConcurrentHashMap<>(); // clientId -> username
+
     final private GameManager gameManager;
 
     private Random rand = new Random();
@@ -71,6 +73,15 @@ public class ConnectionHandler {
 
     public void addActiveUser(Integer clientId, WebSocket conn) {
         activeUsers.put(clientId, conn);
+    }
+
+    public void addActiveUserLoggedIn(Integer clientId, WebSocket conn, String username) {
+        activeUsers.put(clientId, conn);
+        activeUsersLoggedIn.put(clientId, username);
+    }
+
+    public String getActiveUserLoggedIn(Integer clientId) {
+        return activeUsersLoggedIn.get(clientId); // null if not logged in (guest)
     }
 
     /**

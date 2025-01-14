@@ -54,6 +54,9 @@ public class MessageHandler {
                 case "acceptDraw":
                     handleAcceptDraw(clientId, msg);
                     break;
+                case "loginRequest":
+                    handleLoginRequest(conn, msg, clientId);
+                    break;
 
                 default:
                     System.out.println("Unknown message type: " + type);
@@ -169,6 +172,20 @@ public class MessageHandler {
             WebSocket conn = connectionHandler.getClientConn(opponentId);
             server.sendMessageToClient(conn, "{\"type\":\"opponentDisconnectedRes\"}");
         }
+    }
+
+    private void handleLoginRequest(WebSocket conn, JsonObject msg, Integer clientId) {
+        String username = msg.get("username").getAsString();
+        String password = msg.get("password").getAsString();
+        boolean success = server.loginManager.checkLogin(username, password);
+        JsonObject response = new JsonObject();
+        if (success) {
+            connectionHandler.addActiveUserLoggedIn(clientId, conn, username);
+        }
+        response.addProperty("type", "loginRes");
+        response.addProperty("status", success ? "OK" : "ERROR");
+        response.addProperty("username", success ? username : "");
+        server.sendMessageToClient(conn, response.toString());
     }
 
     public void sendToPlayers(Integer gameId, String message) {

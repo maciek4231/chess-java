@@ -11,13 +11,13 @@ public class ChessWebSocketServer extends WebSocketServer {
 
     private final MessageHandler messageHandler;
     private final DatabaseManager databaseManager;
-    private final LoginManager registrationManager;
+    final LoginManager loginManager;
 
     public ChessWebSocketServer(InetSocketAddress address, DatabaseManager databaseManager) {
         super(address);
         messageHandler = new MessageHandler(this);
         this.databaseManager = databaseManager;
-        this.registrationManager = new LoginManager(databaseManager.connection);
+        this.loginManager = new LoginManager(databaseManager.connection);
     }
 
     @Override
