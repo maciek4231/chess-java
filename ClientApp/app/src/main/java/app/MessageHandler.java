@@ -566,4 +566,11 @@ public class MessageHandler {
         msg.addProperty("page", page);
         client.send(msg.toString());
     }
+
+    public void getGameHistory(int page) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getGameHistory");
+        msg.addProperty("page", page);
+        client.send(msg.toString());
+    }
 }
