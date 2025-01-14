@@ -26,6 +26,12 @@ public class MessageHandler {
             JsonObject msg = JsonParser.parseString(message).getAsJsonObject();
             String type = msg.get("type").getAsString();
             Integer clientId = connectionHandler.getClientId(conn);
+
+            // Do not log passwords
+            if (!type.equals("loginRequest") && !type.equals("registerRequest")) {
+                System.out.println(
+                        "Message from " + conn.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + message);
+            }
             switch (type) {
                 case "pickMove":
                     handleMove(clientId, msg);

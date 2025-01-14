@@ -37,8 +37,6 @@ public class ChessWebSocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println(
-                "Message from " + conn.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + message);
         // Handle incoming messages from clients
         try {
             messageHandler.handleMessage(conn, message);

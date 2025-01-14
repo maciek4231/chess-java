@@ -10,4 +10,11 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- insert into users (username, password, email) values ('admin', 'admin', 'admin@szachy.pl');
 
-
+CREATE TABLE IF NOT EXISTS stats (
+    user_id INT,
+    wins INT DEFAULT 0,
+    losses INT DEFAULT 0,
+    draws INT DEFAULT 0,
+    elo INT DEFAULT 1200,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
