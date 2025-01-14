@@ -9,8 +9,12 @@ public class LoginCard {
     CardLayout layout;
     LoginPanel loginPanel;
     RegisterPanel registerPanel;
+    ProfilePanel profilePanel;
+
+    MessageHandler messageHandler;
 
     public LoginCard(Application application, MessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
         mainPanel = new JPanel();
         layout = new CardLayout();
         mainPanel.setLayout(layout);
@@ -19,6 +23,9 @@ public class LoginCard {
         mainPanel.add(loginPanel.getPanel(), "login");
         registerPanel = new RegisterPanel(this, messageHandler);
         mainPanel.add(registerPanel.getPanel(), "register");
+        profilePanel = new ProfilePanel(this, messageHandler);
+        mainPanel.add(profilePanel.getPanel(), "profile");
+
     }
 
     public JPanel getMainPanel() {
@@ -27,5 +34,20 @@ public class LoginCard {
 
     public void changeCard(String cardName) {
         layout.show(mainPanel, cardName);
+    }
+
+    public void logIn(String username) {
+        profilePanel.setUsername(username);
+        changeCard("profile");
+        mainPanel.remove(loginPanel.getPanel());
+        loginPanel = new LoginPanel(this, messageHandler);
+        mainPanel.add(loginPanel.getPanel(), "login");
+        mainPanel.remove(registerPanel.getPanel());
+        registerPanel = new RegisterPanel(this, messageHandler);
+        mainPanel.add(registerPanel.getPanel(), "register");
+    }
+
+    public void logOut() {
+        changeCard("login");
     }
 }

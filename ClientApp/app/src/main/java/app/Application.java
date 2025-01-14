@@ -27,6 +27,9 @@ public class Application {
     MessageHandler messageHandler;
     LoginCard loginCard;
 
+    boolean loggedIn = false;
+    String username = "";
+
     public Application(ChessWebSocketClient client)
     {
         this.client = client;
@@ -152,5 +155,17 @@ public class Application {
         game.resize(gamePanel.getSize().getWidth() / 1152.0, gamePanel.getSize().getHeight() / 1024.0);
         gamePanel.revalidate();
         gamePanel.repaint();
+    }
+
+    public void logIn(String username) {
+        loggedIn = true;
+        this.username = username;
+        loginCard.logIn(username);
+    }
+
+    public void logOut() {
+        loggedIn = false;
+        username = "";
+        loginCard.logOut();
     }
 }
