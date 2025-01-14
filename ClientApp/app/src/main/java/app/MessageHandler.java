@@ -96,6 +96,9 @@ public class MessageHandler {
                 case "playerStatsRes":
                     handleStatsRes(msg);
                     break;
+                case "leaderboardRes":
+                    handleLeaderboardRes(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -609,4 +612,33 @@ public class MessageHandler {
         int games = wins + losses + draws;
         application.setStats(elo, games, wins, losses, draws);
     }
+
+    private void handleLeaderboardRes(JsonObject msg) {
+        JsonArray leaderboard = msg.get("leaderboard").getAsJsonArray();
+        for (JsonElement leaderboardEntry : leaderboard) {
+            JsonObject entry = leaderboardEntry.getAsJsonObject();
+            String username = entry.get("username").getAsString();
+            int rank = entry.get("rank").getAsInt();
+            int elo = entry.get("elo").getAsInt();
+            application.addLeaderboardEntry(username, rank, elo);
+        }
+    }
 }
+
+
+// private void handlePossibleMoves(JsonObject msg) {
+//     try {
+//         JsonArray moves = msg.get("moves").getAsJsonArray();
+//         for (JsonElement entry : moves) {
+//             JsonObject move = entry.getAsJsonObject();
+//             int x1 = move.get("x1").getAsInt();
+//             int y1 = move.get("y1").getAsInt();
+//             int x2 = move.get("x2").getAsInt();
+//             int y2 = move.get("y2").getAsInt();
+//             board.addAvailableMove(new Coords(x1, y1), new Coords(x2, y2));
+//         }
+//     } catch (Exception e) {
+//         System.out.println("Invalid possible moves received.");
+//     }
+//     board.startMyMove();
+// }

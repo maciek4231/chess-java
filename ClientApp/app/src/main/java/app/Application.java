@@ -206,4 +206,8 @@ public class Application {
     public void setStats(int elo, int games, int wins, int losses, int draws) {
         statsCard.setStats(elo, games, wins, losses, draws);
     }
+
+    public void addLeaderboardEntry(String username, int rank, int elo) {
+        leaderboardCard.addEntry(rank, username, elo);
+    }
 }
