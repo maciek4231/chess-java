@@ -8,6 +8,7 @@ public class LoginCard {
     JPanel mainPanel;
     CardLayout layout;
     LoginPanel loginPanel;
+    RegisterPanel registerPanel;
 
     public LoginCard(Application application, MessageHandler messageHandler) {
         mainPanel = new JPanel();
@@ -16,6 +17,8 @@ public class LoginCard {
 
         loginPanel = new LoginPanel(this, messageHandler);
         mainPanel.add(loginPanel.getPanel(), "login");
+        registerPanel = new RegisterPanel(this, messageHandler);
+        mainPanel.add(registerPanel.getPanel(), "register");
     }
 
     public JPanel getMainPanel() {

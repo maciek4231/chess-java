@@ -487,6 +487,13 @@ public class MessageHandler {
         msg.addProperty("username", username);
         msg.addProperty("password", password);
         client.send(msg.toString());
-        System.out.println(msg.toString());
+    }
+
+    public void sendRegisterRequest(String username, String password) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "registerRequest");
+        msg.addProperty("username", username);
+        msg.addProperty("password", password);
+        client.send(msg.toString());
     }
 }

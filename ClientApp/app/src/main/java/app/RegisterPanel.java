@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-public class LoginPanel {
+public class RegisterPanel {
     JPanel panel;
     JPanel contentPanel;
 
@@ -22,13 +22,15 @@ public class LoginPanel {
     JTextField usernameField;
     JLabel passwordLabel;
     JPasswordField passwordField;
-    JButton loginButton;
+    JLabel confirmPasswordLabel;
+    JPasswordField confirmPasswordField;
+    JButton registerButton;
     JLabel responseLabel;
 
-    JLabel registerLabel;
-    JButton registerButton;
+    JLabel loginLabel;
+    JButton loginButton;
 
-    public LoginPanel(LoginCard loginCard, MessageHandler messageHandler) {
+    public RegisterPanel(LoginCard loginCard, MessageHandler messageHandler) {
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         contentPanel = new JPanel();
@@ -47,7 +49,7 @@ public class LoginPanel {
         title.setFont(title.getFont().deriveFont(64.0f));
         contentPanel.add(title);
 
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 64)));
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(usernameLabel.getFont().deriveFont(16.0f));
@@ -90,22 +92,47 @@ public class LoginPanel {
 
         contentPanel.add(Box.createRigidArea(new Dimension(0, 16)));
 
-        loginButton = new JButton("Log in");
-        loginButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
-        loginButton.setFont(loginButton.getFont().deriveFont(32.0f));
-        loginButton.setMaximumSize(new Dimension(384, 64));
-        contentPanel.add(loginButton);
+        confirmPasswordLabel = new JLabel("Confirm Password:");
+        confirmPasswordLabel.setFont(confirmPasswordLabel.getFont().deriveFont(16.0f));
+        contentPanel.add(confirmPasswordLabel);
+        confirmPasswordLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
-        loginButton.addActionListener(e -> {
-            if (usernameField.getText().length() == 0 || new String(passwordField.getPassword()).length() == 0) {
+        confirmPasswordField = new JPasswordField();
+        confirmPasswordField.setFont(confirmPasswordField.getFont().deriveFont(32.0f));
+        confirmPasswordField.setMaximumSize(new Dimension(384, 64));
+        contentPanel.add(confirmPasswordField);
+        confirmPasswordField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == '"') {
+                    e.consume();
+                }
+            }
+        });
+
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        registerButton = new JButton("Sign up");
+        registerButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        registerButton.setFont(registerButton.getFont().deriveFont(32.0f));
+        registerButton.setMaximumSize(new Dimension(384, 64));
+        contentPanel.add(registerButton);
+
+        registerButton.addActionListener(e -> {
+            if (usernameField.getText().length() == 0 || new String(passwordField.getPassword()).length() == 0 || new String(confirmPasswordField.getPassword()).length() == 0) {
                 responseLabel.setForeground(Color.RED);
                 responseLabel.setText("Please fill in all fields.");
                 return;
             }
+            if (!new String(passwordField.getPassword()).equals(new String(confirmPasswordField.getPassword()))) {
+                responseLabel.setForeground(Color.RED);
+                responseLabel.setText("Passwords do not match.");
+                return;
+            }
 
             responseLabel.setForeground(Color.BLACK);
-            responseLabel.setText("Logging in...");
-            messageHandler.sendLoginRequest(usernameField.getText(), new String(passwordField.getPassword()));
+            responseLabel.setText("Registering...");
+            messageHandler.sendRegisterRequest(usernameField.getText(), new String(passwordField.getPassword()));
         });
 
         contentPanel.add(Box.createRigidArea(new Dimension(0, 8)));
@@ -119,21 +146,21 @@ public class LoginPanel {
 
         contentPanel.add(Box.createRigidArea(new Dimension(0, 24)));
 
-        registerLabel = new JLabel("Don't have an account?");
-        registerLabel.setFont(registerLabel.getFont().deriveFont(24.0f));
-        registerLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        contentPanel.add(registerLabel);
+        loginLabel = new JLabel("Already have an account?");
+        loginLabel.setFont(loginLabel.getFont().deriveFont(24.0f));
+        loginLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        contentPanel.add(loginLabel);
 
         contentPanel.add(Box.createRigidArea(new Dimension(0, 16)));
 
-        registerButton = new JButton("Register");
-        registerButton.setFont(registerButton.getFont().deriveFont(24.0f));
-        registerButton.setMaximumSize(new Dimension(384, 64));
-        registerButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
-        contentPanel.add(registerButton);
+        loginButton = new JButton("Log in");
+        loginButton.setFont(loginButton.getFont().deriveFont(24.0f));
+        loginButton.setMaximumSize(new Dimension(384, 64));
+        loginButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        contentPanel.add(loginButton);
 
-        registerButton.addActionListener(e -> {
-            loginCard.changeCard("register");
+        loginButton.addActionListener(e -> {
+            loginCard.changeCard("login");
         });
 
         contentPanel.add(Box.createVerticalGlue());
