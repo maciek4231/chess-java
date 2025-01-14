@@ -161,6 +161,8 @@ public class MessageHandler {
             response.addProperty("isTimed", isTimed ? 1 : 0);
             response.addProperty("isRanked", isRanked);
 
+            isSuccess = true;
+
             if (oppName == null) {
                 oppName = "Guest";
                 if (isRanked.equals(1)) {
@@ -181,8 +183,9 @@ public class MessageHandler {
                 response.addProperty("opponentName", userName);
                 server.sendMessageToClient(connOpp, response.toString()); // if successful both players get the same
                                                                           // response
-                isSuccess = true;
+
             } else {
+                isSuccess = false;
                 response.addProperty("status", -2); // opponent is not available
             }
             response.addProperty("userName", userName);
