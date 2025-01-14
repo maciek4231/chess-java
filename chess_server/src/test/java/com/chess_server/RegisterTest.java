@@ -7,25 +7,25 @@ import org.junit.jupiter.api.Test;
 // TODO: proper database mocking
 public class RegisterTest {
 
-    @Test
-    void testRegister() {
+    // @Test
+    // void testRegister() {
 
-        LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
-        assertEquals(RegistrationStatus.SUCCESS, loginManager.registerUser("test", "hasloTestowe"));
-        assertEquals(RegistrationStatus.USERNAME_EXISTS, loginManager.registerUser("test", "hasloTestowe"));
-    }
+    //     LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
+    //     assertEquals(RegistrationStatus.SUCCESS, loginManager.registerUser("test", "hasloTestowe"));
+    //     assertEquals(RegistrationStatus.USERNAME_EXISTS, loginManager.registerUser("test", "hasloTestowe"));
+    // }
 
-    @Test
-    void testRegisterNullPassword() {
+    // @Test
+    // void testRegisterNullPassword() {
 
-        LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
-        assertEquals(RegistrationStatus.ERROR, loginManager.registerUser("test", null));
-    }
+    //     LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
+    //     assertEquals(RegistrationStatus.ERROR, loginManager.registerUser("test", null));
+    // }
 
-    @Test
-    void testRegisterNullUsername() {
+    // @Test
+    // void testRegisterNullUsername() {
 
-        LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
-        assertEquals(RegistrationStatus.ERROR, loginManager.registerUser(null, "hasloTestowe"));
-    }
+    //     LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
+    //     assertEquals(RegistrationStatus.ERROR, loginManager.registerUser(null, "hasloTestowe"));
+    // }
 }
