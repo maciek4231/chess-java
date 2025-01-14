@@ -111,6 +111,10 @@ public class ConnectWindow {
         responseLabel.setText("The player left the game.");
     }
 
+    public void gameRankedGuestJoining() {
+        responseLabel.setText("Guests can't join ranked games.");
+    }
+
     public static void staticResize(double x, double y) {
         xScale = x;
         yScale = y;
