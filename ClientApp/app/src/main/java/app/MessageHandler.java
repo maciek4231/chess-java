@@ -81,6 +81,9 @@ public class MessageHandler {
                 case "takebackStatusRes":
                     handleRewindStatus(msg);
                     break;
+                case "loginRes":
+                    handleLoginRes(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -515,5 +518,18 @@ public class MessageHandler {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "getMyStats");
         client.send(msg.toString());
+    }
+
+    private void handleLoginRes(JsonObject msg)
+    {
+        boolean success = msg.get("status").getAsString().equals("OK");
+        if (success)
+        {
+            application.logIn(msg.get("username").getAsString());
+        }
+        else
+        {
+            application.showLoginError("Invalid username or password.");
+        }
     }
 }
