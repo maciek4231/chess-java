@@ -89,7 +89,7 @@ public class Application {
         loginPanel = new JPanel();
         loginPanel.setPreferredSize(new Dimension(1152, 1024));
         loginPanel.setLayout(new BorderLayout());
-        loginCard = new LoginCard();
+        loginCard = new LoginCard(this, messageHandler);
         loginPanel.add(loginCard.getMainPanel(), BorderLayout.CENTER);
         mainPanel.add(loginPanel, "login");
 

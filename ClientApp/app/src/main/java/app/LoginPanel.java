@@ -28,7 +28,7 @@ public class LoginPanel {
     JLabel registerLabel;
     JButton registerButton;
 
-    public LoginPanel() {
+    public LoginPanel(LoginCard loginCard, MessageHandler messageHandler) {
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         contentPanel = new JPanel();
@@ -97,8 +97,15 @@ public class LoginPanel {
         contentPanel.add(loginButton);
 
         loginButton.addActionListener(e -> {
+            if (usernameField.getText().length() == 0 || new String(passwordField.getPassword()).length() == 0) {
+                responseLabel.setForeground(Color.RED);
+                responseLabel.setText("Please fill in all fields.");
+                return;
+            }
+
             responseLabel.setForeground(Color.BLACK);
-            responseLabel.setText("Logging in..."); // TODO: Implement login
+            responseLabel.setText("Logging in...");
+            messageHandler.sendLoginRequest(usernameField.getText(), new String(passwordField.getPassword()));
         });
 
         contentPanel.add(Box.createRigidArea(new Dimension(0, 8)));
@@ -124,6 +131,10 @@ public class LoginPanel {
         registerButton.setMaximumSize(new Dimension(384, 64));
         registerButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
         contentPanel.add(registerButton);
+
+        registerButton.addActionListener(e -> {
+            loginCard.changeCard("register");
+        });
 
         contentPanel.add(Box.createVerticalGlue());
     }

@@ -480,4 +480,13 @@ public class MessageHandler {
         this.game = game;
         this.board = game.getBoard();
     }
+
+    public void sendLoginRequest(String username, String password) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "loginRequest");
+        msg.addProperty("username", username);
+        msg.addProperty("password", password);
+        client.send(msg.toString());
+        System.out.println(msg.toString());
+    }
 }

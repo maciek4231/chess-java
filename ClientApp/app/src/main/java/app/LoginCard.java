@@ -9,12 +9,12 @@ public class LoginCard {
     CardLayout layout;
     LoginPanel loginPanel;
 
-    public LoginCard() {
+    public LoginCard(Application application, MessageHandler messageHandler) {
         mainPanel = new JPanel();
         layout = new CardLayout();
         mainPanel.setLayout(layout);
 
-        loginPanel = new LoginPanel();
+        loginPanel = new LoginPanel(this, messageHandler);
         mainPanel.add(loginPanel.getPanel(), "login");
     }
 
