@@ -98,7 +98,6 @@ public class LeaderboardCard {
 
     public void addEntry(int rank, String username, int elo) {
         entries.add(new LeaderboardEntry(rank, username, elo).getPanel());
-        System.out.println("Added entry: " + rank + " " + username + " " + elo);
     }
 
     public void fetchEntries() {
