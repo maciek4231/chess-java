@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.10.0</version>
+      <version>5.11.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -80,12 +80,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0</version>
-        <configuration>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
-        </configuration>
+        <version>3.5.2</version>
       </plugin>
     </plugins>
   </build>

@@ -10,10 +10,14 @@ import java.net.InetSocketAddress;
 public class ChessWebSocketServer extends WebSocketServer {
 
     private final MessageHandler messageHandler;
+    private final DatabaseManager databaseManager;
+    private final LoginManager registrationManager;
 
-    public ChessWebSocketServer(InetSocketAddress address) {
+    public ChessWebSocketServer(InetSocketAddress address, DatabaseManager databaseManager) {
         super(address);
         messageHandler = new MessageHandler(this);
+        this.databaseManager = databaseManager;
+        this.registrationManager = new LoginManager(databaseManager.connection);
     }
 
     @Override
