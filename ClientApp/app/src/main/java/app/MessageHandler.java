@@ -151,8 +151,14 @@ public class MessageHandler {
         } else {
             if (status == -1) {
                 connectWindow.gameNotFound();
-            } else {
+            }
+            else if (status == -2)
+            {
                 connectWindow.opponentLeft();
+            }
+            else if (status == -3)
+            {
+                connectWindow.gameRankedGuestJoining();
             }
         }
     }
