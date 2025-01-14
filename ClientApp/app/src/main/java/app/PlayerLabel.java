@@ -16,7 +16,7 @@ public class PlayerLabel {
         this.xPos = xPos;
         this.yPos = yPos;
 
-        label = new JLabel("Guest", SwingConstants.CENTER);
+        label = new JLabel("", SwingConstants.CENTER);
         label.setBounds((int) (xPos * xScale), (int) (yPos * yScale), (int) (128 * xScale), (int) (64 * yScale));
         correctFontSize();
     }

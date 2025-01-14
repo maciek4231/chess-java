@@ -104,7 +104,6 @@ public class Board {
         opponentLabel = new PlayerLabel(1024, 448);
         jPane.add(opponentLabel.getLabel());
         jPane.setLayer(opponentLabel.getLabel(), 4);
-        opponentLabel.setText("SkibidiToilet");
     }
 
     public void addAvailableMove(Coords from, Coords to) {
@@ -408,5 +407,13 @@ public class Board {
             jPane.remove(piece.getButton());
         }
         pieces.clear();
+    }
+
+    public void setPlayerName(String playerName) {
+        playerLabel.setText(playerName);
+    }
+
+    public void setOpponentName(String opponentName) {
+        opponentLabel.setText(opponentName);
     }
 }

@@ -84,10 +84,12 @@ public class Game {
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+        board.setPlayerName(playerName);
     }
 
     public void setOpponentName(String opponentName) {
         this.opponentName = opponentName;
+        board.setOpponentName(opponentName);
     }
 
     public void setRanked(boolean ranked) {

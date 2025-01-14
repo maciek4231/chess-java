@@ -130,6 +130,8 @@ public class MessageHandler {
         int code = -1;
         boolean isTimed = false;
         boolean isRanked = false;
+        String user = "";
+        String opponent = "";
         try {
             status = msg.get("status").getAsInt();
             code = msg.get("gameCode").getAsInt();
@@ -143,11 +145,15 @@ public class MessageHandler {
             try {
                 isTimed = msg.get("isTimed").getAsInt() == 1;
                 isRanked = msg.get("isRanked").getAsInt() == 1;
+                user = msg.get("userName").getAsString();
+                opponent = msg.get("opponentName").getAsString();
             } catch (Exception e) {
                 System.out.println("Invalid game settings received.");
             }
             game.setRanked(isRanked);
             game.setTimed(isTimed);
+            game.setPlayerName(user);
+            game.setOpponentName(opponent);
         } else {
             if (status == -1) {
                 connectWindow.gameNotFound();
