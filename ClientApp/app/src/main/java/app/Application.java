@@ -161,11 +161,17 @@ public class Application {
         loggedIn = true;
         this.username = username;
         loginCard.logIn(username);
+        game.logIn();
     }
 
     public void logOut() {
         loggedIn = false;
         username = "";
         loginCard.logOut();
+        resetGame();
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
     }
 }

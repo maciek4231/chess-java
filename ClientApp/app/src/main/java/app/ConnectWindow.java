@@ -31,12 +31,14 @@ public class ConnectWindow {
 
     Game game;
     MessageHandler messageHandler;
+    Application application;
 
     private static double xScale = 1.0;
     private static double yScale = 1.0;
 
-    public ConnectWindow(MessageHandler messageHandler, Game game) {
+    public ConnectWindow(MessageHandler messageHandler, Game game, Application application) {
         messageHandler.setConnectWindow(this);
+        this.application = application;
         this.game = game;
         this.messageHandler = messageHandler;
 
@@ -144,6 +146,7 @@ public class ConnectWindow {
         enableRankedGamCheckBox.setBounds((int) (50 * xScale), (int) (125 * yScale), (int) (400 * xScale), (int) (20 * yScale));
         panel.add(enableRankedGamCheckBox, 1);
         enableRankedGamCheckBox.setBackground(new Color(0, 0, 0, 0));
+        enableRankedGamCheckBox.setEnabled(application.isLoggedIn());
 
         enableTimeCheckBox = new JCheckBox("Enable timed game");
         enableTimeCheckBox.setBounds((int) (50 * xScale), (int) (150 * yScale), (int) (400 * xScale), (int) (20 * yScale));
@@ -276,5 +279,10 @@ public class ConnectWindow {
             incMinutes.setEnabled(enabled);
             incSeconds.setEnabled(enabled);
         });
+    }
+
+    public void logIn() // this is only used to enable the ranked checkbox
+    {
+        enableRankedGamCheckBox.setEnabled(true);
     }
 }

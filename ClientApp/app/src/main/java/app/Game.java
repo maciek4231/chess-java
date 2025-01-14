@@ -27,7 +27,7 @@ public class Game {
 
         window.add(board.getPane(), 0, 0);
 
-        connectWindow = new ConnectWindow(messageHandler, this);
+        connectWindow = new ConnectWindow(messageHandler, this, application);
 
         window.add(connectWindow.getPanel(), 1, 1);
     }
@@ -122,5 +122,10 @@ public class Game {
 
     public Board getBoard() {
         return board;
+    }
+
+    public void logIn() // this is only used to enable the ranked checkbox in the connect window
+    {
+        connectWindow.logIn();
     }
 }

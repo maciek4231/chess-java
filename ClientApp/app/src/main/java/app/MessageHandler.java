@@ -488,7 +488,7 @@ public class MessageHandler {
         msg.addProperty("password", password);
         client.send(msg.toString());
 
-        application.logIn("Vivaloor");
+        application.logIn("Vivaloor"); // TODO: remove this line
     }
 
     public void sendRegisterRequest(String username, String password) {
