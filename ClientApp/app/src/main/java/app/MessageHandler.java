@@ -517,7 +517,6 @@ public class MessageHandler {
         msg.addProperty("type", "abandonGame");
         msg.addProperty("gameId", gameCode);
         client.send(msg.toString());
-        gameCode = -1;
     }
 
     public void askForMyStats() {
