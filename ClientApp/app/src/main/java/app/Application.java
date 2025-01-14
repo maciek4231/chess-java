@@ -148,6 +148,7 @@ public class Application {
     }
 
     public void resetGame() { // TODO: also reset game when the opponent leaves.
+        messageHandler.abandonGame();
         game = new Game(this, messageHandler);
         messageHandler.setGame(game);
         gamePanel.removeAll();
