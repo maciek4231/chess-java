@@ -8,6 +8,10 @@ public class DatabaseManager {
 
     Connection connection;
 
+    public Connection connection() {
+        return connection;
+    }
+
     public DatabaseManager() {
         int port = 3306; // default port for MySQL
         String url = "jdbc:mysql://localhost:" + port + "/chess_db"; // mysql needs to be running

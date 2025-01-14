@@ -67,7 +67,7 @@ public class LoginManager {
 
     }
 
-    private byte[] hashPasswordWithSalt(String password, byte[] salt) {
+    public byte[] hashPasswordWithSalt(String password, byte[] salt) {
         try {
             if (salt.length != 16) {
                 System.out.println("Salt length is not 16 bytes");

@@ -1,31 +1,80 @@
 package com.chess_server;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 
-// TODO: proper database mocking
 public class RegisterTest {
 
-    // @Test
-    // void testRegister() {
+    @Mock
+    private Connection connection;
 
-    //     LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
-    //     assertEquals(RegistrationStatus.SUCCESS, loginManager.registerUser("test", "hasloTestowe"));
-    //     assertEquals(RegistrationStatus.USERNAME_EXISTS, loginManager.registerUser("test", "hasloTestowe"));
-    // }
+    @Mock
+    private PreparedStatement preparedStatement;
 
-    // @Test
-    // void testRegisterNullPassword() {
+    private LoginManager loginManager;
 
-    //     LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
-    //     assertEquals(RegistrationStatus.ERROR, loginManager.registerUser("test", null));
-    // }
+    @BeforeEach
+    void setUp() throws SQLException {
+        MockitoAnnotations.openMocks(this);
+        loginManager = new LoginManager(connection);
+    }
 
-    // @Test
-    // void testRegisterNullUsername() {
+    @Test
+    void testRegister_Success() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
 
-    //     LoginManager loginManager = new LoginManager(new DatabaseManager().connection);
-    //     assertEquals(RegistrationStatus.ERROR, loginManager.registerUser(null, "hasloTestowe"));
-    // }
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeUpdate()).thenReturn(1);
+
+        RegistrationStatus status = loginManager.registerUser("newUser", "password");
+
+        assertEquals(RegistrationStatus.SUCCESS, status);
+    }
+
+    @Test
+    void testRegister_UsernameExists() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+
+        RegistrationStatus status = loginManager.registerUser("existingUser", "password");
+
+        assertEquals(RegistrationStatus.USERNAME_EXISTS, status);
+    }
+
+    @Test
+    void testRegister_NullPassword() {
+        RegistrationStatus status = loginManager.registerUser("newUser", null);
+        assertEquals(RegistrationStatus.ERROR, status);
+    }
+
+    @Test
+    void testRegister_NullUsername() {
+        RegistrationStatus status = loginManager.registerUser(null, "password");
+        assertEquals(RegistrationStatus.ERROR, status);
+    }
+
+    @Test
+    void testRegister_ErrorOnDatabase() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenThrow(SQLException.class);
+
+        RegistrationStatus status = loginManager.registerUser("newUser", "password");
+
+        assertEquals(RegistrationStatus.ERROR, status);
+    }
 }
