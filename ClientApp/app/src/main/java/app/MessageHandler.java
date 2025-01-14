@@ -87,6 +87,9 @@ public class MessageHandler {
                 case "registerRes":
                     handleRegisterRes(msg);
                     break;
+                case "logoutRes":
+                    handleLogOutRes(msg);
+                    break;
                 default:
                     System.out.println("Unknown message type: " + type);
             }
@@ -562,5 +565,9 @@ public class MessageHandler {
         msg.addProperty("type", "getPlayerStats");
         msg.addProperty("username", username);
         client.send(msg.toString());
+    }
+
+    private void handleLogOutRes(JsonObject msg) {
+        application.logOut();
     }
 }
