@@ -298,32 +298,61 @@ public class MessageHandler {
         server.sendMessageToClient(conn, update.toString());
     }
 
-    public void sendLost(Integer userId) {
+    public void sendLost(Integer userId, Double[] elo) {
         WebSocket conn = connectionHandler.getClientConn(userId);
         JsonObject response = new JsonObject();
         response.addProperty("type", "gameOverRes");
+        response.addProperty("playerRank", elo[0]);
+        response.addProperty("playerDelta", elo[1]);
+        response.addProperty("opponentRank", elo[2]);
+        response.addProperty("opponentDelta", elo[3]);
         response.addProperty("status", "lost");
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendWin(Integer userId) {
+    public void sendWin(Integer userId, Double[] elo) {
         WebSocket conn = connectionHandler.getClientConn(userId);
         JsonObject response = new JsonObject();
         response.addProperty("type", "gameOverRes");
+        response.addProperty("playerRank", elo[0]);
+        response.addProperty("playerDelta", elo[1]);
+        response.addProperty("opponentRank", elo[2]);
+        response.addProperty("opponentDelta", elo[3]);
         response.addProperty("status", "won");
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendStalemate(Integer gameId) {
-        sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"stalemate\"}");
+    public void sendStalemate(Integer gameId, Double[] elo) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("status", "stalemate");
+        response.addProperty("playerRank", elo[0]);
+        response.addProperty("playerDelta", elo[1]);
+        response.addProperty("opponentRank", elo[2]);
+        response.addProperty("opponentDelta", elo[3]);
+        sendToPlayers(gameId, response.toString());
     }
 
-    public void sendMaterial(Integer gameId) {
-        sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"material\"}");
+    public void sendMaterial(Integer gameId, Double[] elo) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("status", "material");
+        response.addProperty("playerRank", elo[0]);
+        response.addProperty("playerDelta", elo[1]);
+        response.addProperty("opponentRank", elo[2]);
+        response.addProperty("opponentDelta", elo[3]);
+        sendToPlayers(gameId, response.toString());
     }
 
-    public void sendDrawAccepted(Integer gameId) {
-        sendToPlayers(gameId, "{\"type\":\"gameOverRes\",\"status\":\"drawAccept\"}");
+    public void sendDrawAccepted(Integer gameId, Double[] elo) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("status", "drawAccept");
+        response.addProperty("playerRank", elo[0]);
+        response.addProperty("playerDelta", elo[1]);
+        response.addProperty("opponentRank", elo[2]);
+        response.addProperty("opponentDelta", elo[3]);
+        sendToPlayers(gameId, response.toString());
     }
 
     public void sendDrawDeclined(Integer userId) {
@@ -446,8 +475,9 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void updateStats(int winnerId, int loserId, boolean isDraw) {
-        server.databaseManager.statsAndRankingManager.updateStats(connectionHandler.getActiveUserLoggedIn(winnerId),
+    public Double[] updateStats(int winnerId, int loserId, boolean isDraw) {
+        return server.databaseManager.statsAndRankingManager.updateStats(
+                connectionHandler.getActiveUserLoggedIn(winnerId),
                 connectionHandler.getActiveUserLoggedIn(loserId),
                 isDraw);
     }

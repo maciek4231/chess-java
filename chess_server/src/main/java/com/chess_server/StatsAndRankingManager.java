@@ -25,18 +25,24 @@ public class StatsAndRankingManager {
         }
     }
 
-    public void updateStats(String winner, String loser, boolean isDraw) {
+    public Double[] updateStats(String winner, String loser, boolean isDraw) {
         String query = "UPDATE stats SET wins = wins + ?, losses = losses + ?, draws = draws + ?, elo = ? WHERE user_id = ?";
         int winner_id = getIdByUsername(winner);
         int loser_id = getIdByUsername(loser);
         Double eloWinner = (double) getEloById(winner_id);
         Double eloLoser = (double) getEloById(loser_id);
+        Double deltaWinner;
+        Double deltaLoser;
         if (isDraw) {
             Double[] elo = EloRating(eloWinner, eloLoser, 30, 0.5);
+            deltaWinner = elo[0] - eloWinner;
+            deltaLoser = elo[1] - eloLoser;
             eloWinner = elo[0];
             eloLoser = elo[1];
         } else {
             Double[] elo = EloRating(eloWinner, eloLoser, 30, 1.0);
+            deltaWinner = elo[0] - eloWinner;
+            deltaLoser = elo[1] - eloLoser;
             eloWinner = elo[0];
             eloLoser = elo[1];
         }
@@ -76,7 +82,7 @@ public class StatsAndRankingManager {
         } catch (Exception e) {
             System.out.println("Error occurred while updating stats: " + e.getMessage());
         }
-
+        return new Double[] { eloWinner, deltaWinner, eloLoser, deltaLoser };
     }
 
     private int getIdByUsername(String username) {

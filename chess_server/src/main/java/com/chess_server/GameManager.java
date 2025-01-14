@@ -160,25 +160,31 @@ public class GameManager {
     }
 
     public void gameLost(Game game, Integer loser) {
-        messageHandler.sendLost(loser);
-        messageHandler.sendWin(game.getTheOtherPlayer(loser));
+        Double[] elo = new Double[] { 0.0, 0.0, 0.0, 0.0 };
+
         if (gameProperties.get(game.gameId)[2] == 1) {
-            messageHandler.updateStats(loser, game.getTheOtherPlayer(loser), false);
+            elo = messageHandler.updateStats(loser, game.getTheOtherPlayer(loser), false);
         }
+        messageHandler.sendLost(loser, elo);
+        messageHandler.sendWin(game.getTheOtherPlayer(loser), elo);
+
         eraseGame(game);
     }
 
     public void gameDraw(Game game, GameStatus status) {
-        if (status == GameStatus.STALEMATE) {
-            messageHandler.sendStalemate(game.gameId);
-        } else if (status == GameStatus.MATERIAL) {
-            messageHandler.sendMaterial(game.gameId);
-        } else {
-            messageHandler.sendDrawAccepted(game.gameId);
-        }
+        Double[] elo = new Double[] { 0.0, 0.0, 0.0, 0.0 };
+
         if (gameProperties.get(game.gameId)[2] == 1) {
-            messageHandler.updateStats(game.playerWhite, game.playerBlack, true);
+            elo = messageHandler.updateStats(game.playerWhite, game.playerBlack, true);
         }
+        if (status == GameStatus.STALEMATE) {
+            messageHandler.sendStalemate(game.gameId, elo);
+        } else if (status == GameStatus.MATERIAL) {
+            messageHandler.sendMaterial(game.gameId, elo);
+        } else {
+            messageHandler.sendDrawAccepted(game.gameId, elo);
+        }
+
         eraseGame(game);
     }
 
