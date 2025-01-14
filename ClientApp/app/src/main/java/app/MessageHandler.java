@@ -502,4 +502,12 @@ public class MessageHandler {
         msg.addProperty("type", "logoutRequest");
         client.send(msg.toString());
     }
+
+    public void abandonGame() {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "abandonGame");
+        msg.addProperty("gameId", gameCode);
+        client.send(msg.toString());
+        gameCode = -1;
+    }
 }
