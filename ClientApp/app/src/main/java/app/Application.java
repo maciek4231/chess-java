@@ -28,6 +28,7 @@ public class Application {
     LoginCard loginCard;
     StatsCard statsCard;
     LeaderboardCard leaderboardCard;
+    GameHistoryCard gameHistoryCard;
 
     boolean loggedIn = false;
     String username = "";
@@ -90,6 +91,7 @@ public class Application {
         menu.add(new MenuButton(this, "Play", "game"));
         menu.add(new MenuButton(this, "Leaderboard", "leaderboard"));
         menu.add(new MenuButton(this, "Statistics", "statistics"));
+        menu.add(new MenuButton(this, "Game History", "gameHistory"));
         menu.add(Box.createVerticalGlue());
         menu.add(new MenuButton(this, "Account", "login"));
 
@@ -105,6 +107,9 @@ public class Application {
 
         leaderboardCard = new LeaderboardCard(this, messageHandler);
         mainPanel.add(leaderboardCard.getPanel(), "leaderboard");
+
+        gameHistoryCard = new GameHistoryCard(this, messageHandler);
+        mainPanel.add(gameHistoryCard.getPanel(), "gameHistory");
 
         mainPanel.addComponentListener(new ComponentAdapter() {
             @Override

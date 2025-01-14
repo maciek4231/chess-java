@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class LeaderboardCard {
+public class GameHistoryCard {
 
     JPanel panel;
     JPanel contentPanel;
@@ -22,7 +22,7 @@ public class LeaderboardCard {
 
     MessageHandler messageHandler;
 
-    public LeaderboardCard(Application application, MessageHandler messageHandler) {
+    public GameHistoryCard(Application application, MessageHandler messageHandler) {
         this.messageHandler = messageHandler;
 
         panel = new JPanel();
@@ -40,7 +40,7 @@ public class LeaderboardCard {
 
         contentPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
-        titleLabel = new JLabel("Leaderboard:");
+        titleLabel = new JLabel("Game History:");
         titleLabel.setFont(titleLabel.getFont().deriveFont(42.0f));
         contentPanel.add(titleLabel);
         titleLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -96,8 +96,8 @@ public class LeaderboardCard {
         return panel;
     }
 
-    public void addEntry(int rank, String username, int elo) {
-        entries.add(new LeaderboardEntry(rank, username, elo).getPanel());
+    public void addEntry(String result, String username) {
+        entries.add(new HistoryEntry(result, username).getPanel());
     }
 
     public void fetchEntries() {
@@ -105,35 +105,35 @@ public class LeaderboardCard {
             entry.setVisible(false);
         }
         entries.removeAll();
-        messageHandler.getLeaderboard(page);
+        messageHandler.getGameHistory(page);
     }
 
-    private class LeaderboardEntry {
+    private class HistoryEntry {
         JPanel panel;
-        JLabel rankLabel;
+        JLabel resultLabel;
         JLabel usernameLabel;
-        JLabel eloLabel;
 
-        public LeaderboardEntry(int rank, String username, int elo) {
+        public HistoryEntry(String result, String username) {
             panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
             panel.setPreferredSize(new Dimension(448, 40));
             panel.setMaximumSize(new Dimension(448, 40));
             panel.setBackground(Color.LIGHT_GRAY);
 
-            rankLabel = new JLabel(rank + ". ");
-            rankLabel.setFont(rankLabel.getFont().deriveFont(24.0f));
-            panel.add(rankLabel);
+            resultLabel = new JLabel(result);
+            resultLabel.setFont(resultLabel.getFont().deriveFont(24.0f));
+            if (result.equals("Win")) {
+                resultLabel.setForeground(Color.GREEN);
+            } else if (result.equals("Loss")) {
+                resultLabel.setForeground(Color.RED);
+            }
+            panel.add(resultLabel);
+
+            panel.add(Box.createHorizontalGlue());
 
             usernameLabel = new JLabel(username);
             usernameLabel.setFont(usernameLabel.getFont().deriveFont(24.0f));
             panel.add(usernameLabel);
-
-            panel.add(Box.createHorizontalGlue());
-
-            eloLabel = new JLabel("ELO: " + elo);
-            eloLabel.setFont(eloLabel.getFont().deriveFont(24.0f));
-            panel.add(eloLabel);
         }
 
         public JPanel getPanel() {
