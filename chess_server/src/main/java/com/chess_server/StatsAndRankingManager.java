@@ -32,10 +32,18 @@ public class StatsAndRankingManager {
         Double eloWinner = (double) getEloById(winner_id);
         Double eloLoser = (double) getEloById(loser_id);
         if (isDraw) {
-            EloRating(eloWinner, eloLoser, 30, 0.5);
+            Double[] elo = EloRating(eloWinner, eloLoser, 30, 0.5);
+            eloWinner = elo[0];
+            eloLoser = elo[1];
         } else {
-            EloRating(eloWinner, eloLoser, 30, 1.0);
+            Double[] elo = EloRating(eloWinner, eloLoser, 30, 1.0);
+            eloWinner = elo[0];
+            eloLoser = elo[1];
         }
+        System.out.println("eloWinner: " + eloWinner);
+        System.out.println("eloLoser: " + eloLoser);
+        System.out.println("winner_id: " + winner_id);
+        System.out.println("loser_id: " + loser_id);
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -43,25 +51,26 @@ public class StatsAndRankingManager {
                 statement.setInt(1, 0);
                 statement.setInt(2, 0);
                 statement.setInt(3, 1);
-                statement.setInt(4, winner_id);
-                statement.setInt(5, eloWinner.intValue());
+                statement.setInt(5, winner_id);
+                statement.setInt(4, eloWinner.intValue());
                 statement.executeUpdate();
-                statement.setInt(4, loser_id);
-                statement.setInt(5, eloLoser.intValue());
+                statement.setInt(4, eloLoser.intValue());
+                statement.setInt(5, loser_id);
+
                 statement.executeUpdate();
             } else {
                 statement.setInt(1, 1);
                 statement.setInt(2, 0);
                 statement.setInt(3, 0);
-                statement.setInt(4, winner_id);
-                statement.setInt(5, eloWinner.intValue());
+                statement.setInt(4, eloWinner.intValue());
+                statement.setInt(5, winner_id);
                 statement.executeUpdate();
 
                 statement.setInt(1, 0);
                 statement.setInt(2, 1);
                 statement.setInt(3, 0);
-                statement.setInt(4, loser_id);
-                statement.setInt(5, eloLoser.intValue());
+                statement.setInt(4, eloLoser.intValue());
+                statement.setInt(5, loser_id);
                 statement.executeUpdate();
             }
         } catch (Exception e) {
@@ -75,7 +84,11 @@ public class StatsAndRankingManager {
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, username);
-            return statement.executeQuery().getInt(1);
+            statement.executeQuery();
+            ResultSet res = statement.getResultSet();
+            if (res.next()) {
+                return res.getInt(1);
+            }
         } catch (Exception e) {
             System.out.println("Error occurred while getting user id: " + e.getMessage());
         }
@@ -87,7 +100,11 @@ public class StatsAndRankingManager {
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, id);
-            return statement.executeQuery().getInt(1);
+            statement.executeQuery();
+            ResultSet res = statement.getResultSet();
+            if (res.next()) {
+                return res.getInt(1);
+            }
         } catch (Exception e) {
             System.out.println("Error occurred while getting elo: " + e.getMessage());
         }
@@ -102,12 +119,13 @@ public class StatsAndRankingManager {
     // calculate Elo rating
     // outcome determines the outcome: 1 for Player A win, 0 for Player B win, 0.5
     // for draw.
-    public static void EloRating(Double ratingA, Double ratingB, int K, Double outcome) {
+    public static Double[] EloRating(Double ratingA, Double ratingB, int K, Double outcome) {
         Double probA = probabilityElo(ratingB, ratingA);
         Double probB = probabilityElo(ratingA, ratingB);
 
         ratingA = ratingA + K * (outcome - probA);
         ratingB = ratingB + K * ((1 - outcome) - probB);
+        return new Double[] { ratingA, ratingB };
     }
 
     public JsonArray getLeaderboard() {
