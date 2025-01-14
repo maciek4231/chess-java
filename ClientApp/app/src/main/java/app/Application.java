@@ -26,6 +26,7 @@ public class Application {
     JPanel loginPanel;
     MessageHandler messageHandler;
     LoginCard loginCard;
+    StatsCard statsCard;
 
     boolean loggedIn = false;
     String username = "";
@@ -86,6 +87,7 @@ public class Application {
         menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
 
         menu.add(new MenuButton(this, "Play", "game"));
+        menu.add(new MenuButton(this, "Statistics", "statistics"));
         menu.add(Box.createVerticalGlue());
         menu.add(new MenuButton(this, "Account", "login"));
 
@@ -95,6 +97,9 @@ public class Application {
         loginCard = new LoginCard(this, messageHandler);
         loginPanel.add(loginCard.getMainPanel(), BorderLayout.CENTER);
         mainPanel.add(loginPanel, "login");
+
+        statsCard = new StatsCard(this, messageHandler);
+        mainPanel.add(statsCard.getPanel(), "statistics");
 
         mainPanel.addComponentListener(new ComponentAdapter() {
             @Override

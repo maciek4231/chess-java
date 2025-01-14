@@ -25,5 +25,6 @@ public class ImageLoader {
 
         menuButtonIcons.put("game", new ImageIcon(getClass().getResource("/menuButtonPlay.png")));
         menuButtonIcons.put("login", new ImageIcon(getClass().getResource("/menuButtonAccount.png")));
+        menuButtonIcons.put("statistics", new ImageIcon(getClass().getResource("/menuButtonStats.png")));
     }
 }

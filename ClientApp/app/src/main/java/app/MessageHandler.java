@@ -556,4 +556,11 @@ public class MessageHandler {
             System.out.println("Invalid registration status received.");
         }
     }
+
+    public void getPlayerStats(String username) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getPlayerStats");
+        msg.addProperty("username", username);
+        client.send(msg.toString());
+    }
 }

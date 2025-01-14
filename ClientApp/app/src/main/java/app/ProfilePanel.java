@@ -50,7 +50,7 @@ public class ProfilePanel {
         contentPanel.add(usernameLabel);
         usernameLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
-        eloLabel = new JLabel("Elo: 0");
+        eloLabel = new JLabel("ELO: 0");
         eloLabel.setFont(eloLabel.getFont().deriveFont(24.0f));
         contentPanel.add(eloLabel);
         eloLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -99,7 +99,7 @@ public class ProfilePanel {
     }
 
     public void setStats(int elo, int games, int wins, int losses, int draws) {
-        eloLabel.setText("Elo: " + elo);
+        eloLabel.setText("ELO: " + elo);
         gamesLabel.setText("Games: " + games);
         winsLabel.setText("Wins: " + wins);
         lossesLabel.setText("Losses: " + losses);
