@@ -159,8 +159,15 @@ public class Application {
     }
 
     public void changeCard(String cardName) {
-        if (cardName.equals("leaderboard"))
+        if (cardName.equals("login"))
+        {
+            if (loggedIn)
+                messageHandler.askForMyStats();
+        }
+        else if (cardName.equals("leaderboard"))
+        {
             leaderboardCard.updateEntries();
+        }
         mainPanelLayout.show(mainPanel, cardName);
     }
 
