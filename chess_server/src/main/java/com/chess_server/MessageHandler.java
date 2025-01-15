@@ -302,10 +302,10 @@ public class MessageHandler {
         WebSocket conn = connectionHandler.getClientConn(userId);
         JsonObject response = new JsonObject();
         response.addProperty("type", "gameOverRes");
-        response.addProperty("playerRank", elo[0]);
-        response.addProperty("playerDelta", elo[1]);
-        response.addProperty("opponentRank", elo[2]);
-        response.addProperty("opponentDelta", elo[3]);
+        response.addProperty("playerRank", elo[2]);
+        response.addProperty("playerDelta", elo[3]);
+        response.addProperty("opponentRank", elo[0]);
+        response.addProperty("opponentDelta", elo[1]);
         response.addProperty("status", "lost");
         server.sendMessageToClient(conn, response.toString());
     }
@@ -322,37 +322,61 @@ public class MessageHandler {
         server.sendMessageToClient(conn, response.toString());
     }
 
-    public void sendStalemate(Integer gameId, Double[] elo) {
+    public void sendStalemate(Integer gameId, Double[] elo, Integer whiteId, Integer blackId) {
         JsonObject response = new JsonObject();
+        WebSocket whiteConn = connectionHandler.getClientConn(whiteId);
+        WebSocket blackConn = connectionHandler.getClientConn(blackId);
         response.addProperty("type", "gameOverRes");
         response.addProperty("status", "stalemate");
         response.addProperty("playerRank", elo[0]);
         response.addProperty("playerDelta", elo[1]);
         response.addProperty("opponentRank", elo[2]);
         response.addProperty("opponentDelta", elo[3]);
-        sendToPlayers(gameId, response.toString());
+        server.sendMessageToClient(whiteConn, response.toString());
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("playerRank", elo[2]);
+        response.addProperty("playerDelta", elo[3]);
+        response.addProperty("opponentRank", elo[0]);
+        response.addProperty("opponentDelta", elo[1]);
+        server.sendMessageToClient(blackConn, response.toString());
     }
 
-    public void sendMaterial(Integer gameId, Double[] elo) {
+    public void sendMaterial(Integer gameId, Double[] elo, Integer whiteId, Integer blackId) {
         JsonObject response = new JsonObject();
+        WebSocket whiteConn = connectionHandler.getClientConn(whiteId);
+        WebSocket blackConn = connectionHandler.getClientConn(blackId);
         response.addProperty("type", "gameOverRes");
         response.addProperty("status", "material");
         response.addProperty("playerRank", elo[0]);
         response.addProperty("playerDelta", elo[1]);
         response.addProperty("opponentRank", elo[2]);
         response.addProperty("opponentDelta", elo[3]);
-        sendToPlayers(gameId, response.toString());
+        server.sendMessageToClient(whiteConn, response.toString());
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("playerRank", elo[2]);
+        response.addProperty("playerDelta", elo[3]);
+        response.addProperty("opponentRank", elo[0]);
+        response.addProperty("opponentDelta", elo[1]);
+        server.sendMessageToClient(blackConn, response.toString());
     }
 
-    public void sendDrawAccepted(Integer gameId, Double[] elo) {
+    public void sendDrawAccepted(Integer gameId, Double[] elo, Integer whiteId, Integer blackId) {
         JsonObject response = new JsonObject();
+        WebSocket whiteConn = connectionHandler.getClientConn(whiteId);
+        WebSocket blackConn = connectionHandler.getClientConn(blackId);
         response.addProperty("type", "gameOverRes");
         response.addProperty("status", "drawAccept");
         response.addProperty("playerRank", elo[0]);
         response.addProperty("playerDelta", elo[1]);
         response.addProperty("opponentRank", elo[2]);
         response.addProperty("opponentDelta", elo[3]);
-        sendToPlayers(gameId, response.toString());
+        server.sendMessageToClient(whiteConn, response.toString());
+        response.addProperty("type", "gameOverRes");
+        response.addProperty("playerRank", elo[2]);
+        response.addProperty("playerDelta", elo[3]);
+        response.addProperty("opponentRank", elo[0]);
+        response.addProperty("opponentDelta", elo[1]);
+        server.sendMessageToClient(blackConn, response.toString());
     }
 
     public void sendDrawDeclined(Integer userId) {

@@ -178,11 +178,11 @@ public class GameManager {
             elo = messageHandler.updateStats(game.playerWhite, game.playerBlack, true);
         }
         if (status == GameStatus.STALEMATE) {
-            messageHandler.sendStalemate(game.gameId, elo);
+            messageHandler.sendStalemate(game.gameId, elo, game.playerWhite, game.playerBlack);
         } else if (status == GameStatus.MATERIAL) {
-            messageHandler.sendMaterial(game.gameId, elo);
+            messageHandler.sendMaterial(game.gameId, elo, game.playerWhite, game.playerBlack);
         } else {
-            messageHandler.sendDrawAccepted(game.gameId, elo);
+            messageHandler.sendDrawAccepted(game.gameId, elo, game.playerWhite, game.playerBlack);
         }
 
         eraseGame(game);
