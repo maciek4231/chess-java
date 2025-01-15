@@ -163,7 +163,7 @@ public class GameManager {
         Double[] elo = new Double[] { 0.0, 0.0, 0.0, 0.0 };
 
         if (gameProperties.get(game.gameId)[2] == 1) {
-            elo = messageHandler.updateStats(loser, game.getTheOtherPlayer(loser), false);
+            elo = messageHandler.updateStats(game.getTheOtherPlayer(loser), loser, false);
         }
         messageHandler.sendLost(loser, elo);
         messageHandler.sendWin(game.getTheOtherPlayer(loser), elo);
