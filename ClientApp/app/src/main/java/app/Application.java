@@ -159,6 +159,8 @@ public class Application {
     }
 
     public void changeCard(String cardName) {
+        if (cardName.equals("leaderboard"))
+            leaderboardCard.updateEntries();
         mainPanelLayout.show(mainPanel, cardName);
     }
 
@@ -209,5 +211,11 @@ public class Application {
 
     public void addLeaderboardEntry(String username, int rank, int elo) {
         leaderboardCard.addEntry(rank, username, elo);
+    }
+
+    public void repaintMainPanel()
+    {
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 }

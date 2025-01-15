@@ -18,12 +18,16 @@ public class LeaderboardCard {
     JPanel entries;
     JPanel buttonPanel;
 
+    JPanel entriesPanel;
+
     int page = 0;
 
     MessageHandler messageHandler;
+    Application application;
 
     public LeaderboardCard(Application application, MessageHandler messageHandler) {
         this.messageHandler = messageHandler;
+        this.application = application;
 
         panel = new JPanel();
 
@@ -54,6 +58,14 @@ public class LeaderboardCard {
         entries.setOpaque(false);
         entries.setAlignmentX(JPanel.CENTER_ALIGNMENT);
         contentPanel.add(entries);
+
+        entriesPanel = new JPanel();
+        entriesPanel.setLayout(new BoxLayout(entriesPanel, BoxLayout.Y_AXIS));
+        entriesPanel.setPreferredSize(new Dimension(448, 400));
+        entriesPanel.setMaximumSize(new Dimension(448, 400));
+        entriesPanel.setOpaque(false);
+        entriesPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+        entries.add(entriesPanel);
 
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -88,8 +100,6 @@ public class LeaderboardCard {
         buttonPanel.add(nextButton);
 
         contentPanel.add(Box.createVerticalGlue());
-
-        fetchEntries();
     }
 
     public JPanel getPanel() {
@@ -97,12 +107,29 @@ public class LeaderboardCard {
     }
 
     public void addEntry(int rank, String username, int elo) {
-        entries.add(new LeaderboardEntry(rank, username, elo).getPanel());
+        entriesPanel.add(new LeaderboardEntry(rank, username, elo).getPanel());
+        application.repaintMainPanel();
+
     }
 
     public void fetchEntries() {
-        entries.removeAll();
+        entriesPanel.setVisible(false);
+        entries.remove(entriesPanel);
+
+        entriesPanel = new JPanel();
+        entriesPanel.setLayout(new BoxLayout(entriesPanel, BoxLayout.Y_AXIS));
+        entriesPanel.setPreferredSize(new Dimension(448, 400));
+        entriesPanel.setMaximumSize(new Dimension(448, 400));
+        entriesPanel.setOpaque(false);
+        entriesPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+        entriesPanel.setVisible(true);
+        entries.add(entriesPanel);
+
         messageHandler.getLeaderboard(page);
+    }
+
+    public void updateEntries() {
+        fetchEntries();
     }
 
     private class LeaderboardEntry {
