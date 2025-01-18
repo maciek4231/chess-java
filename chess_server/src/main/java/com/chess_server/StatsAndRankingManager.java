@@ -134,20 +134,23 @@ public class StatsAndRankingManager {
         return new Double[] { ratingA, ratingB };
     }
 
-    public JsonArray getLeaderboard() {
+    public JsonArray getLeaderboard(Integer page) {
         String query = "SELECT username, elo FROM stats JOIN users ON stats.user_id = users.id ORDER BY elo DESC";
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.executeQuery();
             ResultSet res = statement.getResultSet();
             JsonArray leaderboard = new JsonArray();
+            for (int i = 0; i < page * 10; i++) {
+                res.next();
+            }
             for (int i = 0; i < 10; i++) {
                 res.next();
                 JsonObject entry = new JsonObject();
                 if (res.isAfterLast()) {
                     break;
                 }
-                entry.addProperty("rank", i + 1);
+                entry.addProperty("rank", i + (page * 10) + 1);
                 entry.addProperty("username", res.getString(1));
                 entry.addProperty("elo", res.getInt(2));
                 leaderboard.add(entry);

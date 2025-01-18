@@ -73,7 +73,7 @@ public class MessageHandler {
                     handleAbandonGame(clientId, msg);
                     break;
                 case "getLeaderboard":
-                    sendLeaderboard(clientId, conn);
+                    sendLeaderboard(clientId, msg, conn);
                     break;
                 case "getPlayerStats":
                     sendPlayerStats(clientId, msg, conn);
@@ -506,8 +506,9 @@ public class MessageHandler {
                 isDraw);
     }
 
-    private void sendLeaderboard(Integer clientId, WebSocket conn) {
-        JsonArray leaderboard = server.databaseManager.statsAndRankingManager.getLeaderboard();
+    private void sendLeaderboard(Integer clientId, JsonObject msg, WebSocket conn) {
+        Integer page = msg.get("page").getAsInt();
+        JsonArray leaderboard = server.databaseManager.statsAndRankingManager.getLeaderboard(page);
         JsonObject response = new JsonObject();
         response.addProperty("type", "leaderboardRes");
         response.add("leaderboard", leaderboard);
